@@ -496,5 +496,12 @@ namespace Migrator.Framework
 		/// <param name="name"></param>
 		/// <returns></returns>
 		string QuoteTableNameIfRequired(string name);
+
+		/// <summary>
+		/// Encodes a guid value as a string, suitable for inclusion in sql statement
+		/// </summary>
+		/// <param name="guid"></param>
+		/// <returns></returns>
+		string Encode(Guid guid);
 	}
 }

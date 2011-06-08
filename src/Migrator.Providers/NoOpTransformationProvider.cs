@@ -332,6 +332,11 @@ namespace Migrator.Providers
 			throw new NotImplementedException();
 		}
 
+		public string Encode(Guid guid)
+		{
+			return guid.ToString();
+		}
+
 		public void Dispose()
 		{
 			//No Op

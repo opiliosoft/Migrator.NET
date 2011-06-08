@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Text;
 using Migrator.Framework;
 using Oracle.DataAccess.Client;
 using ForeignKeyConstraint = Migrator.Framework.ForeignKeyConstraint;
@@ -260,6 +261,14 @@ namespace Migrator.Providers.Oracle
 			GuardAgainstMaximumColumnNameLengthForOracle(name, columns);
 
 			base.AddTable(name, columns);
+		}
+
+		public override string Encode(Guid guid)
+		{
+			byte[] bytes = guid.ToByteArray();
+			var hex = new StringBuilder(bytes.Length * 2);
+			foreach (byte b in bytes) hex.AppendFormat("{0:X2}", b);
+			return hex.ToString();
 		}
 
 		void GuardAgainstMaximumColumnNameLengthForOracle(string name, Column[] columns)

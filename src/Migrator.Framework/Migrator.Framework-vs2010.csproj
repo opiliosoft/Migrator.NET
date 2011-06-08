@@ -54,10 +54,15 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="log4net">
+      <HintPath>..\..\lib\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Maximums.cs" />
+    <Compile Include="JoiningTableTransformationProviderExtensions.cs" />
     <Compile Include="DataRecordExtensions.cs" />
     <Compile Include="Column.cs" />
     <Compile Include="ColumnProperty.cs" />
@@ -87,6 +92,8 @@
     <Compile Include="SchemaBuilder\RenameTableExpression.cs" />
     <Compile Include="SchemaBuilder\SchemaBuilder.cs" />
     <Compile Include="StringUtils.cs" />
+    <Compile Include="Support\Inflector.cs" />
+    <Compile Include="Support\TransformationProviderUtility.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MigratorDotNet.snk" />

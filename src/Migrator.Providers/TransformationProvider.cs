@@ -59,7 +59,7 @@ namespace Migrator.Providers
 			set { _logger = value; }
 		}
 
-		public ITransformationProvider this[string provider]
+		public virtual ITransformationProvider this[string provider]
 		{
 			get
 			{
@@ -306,7 +306,7 @@ namespace Migrator.Providers
 			AddColumn(table, column, type, size, ColumnProperty.Null, null);
 		}
 
-		public void AddColumn(string table, string column, DbType type, object defaultValue)
+		public virtual void AddColumn(string table, string column, DbType type, object defaultValue)
 		{
 			if (ColumnExists(table, column))
 			{
@@ -499,7 +499,7 @@ namespace Migrator.Providers
 			return ConstraintExists(table, name);
 		}
 
-		public int ExecuteNonQuery(string sql)
+		public virtual int ExecuteNonQuery(string sql)
 		{
 			Logger.Trace(sql);
 			Logger.ApplyingDBChange(sql);
@@ -522,7 +522,7 @@ namespace Migrator.Providers
 		/// </summary>
 		/// <param name="sql">The SQL command.</param>
 		/// <returns>A data iterator, <see cref="System.Data.IDataReader">IDataReader</see>.</returns>
-		public IDataReader ExecuteQuery(string sql)
+		public virtual IDataReader ExecuteQuery(string sql)
 		{
 			Logger.Trace(sql);
 			using (IDbCommand cmd = BuildCommand(sql))
@@ -539,7 +539,7 @@ namespace Migrator.Providers
 			}
 		}
 
-		public object ExecuteScalar(string sql)
+		public virtual object ExecuteScalar(string sql)
 		{
 			Logger.Trace(sql);
 			using (IDbCommand cmd = BuildCommand(sql))
@@ -556,7 +556,7 @@ namespace Migrator.Providers
 			}
 		}
 
-		public IDataReader Select(string what, string from)
+		public virtual IDataReader Select(string what, string from)
 		{
 			return Select(what, from, "1=1");
 		}
@@ -666,7 +666,7 @@ namespace Migrator.Providers
 		/// <summary>
 		/// Starts a transaction. Called by the migration mediator.
 		/// </summary>
-		public void BeginTransaction()
+		public virtual void BeginTransaction()
 		{
 			if (_transaction == null && _connection != null)
 			{
@@ -697,7 +697,7 @@ namespace Migrator.Providers
 		/// <summary>
 		/// Commit the current transaction. Called by the migrations mediator.
 		/// </summary>
-		public void Commit()
+		public virtual void Commit()
 		{
 			if (_transaction != null && _connection != null && _connection.State == ConnectionState.Open)
 			{
@@ -716,7 +716,7 @@ namespace Migrator.Providers
 		/// <summary>
 		/// The list of Migrations currently applied to the database.
 		/// </summary>
-		public List<long> AppliedMigrations
+		public virtual List<long> AppliedMigrations
 		{
 			get
 			{
@@ -752,7 +752,7 @@ namespace Migrator.Providers
 		/// Marks a Migration version number as having been applied
 		/// </summary>
 		/// <param name="version">The version number of the migration that was applied</param>
-		public void MigrationApplied(long version)
+		public virtual void MigrationApplied(long version)
 		{
 			CreateSchemaInfoTable();
 			Insert("SchemaInfo", new[] {"version"}, new[] {version.ToString()});
@@ -763,34 +763,34 @@ namespace Migrator.Providers
 		/// Marks a Migration version number as having been rolled back from the database
 		/// </summary>
 		/// <param name="version">The version number of the migration that was removed</param>
-		public void MigrationUnApplied(long version)
+		public virtual void MigrationUnApplied(long version)
 		{
 			CreateSchemaInfoTable();
 			Delete("SchemaInfo", "version", version.ToString());
 			_appliedMigrations.Remove(version);
 		}
 
-		public void AddColumn(string table, Column column)
+		public virtual void AddColumn(string table, Column column)
 		{
 			AddColumn(table, column.Name, column.Type, column.Size, column.ColumnProperty, column.DefaultValue);
 		}
 
-		public void GenerateForeignKey(string primaryTable, string refTable)
+		public virtual void GenerateForeignKey(string primaryTable, string refTable)
 		{
 			GenerateForeignKey(primaryTable, refTable, ForeignKeyConstraint.NoAction);
 		}
 
-		public void GenerateForeignKey(string primaryTable, string refTable, ForeignKeyConstraint constraint)
+		public virtual void GenerateForeignKey(string primaryTable, string refTable, ForeignKeyConstraint constraint)
 		{
 			GenerateForeignKey(primaryTable, refTable + "Id", refTable, "Id", constraint);
 		}
 
-		public IDbCommand GetCommand()
+		public virtual IDbCommand GetCommand()
 		{
 			return BuildCommand(null);
 		}
 
-		public void ExecuteSchemaBuilder(SchemaBuilder builder)
+		public virtual void ExecuteSchemaBuilder(SchemaBuilder builder)
 		{
 			foreach (ISchemaBuilderExpression expr in builder.Expressions)
 				expr.Create(this);
@@ -804,7 +804,7 @@ namespace Migrator.Providers
 			}
 		}
 
-		public string QuoteColumnNameIfRequired(string name)
+		public virtual string QuoteColumnNameIfRequired(string name)
 		{
 			if (Dialect.ColumnNameNeedsQuote || Dialect.IsReservedWord(name))
 			{
@@ -813,7 +813,7 @@ namespace Migrator.Providers
 			return name;
 		}
 
-		public string QuoteTableNameIfRequired(string name)
+		public virtual string QuoteTableNameIfRequired(string name)
 		{
 			if (Dialect.TableNameNeedsQuote || Dialect.IsReservedWord(name))
 			{
@@ -822,7 +822,12 @@ namespace Migrator.Providers
 			return name;
 		}
 
-		public string[] QuoteColumnNamesIfRequired(params string[] columnNames)
+		public virtual string Encode(Guid guid)
+		{
+			return guid.ToString();
+		}
+
+		public virtual string[] QuoteColumnNamesIfRequired(params string[] columnNames)
 		{
 			var quotedColumns = new string[columnNames.Length];
 
@@ -834,7 +839,7 @@ namespace Migrator.Providers
 			return quotedColumns;
 		}
 
-		public bool IsThisProvider(string provider)
+		public virtual bool IsThisProvider(string provider)
 		{
 			// XXX: This might need to be more sophisticated. Currently just a convention
 			return GetType().Name.ToLower().StartsWith(provider.ToLower());
@@ -847,7 +852,7 @@ namespace Migrator.Providers
 			ExecuteNonQuery(sqlCreate);
 		}
 
-		public List<string> GetPrimaryKeys(IEnumerable<Column> columns)
+		public virtual List<string> GetPrimaryKeys(IEnumerable<Column> columns)
 		{
 			var pks = new List<string>();
 			foreach (Column col in columns)
@@ -952,7 +957,7 @@ namespace Migrator.Providers
 			                        	});
 		}
 
-		public string JoinColumnsAndValues(string[] columns, string[] values)
+		public virtual string JoinColumnsAndValues(string[] columns, string[] values)
 		{
 			string[] quotedValues = QuoteValues(values);
 			var namesAndValues = new string[columns.Length];
