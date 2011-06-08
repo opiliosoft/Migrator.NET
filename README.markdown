@@ -1,5 +1,3 @@
-![DevDefined.OAuth logo][1]
-
 Introduction
 ------------
 
@@ -10,11 +8,16 @@ What's different in the fork
 
 In this fork the main changes are:
 
-* Now targets .Net Framework 3.5 instead of 2.0
-* Support for reserved words
+* Now targets .Net Framework 3.5 instead of 2.0.
+* Support for reserved words.
 * Support for guid types across all databases.
-* Utility classes for removing all tables etc. from a database (to support migration integration tests)
+* Utility classes for removing all tables etc. from a database (to support migration integration tests).
 * Warnings in Oracle when attempting to create column/table/key names that are over-length.
+
+Coming soon
+-----------
+
+* Schema support for Oracle.
   
 Downloads/Releases
 ------------------
