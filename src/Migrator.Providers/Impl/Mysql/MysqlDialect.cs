@@ -8,12 +8,16 @@ namespace Migrator.Providers.Mysql
 	{
 		public MysqlDialect()
 		{
+			// TODO: As per http://dev.mysql.com/doc/refman/5.0/en/char.html 5.0.3 and above
+			// can handle varchar(n) up to a length OF 65,535 - so the limit of 255 should no longer apply.
+
 			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR(255)");
 			RegisterColumnType(DbType.AnsiStringFixedLength, 255, "CHAR($l)");
 			RegisterColumnType(DbType.AnsiStringFixedLength, 65535, "TEXT");
 			RegisterColumnType(DbType.AnsiStringFixedLength, 16777215, "MEDIUMTEXT");
 			RegisterColumnType(DbType.AnsiString, "VARCHAR(255)");
 			RegisterColumnType(DbType.AnsiString, 255, "VARCHAR($l)");
+			RegisterColumnType(DbType.AnsiString, 256, "VARCHAR(255)");
 			RegisterColumnType(DbType.AnsiString, 65535, "TEXT");
 			RegisterColumnType(DbType.AnsiString, 16777215, "MEDIUMTEXT");
 			RegisterColumnType(DbType.Binary, "LONGBLOB");
@@ -39,8 +43,10 @@ namespace Migrator.Providers.Mysql
 			RegisterColumnType(DbType.StringFixedLength, 16777215, "MEDIUMTEXT");
 			RegisterColumnType(DbType.String, "VARCHAR(255)");
 			RegisterColumnType(DbType.String, 255, "VARCHAR($l)");
+			RegisterColumnType(DbType.String, 256, "VARCHAR(255)");
 			RegisterColumnType(DbType.String, 65535, "TEXT");
 			RegisterColumnType(DbType.String, 16777215, "MEDIUMTEXT");
+			RegisterColumnType(DbType.String, 1073741823, "LONGTEXT");
 			RegisterColumnType(DbType.Time, "TIME");
 
 			RegisterProperty(ColumnProperty.Unsigned, "UNSIGNED");

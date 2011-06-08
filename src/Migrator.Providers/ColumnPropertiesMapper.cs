@@ -10,28 +10,28 @@ namespace Migrator.Providers
 	/// </summary>
 	public class ColumnPropertiesMapper
 	{
+		protected Dialect dialect;
+
+		/// <summary>The SQL type</summary>
+		protected string type;
+
+		/// <summary>The name of the column</summary>
+		protected string name;
+
 		/// <summary>
 		/// the type of the column
 		/// </summary>
 		protected string columnSql;
 
 		/// <summary>
+		/// Sql if This column is Indexed
+		/// </summary>
+		protected bool indexed = false;
+
+		/// <summary>
 		/// Sql if this column has a default value
 		/// </summary>
 		protected object defaultVal;
-
-		protected Dialect dialect;
-
-		/// <summary>
-		/// Sql if This column is Indexed
-		/// </summary>
-		protected bool indexed;
-
-		/// <summary>The name of the column</summary>
-		protected string name;
-
-		/// <summary>The SQL type</summary>
-		protected string type;
 
 		public ColumnPropertiesMapper(Dialect dialect, string type)
 		{
@@ -79,18 +79,18 @@ namespace Migrator.Providers
 			Name = column.Name;
 			indexed = PropertySelected(column.ColumnProperty, ColumnProperty.Indexed);
 
-			var vals = new List<string>();
-			vals.Add(dialect.ColumnNameNeedsQuote ? QuotedName : Name);
+			List<string> vals = new List<string>();
+			vals.Add(dialect.ColumnNameNeedsQuote || dialect.IsReservedWord(Name) ? QuotedName : Name);
 
 			vals.Add(type);
 
-			if (! dialect.IdentityNeedsType)
+			if (!dialect.IdentityNeedsType)
 				AddValueIfSelected(column, ColumnProperty.Identity, vals);
 
 			if (dialect.IsUnsignedCompatible(column.Type))
 				AddValueIfSelected(column, ColumnProperty.Unsigned, vals);
 
-			if (! PropertySelected(column.ColumnProperty, ColumnProperty.PrimaryKey) || dialect.NeedsNotNullForIdentity)
+			if (!PropertySelected(column.ColumnProperty, ColumnProperty.PrimaryKey) || dialect.NeedsNotNullForIdentity)
 				AddValueIfSelected(column, ColumnProperty.NotNull, vals);
 
 			AddValueIfSelected(column, ColumnProperty.PrimaryKey, vals);
@@ -107,7 +107,7 @@ namespace Migrator.Providers
 			columnSql = String.Join(" ", vals.ToArray());
 		}
 
-		void AddValueIfSelected(Column column, ColumnProperty property, ICollection<string> vals)
+		private void AddValueIfSelected(Column column, ColumnProperty property, ICollection<string> vals)
 		{
 			if (PropertySelected(column.ColumnProperty, property))
 				vals.Add(dialect.SqlForProperty(property));
