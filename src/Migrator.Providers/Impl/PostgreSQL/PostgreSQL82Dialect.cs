@@ -1,9 +1,13 @@
-﻿namespace Migrator.Providers.PostgreSQL
+﻿using System;
+using System.Data;
+
+namespace Migrator.Providers.PostgreSQL
 {
-	/// <summary>
-	/// Maintained for backward compatability
-	/// </summary>
 	public class PostgreSQL82Dialect : PostgreSQLDialect
 	{
+		public PostgreSQL82Dialect()
+		{
+			RegisterColumnType(DbType.Guid, "uuid"); // Requires postgresql 8.2 and up
+		}
 	}
 }
