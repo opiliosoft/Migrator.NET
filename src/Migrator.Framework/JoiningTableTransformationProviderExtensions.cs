@@ -28,8 +28,7 @@ namespace Migrator.Framework
 			return (Inflector.Singularize(lhsTableName) ?? lhsTableName) + (Inflector.Pluralize(rhsTableName) ?? rhsTableName);
 		}
 
-		public static ITransformationProvider AddManyToManyJoiningTable(this ITransformationProvider database, string schema, string lhsTableName, string lhsKey, string rhsTableName, string rhsKey,
-																																		string joiningTableName)
+		public static ITransformationProvider AddManyToManyJoiningTable(this ITransformationProvider database, string schema, string lhsTableName, string lhsKey, string rhsTableName, string rhsKey, string joiningTableName)
 		{
 			string joiningTableWithSchema = TransformationProviderUtility.FormatTableName(schema, joiningTableName);
 
@@ -60,7 +59,7 @@ namespace Migrator.Framework
 
 		static string ShortenKeyNameToBeSuitableForOracle(string pkName)
 		{
-			return TransformationProviderUtility.AdjustNameToSize(pkName, TransformationProviderUtility.MaxLengthForForeignKeyInOracle);
+			return TransformationProviderUtility.AdjustNameToSize(pkName, TransformationProviderUtility.MaxLengthForForeignKeyInOracle, false);
 		}
 
 		public static ITransformationProvider RemoveManyToManyJoiningTable(this ITransformationProvider database, string schema, string lhsTableName, string rhsTableName)

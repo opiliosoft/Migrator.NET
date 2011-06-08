@@ -263,14 +263,6 @@ namespace Migrator.Providers.Oracle
 			base.AddTable(name, columns);
 		}
 
-		public override string Encode(Guid guid)
-		{
-			byte[] bytes = guid.ToByteArray();
-			var hex = new StringBuilder(bytes.Length * 2);
-			foreach (byte b in bytes) hex.AppendFormat("{0:X2}", b);
-			return hex.ToString();
-		}
-
 		void GuardAgainstMaximumColumnNameLengthForOracle(string name, Column[] columns)
 		{
 			foreach (Column column in columns)
@@ -282,6 +274,14 @@ namespace Migrator.Providers.Oracle
 						              column.Name, column.Name.Length), "columns");
 				}
 			}
+		}
+
+		public override string Encode(Guid guid)
+		{
+			byte[] bytes = guid.ToByteArray();
+			var hex = new StringBuilder(bytes.Length*2);
+			foreach (byte b in bytes) hex.AppendFormat("{0:X2}", b);
+			return hex.ToString();
 		}
 	}
 }

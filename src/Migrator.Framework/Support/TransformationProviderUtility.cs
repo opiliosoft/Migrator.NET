@@ -6,23 +6,24 @@ namespace Migrator.Framework.Support
 	{
 		public const int MaxLengthForForeignKeyInOracle = 30;
 		static readonly ILog log = LogManager.GetLogger(typeof (TransformationProviderUtility));
+		static readonly string[] CommonWords = new[] {"Test"};
 
 		public static string CreateForeignKeyName(string tableName, string foreignKeyTableName)
 		{
 			string fkName = string.Format("FK_{0}_{1}", tableName, foreignKeyTableName);
 
-			return AdjustNameToSize(fkName, MaxLengthForForeignKeyInOracle);
+			return AdjustNameToSize(fkName, MaxLengthForForeignKeyInOracle, true);
 		}
 
-		public static string AdjustNameToSize(string name, int totalCharacters)
+		public static string AdjustNameToSize(string name, int totalCharacters, bool removeCommmonWords)
 		{
 			string adjustedName = name;
 
 			if (adjustedName.Length > totalCharacters)
 			{
-				if (adjustedName.Contains("Test"))
+				if (removeCommmonWords)
 				{
-					adjustedName = adjustedName.Replace("Test", "");
+					adjustedName = RemoveCommonWords(adjustedName);					
 				}
 			}
 
@@ -33,6 +34,18 @@ namespace Migrator.Framework.Support
 				log.WarnFormat("Name has been truncated from: {0} to: {1}", name, adjustedName);
 			}
 
+			return adjustedName;
+		}
+
+		static string RemoveCommonWords(string adjustedName)
+		{
+			foreach (var word in CommonWords)
+			{
+				if (adjustedName.Contains(word))
+				{
+					adjustedName = adjustedName.Replace(word, string.Empty);
+				}
+			}
 			return adjustedName;
 		}
 
