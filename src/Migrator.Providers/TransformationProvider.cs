@@ -222,6 +222,7 @@ namespace Migrator.Providers
 		{
 			if (ColumnExists(table, column))
 			{
+				column = QuoteColumnNameIfRequired(column);
 				ExecuteNonQuery(String.Format("ALTER TABLE {0} DROP COLUMN {1} ", table, column));
 			}
 		}
