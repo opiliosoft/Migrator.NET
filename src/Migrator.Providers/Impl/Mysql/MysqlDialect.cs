@@ -46,6 +46,8 @@ namespace Migrator.Providers.Mysql
 			
             RegisterProperty(ColumnProperty.Unsigned, "UNSIGNED");
             RegisterProperty(ColumnProperty.Identity, "AUTO_INCREMENT");
+
+						AddReservedWords("KEY");
         }
 
 		public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString)
