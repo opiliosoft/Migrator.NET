@@ -13,6 +13,7 @@ namespace Migrator.Providers
 		readonly Dictionary<ColumnProperty, string> propertyMap = new Dictionary<ColumnProperty, string>();
 		readonly HashSet<string> reservedWords = new HashSet<string>();
 		readonly TypeNames typeNames = new TypeNames();
+		readonly List<DbType> unsignedCompatibleTypes = new List<DbType>();
 
 		protected Dialect()
 		{
@@ -204,5 +205,25 @@ namespace Migrator.Providers
 				mapper.Default = column.DefaultValue;
 			return mapper;
 		}
+
+		/// <summary>
+		/// Subclasses register which DbTypes are unsigned-compatible (ie, available in signed and unsigned variants)
+		/// </summary>
+		/// <param name="type"></param>
+		protected void RegisterUnsignedCompatible(DbType type)
+		{
+			unsignedCompatibleTypes.Add(type);
+		}
+
+		/// <summary>
+		/// Determine if a particular database type has an unsigned variant
+		/// </summary>
+		/// <param name="type">The DbType</param>
+		/// <returns>True if the database type has an unsigned variant, otherwise false</returns>
+		public bool IsUnsignedCompatible(DbType type)
+		{
+			return unsignedCompatibleTypes.Contains(type);
+		}
+
 	}
 }

@@ -176,7 +176,10 @@ namespace Migrator.Providers
 			{
 				// Remove the primary key notation if compound primary key because we'll add it back later
 				if (compoundPrimaryKey && column.IsPrimaryKey)
-					column.ColumnProperty = ColumnProperty.Unsigned | ColumnProperty.NotNull;
+				{
+					column.ColumnProperty = column.ColumnProperty ^ ColumnProperty.PrimaryKey; 
+					column.ColumnProperty = column.ColumnProperty | ColumnProperty.NotNull; // PK is always not-null
+				}
 
 				ColumnPropertiesMapper mapper = _dialect.GetAndMapColumnProperties(column);
 				columnProviders.Add(mapper);
