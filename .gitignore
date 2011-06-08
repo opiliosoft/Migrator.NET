@@ -1,7 +1,12 @@
-
-*.suo
-*.user
 bin/
 obj/
+*.log
+logs/
 _ReSharper*/
-build/
+output/
+release/
+*.suo
+*.user
+*.cache
+
+/src/GlobalAssemblyInfo.cs
