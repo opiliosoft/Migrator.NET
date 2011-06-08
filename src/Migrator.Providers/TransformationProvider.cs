@@ -755,10 +755,10 @@ namespace Migrator.Providers
 		/// Marks a Migration version number as having been applied
 		/// </summary>
 		/// <param name="version">The version number of the migration that was applied</param>
-		public virtual void MigrationApplied(long version)
+		public void MigrationApplied(long version)
 		{
 			CreateSchemaInfoTable();
-			Insert("SchemaInfo", new[] {"version"}, new[] {version.ToString()});
+			Insert("SchemaInfo", new string[] { "Version" }, new object[] { version });
 			_appliedMigrations.Add(version);
 		}
 
@@ -766,10 +766,10 @@ namespace Migrator.Providers
 		/// Marks a Migration version number as having been rolled back from the database
 		/// </summary>
 		/// <param name="version">The version number of the migration that was removed</param>
-		public virtual void MigrationUnApplied(long version)
+		public void MigrationUnApplied(long version)
 		{
 			CreateSchemaInfoTable();
-			Delete("SchemaInfo", "version", version.ToString());
+			Delete("SchemaInfo", "Version", version.ToString());
 			_appliedMigrations.Remove(version);
 		}
 
