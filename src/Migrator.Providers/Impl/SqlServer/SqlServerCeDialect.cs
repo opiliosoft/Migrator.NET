@@ -18,6 +18,5 @@ namespace Migrator.Providers.SqlServer
 		{
 			return new SqlServerCeTransformationProvider(dialect, connectionString);
 		}
-
 	}
 }

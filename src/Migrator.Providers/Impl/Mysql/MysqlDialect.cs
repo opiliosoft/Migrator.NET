@@ -1,4 +1,3 @@
-
 using System;
 using System.Data;
 using Migrator.Framework;
@@ -7,9 +6,9 @@ namespace Migrator.Providers.Mysql
 {
 	public class MysqlDialect : Dialect
 	{
-	    public MysqlDialect()
-	    {
-	        RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR(255)");
+		public MysqlDialect()
+		{
+			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR(255)");
 			RegisterColumnType(DbType.AnsiStringFixedLength, 255, "CHAR($l)");
 			RegisterColumnType(DbType.AnsiStringFixedLength, 65535, "TEXT");
 			RegisterColumnType(DbType.AnsiStringFixedLength, 16777215, "MEDIUMTEXT");
@@ -43,30 +42,30 @@ namespace Migrator.Providers.Mysql
 			RegisterColumnType(DbType.String, 65535, "TEXT");
 			RegisterColumnType(DbType.String, 16777215, "MEDIUMTEXT");
 			RegisterColumnType(DbType.Time, "TIME");
-			
-            RegisterProperty(ColumnProperty.Unsigned, "UNSIGNED");
-            RegisterProperty(ColumnProperty.Identity, "AUTO_INCREMENT");
 
-						AddReservedWords("KEY");
-        }
+			RegisterProperty(ColumnProperty.Unsigned, "UNSIGNED");
+			RegisterProperty(ColumnProperty.Identity, "AUTO_INCREMENT");
+
+			AddReservedWords("KEY");
+		}
+
+		public override string QuoteTemplate
+		{
+			get { return "`{0}`"; }
+		}
 
 		public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString)
 		{
 			return new MySqlTransformationProvider(dialect, connectionString);
 		}
 
-        public override string QuoteTemplate
-        {
-            get { return "`{0}`"; }
-        }
-
-        public override string Default(object defaultValue)
-        {
-            if (defaultValue.GetType().Equals(typeof (bool)))
-            {
-                defaultValue = ((bool) defaultValue) ? 1 : 0;
-            }
-            return String.Format("DEFAULT {0}", defaultValue);
-        }
-    }
+		public override string Default(object defaultValue)
+		{
+			if (defaultValue.GetType().Equals(typeof (bool)))
+			{
+				defaultValue = ((bool) defaultValue) ? 1 : 0;
+			}
+			return String.Format("DEFAULT {0}", defaultValue);
+		}
+	}
 }

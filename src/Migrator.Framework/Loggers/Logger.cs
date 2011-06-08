@@ -1,4 +1,5 @@
 #region License
+
 //The contents of this file are subject to the Mozilla Public License
 //Version 1.1 (the "License"); you may not use this file except in
 //compliance with the License. You may obtain a copy of the License at
@@ -7,6 +8,7 @@
 //basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
 //License for the specific language governing rights and limitations
 //under the License.
+
 #endregion
 
 using System;
@@ -19,8 +21,8 @@ namespace Migrator.Framework.Loggers
 	/// </summary>
 	public class Logger : IAttachableLogger
 	{
-		private readonly bool _trace;
-		private readonly List<ILogWriter> _writers = new List<ILogWriter>();
+		readonly bool _trace;
+		readonly List<ILogWriter> _writers = new List<ILogWriter>();
 
 		public Logger(bool trace)
 		{
@@ -41,11 +43,6 @@ namespace Migrator.Framework.Loggers
 		public void Detach(ILogWriter writer)
 		{
 			_writers.Remove(writer);
-		}
-
-		public void Started(long currentVersion, long finalVersion)
-		{
-			WriteLine("Current version : {0}.  Target version : {1}", currentVersion, finalVersion);
 		}
 
 		public void Started(List<long> currentVersions, long finalVersion)
@@ -73,43 +70,25 @@ namespace Migrator.Framework.Loggers
 			WriteLine("Rolling back to migration {0}", originalVersion);
 		}
 
-        public void ApplyingDBChange(string sql)
-	    {
-	        Log(sql);
-	    }
+		public void ApplyingDBChange(string sql)
+		{
+			Log(sql);
+		}
 
 		public void Exception(long version, string migrationName, Exception ex)
 		{
-            WriteLine("============ Error Detail ============");
-            WriteLine("Error in migration: {0}", version);
-            LogExceptionDetails(ex);
-            WriteLine("======================================");
+			WriteLine("============ Error Detail ============");
+			WriteLine("Error in migration: {0}", version);
+			LogExceptionDetails(ex);
+			WriteLine("======================================");
 		}
 
-        public void Exception(string message, Exception ex)
-        {
-            WriteLine("============ Error Detail ============");
-            WriteLine("Error: {0}", message);
-            LogExceptionDetails(ex);
-            WriteLine("======================================");
-        }
-
-	    private void LogExceptionDetails(Exception ex)
-	    {
-	        WriteLine("{0}", ex.Message);
-            WriteLine("{0}", ex.StackTrace);
-	        Exception iex = ex.InnerException;
-	        while (iex != null)
-	        {
-	            WriteLine("Caused by: {0}", iex);
-                WriteLine("{0}", ex.StackTrace);
-	            iex = iex.InnerException;
-	        }
-	    }
-
-	    public void Finished(long originalVersion, long currentVersion)
+		public void Exception(string message, Exception ex)
 		{
-			WriteLine("Migrated to version {0}", currentVersion);
+			WriteLine("============ Error Detail ============");
+			WriteLine("Error: {0}", message);
+			LogExceptionDetails(ex);
+			WriteLine("======================================");
 		}
 
 		public void Finished(List<long> originalVersions, long currentVersion)
@@ -136,7 +115,30 @@ namespace Migrator.Framework.Loggers
 			}
 		}
 
-		private void Write(string message, params object[] args)
+		public void Started(long currentVersion, long finalVersion)
+		{
+			WriteLine("Current version : {0}.  Target version : {1}", currentVersion, finalVersion);
+		}
+
+		void LogExceptionDetails(Exception ex)
+		{
+			WriteLine("{0}", ex.Message);
+			WriteLine("{0}", ex.StackTrace);
+			Exception iex = ex.InnerException;
+			while (iex != null)
+			{
+				WriteLine("Caused by: {0}", iex);
+				WriteLine("{0}", ex.StackTrace);
+				iex = iex.InnerException;
+			}
+		}
+
+		public void Finished(long originalVersion, long currentVersion)
+		{
+			WriteLine("Migrated to version {0}", currentVersion);
+		}
+
+		void Write(string message, params object[] args)
 		{
 			foreach (ILogWriter writer in _writers)
 			{
@@ -144,7 +146,7 @@ namespace Migrator.Framework.Loggers
 			}
 		}
 
-		private void WriteLine(string message, params object[] args)
+		void WriteLine(string message, params object[] args)
 		{
 			foreach (ILogWriter writer in _writers)
 			{
@@ -156,9 +158,9 @@ namespace Migrator.Framework.Loggers
 		{
 			return new Logger(false, new ConsoleWriter());
 		}
-		
-		private string LatestVersion(List<long> versions)
-        {
+
+		string LatestVersion(List<long> versions)
+		{
 			if (versions.Count > 0)
 			{
 				return versions[versions.Count - 1].ToString();

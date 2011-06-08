@@ -1,4 +1,5 @@
 ﻿#region License
+
 //The contents of this file are subject to the Mozilla Public License
 //Version 1.1 (the "License"); you may not use this file except in
 //compliance with the License. You may obtain a copy of the License at
@@ -7,13 +8,14 @@
 //basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
 //License for the specific language governing rights and limitations
 //under the License.
+
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Migrator.Framework;
 using Migrator.Tools;
-using System.Collections.Generic;
 
 namespace Migrator.MigratorConsole
 {
@@ -23,16 +25,16 @@ namespace Migrator.MigratorConsole
 	/// </remarks>
 	public class MigratorConsole
 	{
-		private string _provider;
-		private string _connectionString;
-		private string _migrationsAssembly;
-		private bool _list = false;
-		private bool _trace = false;
-		private bool _dryrun = false;
-		private string _dumpTo;
-		private long _migrateTo = -1;
-		private string[] args;
-		
+		readonly string[] args;
+		string _connectionString;
+		bool _dryrun;
+		string _dumpTo;
+		bool _list;
+		long _migrateTo = -1;
+		string _migrationsAssembly;
+		string _provider;
+		bool _trace;
+
 		/// <summary>
 		/// Builds a new console
 		/// </summary>
@@ -42,7 +44,7 @@ namespace Migrator.MigratorConsole
 			args = argv;
 			ParseArguments(argv);
 		}
-		
+
 		/// <summary>
 		/// Run the migrator's console
 		/// </summary>
@@ -72,55 +74,55 @@ namespace Migrator.MigratorConsole
 			}
 			return 0;
 		}
-		
+
 		/// <summary>
 		/// Runs the migrations.
 		/// </summary>
 		public void Migrate()
 		{
 			CheckArguments();
-			
+
 			Migrator mig = GetMigrator();
-            if (mig.DryRun)
-                mig.Logger.Log("********** Dry run! Not actually applying changes. **********");
+			if (mig.DryRun)
+				mig.Logger.Log("********** Dry run! Not actually applying changes. **********");
 
 			if (_migrateTo == -1)
 				mig.MigrateToLastVersion();
 			else
 				mig.MigrateTo(_migrateTo);
 		}
-		
+
 		/// <summary>
 		/// List migrations.
 		/// </summary>
 		public void List()
 		{
 			CheckArguments();
-			
+
 			Migrator mig = GetMigrator();
 			List<long> appliedMigrations = mig.AppliedMigrations;
-			
+
 			Console.WriteLine("Available migrations:");
 			foreach (Type t in mig.MigrationsTypes)
 			{
-                long v = MigrationLoader.GetMigrationVersion(t);
+				long v = MigrationLoader.GetMigrationVersion(t);
 				Console.WriteLine("{0} {1} {2}",
-                                  appliedMigrations.Contains(v) ? "=>" : "  ",
+				                  appliedMigrations.Contains(v) ? "=>" : "  ",
 				                  v.ToString().PadLeft(3),
 				                  StringUtils.ToHumanName(t.Name)
-				                 );
+					);
 			}
 		}
-		
+
 		public void Dump()
 		{
 			CheckArguments();
-			
-			SchemaDumper dumper = new SchemaDumper(_provider, _connectionString);
-			
+
+			var dumper = new SchemaDumper(_provider, _connectionString);
+
 			dumper.DumpTo(_dumpTo);
 		}
-		
+
 		/// <summary>
 		/// Show usage information and help.
 		/// </summary>
@@ -128,7 +130,7 @@ namespace Migrator.MigratorConsole
 		{
 			int tab = 17;
 			Version ver = Assembly.GetExecutingAssembly().GetName().Version;
-			
+
 			Console.WriteLine("Database migrator - v{0}.{1}.{2}", ver.Major, ver.Minor, ver.Revision);
 			Console.WriteLine();
 			Console.WriteLine("usage:\nMigrator.Console.exe provider connectionString migrationsAssembly [options]");
@@ -144,27 +146,28 @@ namespace Migrator.MigratorConsole
 			Console.WriteLine("\t-{0}{1}", "dryrun".PadRight(tab), "Simulation mode (don't actually apply/remove any migrations)");
 			Console.WriteLine();
 		}
-		
+
 		#region Private helper methods
-		private void CheckArguments()
+
+		void CheckArguments()
 		{
 			if (_connectionString == null)
 				throw new ArgumentException("Connection string missing", "connectionString");
 			if (_migrationsAssembly == null)
 				throw new ArgumentException("Migrations assembly missing", "migrationsAssembly");
 		}
-				
-		private Migrator GetMigrator()
+
+		Migrator GetMigrator()
 		{
 			Assembly asm = Assembly.LoadFrom(_migrationsAssembly);
-			
-			Migrator migrator = new Migrator(_provider, _connectionString, asm, _trace);
+
+			var migrator = new Migrator(_provider, _connectionString, asm, _trace);
 			migrator.args = args;
-		    migrator.DryRun = _dryrun;
+			migrator.DryRun = _dryrun;
 			return migrator;
 		}
-				
-		private void ParseArguments(string[] argv)
+
+		void ParseArguments(string[] argv)
 		{
 			for (int i = 0; i < argv.Length; i++)
 			{
@@ -182,12 +185,12 @@ namespace Migrator.MigratorConsole
 				}
 				else if (argv[i].Equals("-version"))
 				{
-					_migrateTo = long.Parse(argv[i+1]);
+					_migrateTo = long.Parse(argv[i + 1]);
 					i++;
 				}
 				else if (argv[i].Equals("-dump"))
 				{
-					_dumpTo = argv[i+1];
+					_dumpTo = argv[i + 1];
 					i++;
 				}
 				else
@@ -198,6 +201,7 @@ namespace Migrator.MigratorConsole
 				}
 			}
 		}
+
 		#endregion
 	}
 }

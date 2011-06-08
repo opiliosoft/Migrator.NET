@@ -17,9 +17,7 @@ namespace Migrator.Framework.SchemaBuilder
 {
 	public class FluentColumn : IFluentColumn
 	{
-		private Column _inner;
-		private ForeignKeyConstraint _constraint;
-		private ForeignKey _fk;
+		readonly Column _inner;
 
 		public FluentColumn(string columnName)
 		{
@@ -66,15 +64,8 @@ namespace Migrator.Framework.SchemaBuilder
 			set { _inner.DefaultValue = value; }
 		}
 
-		public ForeignKeyConstraint Constraint
-		{
-			get { return _constraint; }
-			set { _constraint = value; }
-		}
-		public ForeignKey ForeignKey
-		{
-			get { return _fk; }
-			set { _fk = value; }
-		}
+		public ForeignKeyConstraint Constraint { get; set; }
+
+		public ForeignKey ForeignKey { get; set; }
 	}
 }

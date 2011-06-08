@@ -15,15 +15,15 @@ namespace Migrator.Framework.SchemaBuilder
 {
 	public class AddColumnExpression : ISchemaBuilderExpression
 	{
-		private IFluentColumn _column;
-		private string _toTable;
-
+		readonly IFluentColumn _column;
+		readonly string _toTable;
 
 		public AddColumnExpression(string toTable, IFluentColumn column)
 		{
 			_column = column;
 			_toTable = toTable;
 		}
+
 		public void Create(ITransformationProvider provider)
 		{
 			provider.AddColumn(_toTable, _column.Name, _column.Type, _column.Size, _column.ColumnProperty, _column.DefaultValue);

@@ -111,6 +111,10 @@
     <Compile Include="Impl\SqlServer\SqlServerTransformationProvider.cs" />
     <Compile Include="TransformationProvider.cs" />
     <Compile Include="TypeNames.cs" />
+    <Compile Include="Utility\MySqlServerUtility.cs" />
+    <Compile Include="Utility\OracleServerUtility.cs" />
+    <Compile Include="Utility\PostgreSqlServerUtility.cs" />
+    <Compile Include="Utility\SqlServerUtility.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Migrator.Framework\Migrator.Framework-vs2008.csproj">

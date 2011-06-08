@@ -19,140 +19,140 @@ using Migrator.Framework;
 
 namespace Migrator.Providers.SqlServer
 {
-    /// <summary>
-    /// Migration transformations provider for Microsoft SQL Server.
-    /// </summary>
-    public class SqlServerTransformationProvider : TransformationProvider
-    {
-        public SqlServerTransformationProvider(Dialect dialect, string connectionString)
-            : base(dialect, connectionString)
-        {
-            CreateConnection();
-        }
+	/// <summary>
+	/// Migration transformations provider for Microsoft SQL Server.
+	/// </summary>
+	public class SqlServerTransformationProvider : TransformationProvider
+	{
+		public const string DefaultSchema = "dbo";
 
-    	public const string DefaultSchema = "dbo";
+		public SqlServerTransformationProvider(Dialect dialect, string connectionString)
+			: base(dialect, connectionString)
+		{
+			CreateConnection();
+		}
 
-    	protected virtual void CreateConnection()
-    	{
-    		_connection = new SqlConnection();
-    		_connection.ConnectionString = _connectionString;
-    		_connection.Open();
-    	}
+		protected virtual void CreateConnection()
+		{
+			_connection = new SqlConnection();
+			_connection.ConnectionString = _connectionString;
+			_connection.Open();
+		}
 
-			// FIXME: We should look into implementing this with INFORMATION_SCHEMA if possible
-			// so that it would be usable by all the SQL Server implementations
-			public override bool ConstraintExists(string table, string name)
+		// FIXME: We should look into implementing this with INFORMATION_SCHEMA if possible
+		// so that it would be usable by all the SQL Server implementations
+		public override bool ConstraintExists(string table, string name)
+		{
+			using (IDataReader reader =
+				ExecuteQuery(string.Format("SELECT TOP 1 * FROM sysobjects WHERE id = object_id('{0}')", name)))
 			{
-				using (IDataReader reader =
-					ExecuteQuery(string.Format("SELECT TOP 1 * FROM sysobjects WHERE id = object_id('{0}')", name)))
-				{
-					return reader.Read();
-				}
+				return reader.Read();
+			}
+		}
+
+		public override void AddColumn(string table, string sqlColumn)
+		{
+			ExecuteNonQuery(string.Format("ALTER TABLE {0} ADD {1}", table, sqlColumn));
+		}
+
+		public override bool ColumnExists(string table, string column)
+		{
+			string schema;
+			if (!TableExists(table))
+			{
+				return false;
+			}
+			int firstIndex = table.IndexOf(".");
+			if (firstIndex >= 0)
+			{
+				schema = table.Substring(0, firstIndex);
+				table = table.Substring(firstIndex + 1);
+			}
+			else
+			{
+				schema = DefaultSchema;
+			}
+			using (
+				IDataReader reader = base.ExecuteQuery(string.Format("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '{0}' AND TABLE_NAME='{1}' AND COLUMN_NAME='{2}'", schema, table, column)))
+			{
+				return reader.Read();
+			}
+		}
+
+		public override bool TableExists(string table)
+		{
+			string schema;
+
+			int firstIndex = table.IndexOf(".");
+			if (firstIndex >= 0)
+			{
+				schema = table.Substring(0, firstIndex);
+				table = table.Substring(firstIndex + 1);
+			}
+			else
+			{
+				schema = DefaultSchema;
 			}
 
-			public override void AddColumn(string table, string sqlColumn)
+			using (IDataReader reader = base.ExecuteQuery(string.Format("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME='{0}' AND TABLE_SCHEMA='{1}'", table, schema)))
 			{
-				ExecuteNonQuery(string.Format("ALTER TABLE {0} ADD {1}", table, sqlColumn));
+				return reader.Read();
 			}
+		}
 
-			public override bool ColumnExists(string table, string column)
+		public override void RemoveColumn(string table, string column)
+		{
+			DeleteColumnConstraints(table, column);
+			base.RemoveColumn(table, column);
+		}
+
+		public override void RenameColumn(string tableName, string oldColumnName, string newColumnName)
+		{
+			if (ColumnExists(tableName, newColumnName))
+				throw new MigrationException(String.Format("Table '{0}' has column named '{1}' already", tableName, newColumnName));
+
+			if (ColumnExists(tableName, oldColumnName))
+				ExecuteNonQuery(String.Format("EXEC sp_rename '{0}.{1}', '{2}', 'COLUMN'", tableName, oldColumnName, newColumnName));
+		}
+
+		public override void RenameTable(string oldName, string newName)
+		{
+			if (TableExists(newName))
+				throw new MigrationException(String.Format("Table with name '{0}' already exists", newName));
+
+			if (TableExists(oldName))
+				ExecuteNonQuery(String.Format("EXEC sp_rename '{0}', '{1}'", oldName, newName));
+		}
+
+		// Deletes all constraints linked to a column. Sql Server
+		// doesn't seems to do this.
+		void DeleteColumnConstraints(string table, string column)
+		{
+			string sqlContrainte = FindConstraints(table, column);
+			var constraints = new List<string>();
+			using (IDataReader reader = ExecuteQuery(sqlContrainte))
 			{
-				string schema;
-				if (!TableExists(table))
+				while (reader.Read())
 				{
-					return false;
-				}
-				int firstIndex = table.IndexOf(".");
-				if (firstIndex >= 0)
-				{
-					schema = table.Substring(0, firstIndex);
-					table = table.Substring(firstIndex + 1);
-				}
-				else
-				{
-					schema = DefaultSchema;
-				}
-				using (
-					IDataReader reader = base.ExecuteQuery(string.Format("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '{0}' AND TABLE_NAME='{1}' AND COLUMN_NAME='{2}'", schema, table, column)))
-				{
-					return reader.Read();
-				}
-			}
-
-			public override bool TableExists(string table)
-			{
-				string schema;
-
-				int firstIndex = table.IndexOf(".");
-				if (firstIndex >= 0)
-				{
-					schema = table.Substring(0, firstIndex);
-					table = table.Substring(firstIndex + 1);
-				}
-				else
-				{
-					schema = DefaultSchema;
-				}
-
-				using (IDataReader reader = base.ExecuteQuery(string.Format("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME='{0}' AND TABLE_SCHEMA='{1}'", table, schema)))
-				{
-					return reader.Read();
+					constraints.Add(reader.GetString(0));
 				}
 			}
-
-			public override void RemoveColumn(string table, string column)
+			// Can't share the connection so two phase modif
+			foreach (string constraint in constraints)
 			{
-				DeleteColumnConstraints(table, column);
-				base.RemoveColumn(table, column);
+				RemoveForeignKey(table, constraint);
 			}
+		}
 
-			public override void RenameColumn(string tableName, string oldColumnName, string newColumnName)
-			{
-				if (ColumnExists(tableName, newColumnName))
-					throw new MigrationException(String.Format("Table '{0}' has column named '{1}' already", tableName, newColumnName));
-
-				if (ColumnExists(tableName, oldColumnName))
-					ExecuteNonQuery(String.Format("EXEC sp_rename '{0}.{1}', '{2}', 'COLUMN'", tableName, oldColumnName, newColumnName));
-			}
-
-			public override void RenameTable(string oldName, string newName)
-			{
-				if (TableExists(newName))
-					throw new MigrationException(String.Format("Table with name '{0}' already exists", newName));
-
-				if (TableExists(oldName))
-					ExecuteNonQuery(String.Format("EXEC sp_rename '{0}', '{1}'", oldName, newName));
-			}
-
-			// Deletes all constraints linked to a column. Sql Server
-			// doesn't seems to do this.
-			void DeleteColumnConstraints(string table, string column)
-			{
-				string sqlContrainte = FindConstraints(table, column);
-				var constraints = new List<string>();
-				using (IDataReader reader = ExecuteQuery(sqlContrainte))
-				{
-					while (reader.Read())
-					{
-						constraints.Add(reader.GetString(0));
-					}
-				}
-				// Can't share the connection so two phase modif
-				foreach (string constraint in constraints)
-				{
-					RemoveForeignKey(table, constraint);
-				}
-			}
-
-			// FIXME: We should look into implementing this with INFORMATION_SCHEMA if possible
-			// so that it would be usable by all the SQL Server implementations
-			protected virtual string FindConstraints(string table, string column)
-			{
-				return string.Format(
-					"SELECT cont.name FROM sysobjects cont, syscolumns col, sysconstraints cnt  "
-					+ "WHERE cont.parent_obj = col.id AND cnt.constid = cont.id AND cnt.colid=col.colid "
-					+ "AND col.name = '{1}' AND col.id = object_id('{0}')",
-					table, column);
-			}
-    }
+		// FIXME: We should look into implementing this with INFORMATION_SCHEMA if possible
+		// so that it would be usable by all the SQL Server implementations
+		protected virtual string FindConstraints(string table, string column)
+		{
+			return string.Format(
+				"SELECT cont.name FROM sysobjects cont, syscolumns col, sysconstraints cnt  "
+				+ "WHERE cont.parent_obj = col.id AND cnt.constid = cont.id AND cnt.colid=col.colid "
+				+ "AND col.name = '{1}' AND col.id = object_id('{0}')",
+				table, column);
+		}
+	}
 }

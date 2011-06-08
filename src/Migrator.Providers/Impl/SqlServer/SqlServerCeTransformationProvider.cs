@@ -26,7 +26,6 @@ namespace Migrator.Providers.SqlServer
 		public SqlServerCeTransformationProvider(Dialect dialect, string connectionString)
 			: base(dialect, connectionString)
 		{
-
 		}
 
 		protected override void CreateConnection()
@@ -63,7 +62,6 @@ namespace Migrator.Providers.SqlServer
 		// Not supported by SQLCe when we have a better schemadumper which gives the exact sql construction including constraints we may use it to insert into a new table and then drop the old table...but this solution is dangerous for big tables.
 		public override void RenameTable(string oldName, string newName)
 		{
-			
 			if (TableExists(newName))
 				throw new MigrationException(String.Format("Table with name '{0}' already exists", newName));
 
@@ -75,8 +73,8 @@ namespace Migrator.Providers.SqlServer
 		{
 			return
 				string.Format("SELECT cont.constraint_name FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE cont "
-					+ "WHERE cont.Table_Name='{0}' AND cont.column_name = '{1}'",
-					table, column);
+				              + "WHERE cont.Table_Name='{0}' AND cont.column_name = '{1}'",
+				              table, column);
 		}
 	}
 }

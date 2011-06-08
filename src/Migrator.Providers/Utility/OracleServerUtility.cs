@@ -4,73 +4,76 @@ using System.Data;
 using System.Linq;
 using Oracle.DataAccess.Client;
 
-namespace EnterpriseTester.Tests
+namespace Migrator.Providers.Utility
 {
-  public static class OracleServerUtility
-  {
-    static string[] _specialTableNames = new string[] { "DEF$_AQCALL",
-"DEF$_AQERROR",
-"SQLPLUS_PRODUCT_PROFILE",
-"HELP",
-"MVIEW$_ADV_INDEX",
-"MVIEW$_ADV_PARTITION"};
+	public static class OracleServerUtility
+	{
+		static readonly string[] _specialTableNames = new[]
+		                                              	{
+		                                              		"DEF$_AQCALL",
+		                                              		"DEF$_AQERROR",
+		                                              		"SQLPLUS_PRODUCT_PROFILE",
+		                                              		"HELP",
+		                                              		"MVIEW$_ADV_INDEX",
+		                                              		"MVIEW$_ADV_PARTITION"
+		                                              	};
 
-    public static void RemoveAllTablesFromDefaultDatabase(string connectionString)
-    {
-      using (var connection = new OracleConnection(connectionString))
-      {
-        connection.Open();
+		public static void RemoveAllTablesFromDefaultDatabase(string connectionString)
+		{
+			using (var connection = new OracleConnection(connectionString))
+			{
+				connection.Open();
 
-        var allTablesToDrop = GetTablesToDrop(connection).ToArray();
+				string[] allTablesToDrop = GetTablesToDrop(connection).ToArray();
 
-        foreach (var table in allTablesToDrop)
-        {
-          string statement = string.Format("drop table \"{0}\" cascade constraints", table);
-          
-          ExecuteDropCommand(connection, statement);
-        }               
-      }
-    }
+				foreach (string table in allTablesToDrop)
+				{
+					string statement = string.Format("drop table \"{0}\" cascade constraints", table);
 
-    static void ExecuteDropCommand(OracleConnection connection, string statement)
-    {
-      using (var dropCmd = new OracleCommand(statement, connection))
-      {
-        dropCmd.ExecuteNonQuery();
-      }
-    }
+					ExecuteDropCommand(connection, statement);
+				}
+			}
+		}
 
-    public static int GetTableCount(string connectionString)
-    {
-      using (var connection = new OracleConnection(connectionString))
-      {
-        connection.Open();
+		static void ExecuteDropCommand(OracleConnection connection, string statement)
+		{
+			using (var dropCmd = new OracleCommand(statement, connection))
+			{
+				dropCmd.ExecuteNonQuery();
+			}
+		}
 
-        return GetTablesToDrop(connection).Count();
-      }
-    }
+		public static int GetTableCount(string connectionString)
+		{
+			using (var connection = new OracleConnection(connectionString))
+			{
+				connection.Open();
 
-    public static IEnumerable<string> GetTablesToDrop(OracleConnection connection)
-    {
-      const string query = @"select * from user_tables where TABLESPACE_NAME = 'SYSTEM'";
+				return GetTablesToDrop(connection).Count();
+			}
+		}
 
-      using (var getDropAllTablesCommand = new OracleCommand(query, connection))
-      {
-        getDropAllTablesCommand.CommandType = CommandType.Text;
+		public static IEnumerable<string> GetTablesToDrop(OracleConnection connection)
+		{
+			const string query = @"select * from user_tables where TABLESPACE_NAME = 'SYSTEM'";
 
-        using (var reader = getDropAllTablesCommand.ExecuteReader())
-        {
-          while (reader.Read() && (reader[0] != null && !Convert.IsDBNull(reader[0])))
-          {
-            string tableName = reader[0].ToString();
-            
-            if (!_specialTableNames.Contains(tableName))
-            {
-              yield return tableName;
-            }
-          }
-        }
-      }      
-    }
-  }
+			using (var getDropAllTablesCommand = new OracleCommand(query, connection))
+			{
+				getDropAllTablesCommand.CommandType = CommandType.Text;
+
+				using (OracleDataReader reader = getDropAllTablesCommand.ExecuteReader())
+				{
+					while (reader.Read() && (reader[0] != null && !Convert.IsDBNull(reader[0])))
+					{
+						string tableName = reader[0].ToString();
+
+						if (!_specialTableNames.Contains(tableName))
+						{
+							yield return tableName;
+						}
+					}
+				}
+			}
+		}
+	}
 }

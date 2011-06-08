@@ -19,9 +19,9 @@ namespace Migrator.Framework.SchemaBuilder
 {
 	public class SchemaBuilder : IColumnOptions, IForeignKeyOptions, IDeleteTableOptions
 	{
-		private string _currentTable;
-		private IFluentColumn _currentColumn;
-		private IList<ISchemaBuilderExpression> _exprs;
+		readonly IList<ISchemaBuilderExpression> _exprs;
+		IFluentColumn _currentColumn;
+		string _currentTable;
 
 		public SchemaBuilder()
 		{
@@ -31,6 +31,30 @@ namespace Migrator.Framework.SchemaBuilder
 		public IEnumerable<ISchemaBuilderExpression> Expressions
 		{
 			get { return _exprs; }
+		}
+
+		public SchemaBuilder OfType(DbType columnType)
+		{
+			_currentColumn.Type = columnType;
+
+			return this;
+		}
+
+		public SchemaBuilder WithSize(int size)
+		{
+			if (size == 0)
+				throw new ArgumentNullException("size", "Size must be greater than zero");
+
+			_currentColumn.Size = size;
+
+			return this;
+		}
+
+		public IForeignKeyOptions AsForeignKey()
+		{
+			_currentColumn.ColumnProperty = ColumnProperty.ForeignKey;
+
+			return this;
 		}
 
 		/// <summary>
@@ -64,6 +88,28 @@ namespace Migrator.Framework.SchemaBuilder
 		/// <summary>
 		/// Reference an existing table.
 		/// </summary>
+		/// <param name="name">Table to reference</param>
+		/// <returns>SchemaBuilder for chaining</returns>
+		public SchemaBuilder WithTable(string name)
+		{
+			if (string.IsNullOrEmpty(name))
+				throw new ArgumentNullException("name");
+
+			_currentTable = name;
+
+			return this;
+		}
+
+		public SchemaBuilder ReferencedTo(string primaryKeyTable, string primaryKeyColumn)
+		{
+			_currentColumn.Constraint = ForeignKeyConstraint.NoAction;
+			_currentColumn.ForeignKey = new ForeignKey(primaryKeyTable, primaryKeyColumn);
+			return this;
+		}
+
+		/// <summary>
+		/// Reference an existing table.
+		/// </summary>
 		/// <param name="newName">Table to reference</param>
 		/// <returns>SchemaBuilder for chaining</returns>
 		public SchemaBuilder RenameTable(string newName)
@@ -73,21 +119,6 @@ namespace Migrator.Framework.SchemaBuilder
 
 			_exprs.Add(new RenameTableExpression(_currentTable, newName));
 			_currentTable = newName;
-
-			return this;
-		}
-
-		/// <summary>
-		/// Reference an existing table.
-		/// </summary>
-		/// <param name="name">Table to reference</param>
-		/// <returns>SchemaBuilder for chaining</returns>
-		public SchemaBuilder WithTable(string name)
-		{
-			if (string.IsNullOrEmpty(name))
-				throw new ArgumentNullException("name");
-
-			_currentTable = name;
 
 			return this;
 		}
@@ -111,26 +142,9 @@ namespace Migrator.Framework.SchemaBuilder
 			return this;
 		}
 
-		public SchemaBuilder OfType(DbType columnType)
-		{
-			_currentColumn.Type = columnType;
-
-			return this;
-		}
-
 		public SchemaBuilder WithProperty(ColumnProperty columnProperty)
 		{
 			_currentColumn.ColumnProperty = columnProperty;
-
-			return this;
-		}
-
-		public SchemaBuilder WithSize(int size)
-		{
-			if (size == 0)
-				throw new ArgumentNullException("size", "Size must be greater than zero");
-
-			_currentColumn.Size = size;
 
 			return this;
 		}
@@ -142,20 +156,6 @@ namespace Migrator.Framework.SchemaBuilder
 
 			_currentColumn.DefaultValue = defaultValue;
 
-			return this;
-		}
-
-		public IForeignKeyOptions AsForeignKey()
-		{
-			_currentColumn.ColumnProperty = ColumnProperty.ForeignKey;
-
-			return this;
-		}
-
-		public SchemaBuilder ReferencedTo(string primaryKeyTable, string primaryKeyColumn)
-		{
-			_currentColumn.Constraint = ForeignKeyConstraint.NoAction;
-			_currentColumn.ForeignKey = new ForeignKey(primaryKeyTable, primaryKeyColumn);
 			return this;
 		}
 
