@@ -18,12 +18,6 @@ Coming soon
 -----------
 
 * Schema support for Oracle.
-  
-Downloads/Releases
-------------------
-
-You can download releases from the [google code site][14].
 
   [1]: http://code.google.com/p/migratordotnet/
   [2]: https://github.com/migratordotnet/Migrator.NET
-  
