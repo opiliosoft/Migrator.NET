@@ -47,7 +47,7 @@ namespace Migrator
 
 			foreach (string key in dialects.Keys)
 			{
-				if (0 < key.IndexOf(providerName, StringComparison.InvariantCultureIgnoreCase))
+				if (key.IndexOf(providerName, StringComparison.InvariantCultureIgnoreCase) >= 0)
 					return dialects[key];
 			}
 			return null;
