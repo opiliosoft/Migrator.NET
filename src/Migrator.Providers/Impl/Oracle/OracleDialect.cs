@@ -89,9 +89,9 @@ namespace Migrator.Providers.Oracle
 			get { return false; }
 		}
 
-		public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString)
+		public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema)
 		{
-			return new OracleTransformationProvider(dialect, connectionString);
+			return new OracleTransformationProvider(dialect, connectionString, defaultSchema);
 		}
 	}
 }

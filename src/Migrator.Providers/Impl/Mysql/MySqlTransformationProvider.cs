@@ -12,7 +12,7 @@ namespace Migrator.Providers.Mysql
 	public class MySqlTransformationProvider : TransformationProvider
 	{
 		public MySqlTransformationProvider(Dialect dialect, string connectionString)
-			: base(dialect, connectionString)
+			: base(dialect, connectionString, null) // we ignore schemas for MySql (schema == database for MySql)
 		{
 			_connection = new MySqlConnection(_connectionString);
 			_connection.ConnectionString = _connectionString;

@@ -42,6 +42,9 @@ namespace Migrator.NAnt
 		string _scriptFile;
 		long _to = -1; // To last revision
 
+		[TaskAttribute("defaultschema")]
+		public string DefaultSchema { get; set; }
+
 		[TaskAttribute("provider", Required = true)]
 		public string Provider { set; get; }
 
@@ -112,7 +115,7 @@ namespace Migrator.NAnt
 
 		void Execute(Assembly asm)
 		{
-			var mig = new Migrator(Provider, ConnectionString, asm, Trace, new TaskLogger(this));
+			var mig = new Migrator(Provider, ConnectionString, DefaultSchema, asm, Trace, new TaskLogger(this));
 			mig.DryRun = DryRun;
 			if (ScriptChanges)
 			{

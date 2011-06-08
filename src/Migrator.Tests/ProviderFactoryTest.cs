@@ -25,7 +25,7 @@ namespace Migrator.Tests
 		{
 			ITransformationProvider provider = ProviderFactory.Create("MySql",
 			                                                          ConfigurationManager.AppSettings[
-			                                                          	"MySqlConnectionString"]);
+			                                                          	"MySqlConnectionString"], null);
 			Assert.IsNotNull(provider);
 		}
 
@@ -35,7 +35,7 @@ namespace Migrator.Tests
 		{
 			ITransformationProvider provider = ProviderFactory.Create("Oracle",
 			                                                          ConfigurationManager.AppSettings[
-			                                                          	"OracleConnectionString"]);
+																																	"OracleConnectionString"], null);
 			Assert.IsNotNull(provider);
 		}
 
@@ -45,7 +45,7 @@ namespace Migrator.Tests
 		{
 			ITransformationProvider provider = ProviderFactory.Create("PostgreSQL",
 			                                                          ConfigurationManager.AppSettings[
-			                                                          	"NpgsqlConnectionString"]);
+																																	"NpgsqlConnectionString"], null);
 			Assert.IsNotNull(provider);
 		}
 
@@ -55,7 +55,7 @@ namespace Migrator.Tests
 		{
 			ITransformationProvider provider = ProviderFactory.Create("SQLite",
 			                                                          ConfigurationManager.AppSettings[
-			                                                          	"SQLiteConnectionString"]);
+																																	"SQLiteConnectionString"], null);
 			Assert.IsNotNull(provider);
 		}
 
@@ -65,7 +65,7 @@ namespace Migrator.Tests
 		{
 			ITransformationProvider provider = ProviderFactory.Create("SqlServer2005",
 			                                                          ConfigurationManager.AppSettings[
-			                                                          	"SqlServer2005ConnectionString"]);
+																																	"SqlServer2005ConnectionString"], null);
 			Assert.IsNotNull(provider);
 		}
 
@@ -75,7 +75,7 @@ namespace Migrator.Tests
 		{
 			ITransformationProvider provider = ProviderFactory.Create("SqlServerCe",
 			                                                          ConfigurationManager.AppSettings[
-			                                                          	"SqlServerCeConnectionString"]);
+																																	"SqlServerCeConnectionString"], null);
 			Assert.IsNotNull(provider);
 		}
 
@@ -85,7 +85,7 @@ namespace Migrator.Tests
 		{
 			ITransformationProvider provider = ProviderFactory.Create("SqlServer",
 			                                                          ConfigurationManager.AppSettings[
-			                                                          	"SqlServerConnectionString"]);
+																																	"SqlServerConnectionString"], null);
 			Assert.IsNotNull(provider);
 		}
 	}

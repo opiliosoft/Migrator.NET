@@ -31,18 +31,18 @@ namespace Migrator
 		protected bool _dryrun;
 		ILogger _logger = new Logger(false);
 
-		public Migrator(string provider, string connectionString, Assembly migrationAssembly)
-			: this(provider, connectionString, migrationAssembly, false)
+		public Migrator(string provider, string connectionString, string defaultSchema, Assembly migrationAssembly)
+			: this(provider, connectionString, defaultSchema, migrationAssembly, false)
 		{
 		}
 
-		public Migrator(string provider, string connectionString, Assembly migrationAssembly, bool trace)
-			: this(ProviderFactory.Create(provider, connectionString), migrationAssembly, trace)
+		public Migrator(string provider, string connectionString, string defaultSchema, Assembly migrationAssembly, bool trace)
+			: this(ProviderFactory.Create(provider, connectionString, defaultSchema), migrationAssembly, trace)
 		{
 		}
 
-		public Migrator(string provider, string connectionString, Assembly migrationAssembly, bool trace, ILogger logger)
-			: this(ProviderFactory.Create(provider, connectionString), migrationAssembly, trace, logger)
+		public Migrator(string provider, string connectionString, string defaultSchema, Assembly migrationAssembly, bool trace, ILogger logger)
+			: this(ProviderFactory.Create(provider, connectionString, defaultSchema), migrationAssembly, trace, logger)
 		{
 		}
 

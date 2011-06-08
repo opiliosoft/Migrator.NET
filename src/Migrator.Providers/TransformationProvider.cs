@@ -30,7 +30,7 @@ namespace Migrator.Providers
 	public abstract class TransformationProvider : ITransformationProvider
 	{
 		protected readonly string _connectionString;
-
+		protected readonly string _defaultSchema;
 		readonly ForeignKeyConstraintMapper constraintMapper = new ForeignKeyConstraintMapper();
 		List<long> _appliedMigrations;
 		protected IDbConnection _connection;
@@ -38,10 +38,11 @@ namespace Migrator.Providers
 		ILogger _logger;
 		IDbTransaction _transaction;
 
-		protected TransformationProvider(Dialect dialect, string connectionString)
+		protected TransformationProvider(Dialect dialect, string connectionString, string defaultSchema)
 		{
 			_dialect = dialect;
 			_connectionString = connectionString;
+			_defaultSchema = defaultSchema;
 			_logger = new Logger(false);
 		}
 

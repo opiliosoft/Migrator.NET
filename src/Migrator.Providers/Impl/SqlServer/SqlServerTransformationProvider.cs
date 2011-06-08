@@ -24,10 +24,8 @@ namespace Migrator.Providers.SqlServer
 	/// </summary>
 	public class SqlServerTransformationProvider : TransformationProvider
 	{
-		public const string DefaultSchema = "dbo";
-
-		public SqlServerTransformationProvider(Dialect dialect, string connectionString)
-			: base(dialect, connectionString)
+		public SqlServerTransformationProvider(Dialect dialect, string connectionString, string defaultSchema)
+			: base(dialect, connectionString, defaultSchema)
 		{
 			CreateConnection();
 		}
@@ -70,7 +68,7 @@ namespace Migrator.Providers.SqlServer
 			}
 			else
 			{
-				schema = DefaultSchema;
+				schema = _defaultSchema;
 			}
 			using (
 				IDataReader reader = base.ExecuteQuery(string.Format("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '{0}' AND TABLE_NAME='{1}' AND COLUMN_NAME='{2}'", schema, table, column)))
@@ -91,7 +89,7 @@ namespace Migrator.Providers.SqlServer
 			}
 			else
 			{
-				schema = DefaultSchema;
+				schema = _defaultSchema;
 			}
 
 			using (IDataReader reader = base.ExecuteQuery(string.Format("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME='{0}' AND TABLE_SCHEMA='{1}'", table, schema)))

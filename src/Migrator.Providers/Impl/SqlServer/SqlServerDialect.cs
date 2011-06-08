@@ -6,6 +6,8 @@ namespace Migrator.Providers.SqlServer
 {
 	public class SqlServerDialect : Dialect
 	{
+		public const string DboSchemaName = "dbo";
+		
 		public SqlServerDialect()
 		{
 			RegisterColumnType(DbType.AnsiStringFixedLength, "CHAR(255)");
@@ -59,9 +61,9 @@ namespace Migrator.Providers.SqlServer
 			get { return "[{0}]"; }
 		}
 
-		public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString)
+		public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema)
 		{
-			return new SqlServerTransformationProvider(dialect, connectionString);
+			return new SqlServerTransformationProvider(dialect, connectionString, defaultSchema ?? DboSchemaName);
 		}
 
 		public override string Quote(string value)

@@ -34,6 +34,7 @@ namespace Migrator.MigratorConsole
 		string _migrationsAssembly;
 		string _provider;
 		bool _trace;
+		string _defaultSchema;
 
 		/// <summary>
 		/// Builds a new console
@@ -118,7 +119,7 @@ namespace Migrator.MigratorConsole
 		{
 			CheckArguments();
 
-			var dumper = new SchemaDumper(_provider, _connectionString);
+			var dumper = new SchemaDumper(_provider, _connectionString, _defaultSchema);
 
 			dumper.DumpTo(_dumpTo);
 		}
@@ -140,6 +141,7 @@ namespace Migrator.MigratorConsole
 			Console.WriteLine("\t{0} {1}", "migrationAssembly".PadRight(tab), "Path to the assembly containing the migrations");
 			Console.WriteLine("Options:");
 			Console.WriteLine("\t-{0}{1}", "version NO".PadRight(tab), "To specific version to migrate the database to");
+			Console.WriteLine("\t-{0}{1}", "defaultSchema <schema>".PadRight(tab), "To specify the default schema");
 			Console.WriteLine("\t-{0}{1}", "list".PadRight(tab), "List migrations");
 			Console.WriteLine("\t-{0}{1}", "trace".PadRight(tab), "Show debug informations");
 			Console.WriteLine("\t-{0}{1}", "dump FILE".PadRight(tab), "Dump the database schema as migration code");
@@ -161,7 +163,7 @@ namespace Migrator.MigratorConsole
 		{
 			Assembly asm = Assembly.LoadFrom(_migrationsAssembly);
 
-			var migrator = new Migrator(_provider, _connectionString, asm, _trace);
+			var migrator = new Migrator(_provider, _connectionString, _defaultSchema, asm, _trace);
 			migrator.args = args;
 			migrator.DryRun = _dryrun;
 			return migrator;
@@ -187,6 +189,10 @@ namespace Migrator.MigratorConsole
 				{
 					_migrateTo = long.Parse(argv[i + 1]);
 					i++;
+				}
+				else if (argv[i].EndsWith("-defaultSchema"))
+				{
+					_defaultSchema = argv[i + 1];
 				}
 				else if (argv[i].Equals("-dump"))
 				{

@@ -18,7 +18,7 @@ namespace Migrator.Providers.SQLite
 	public class SQLiteTransformationProvider : TransformationProvider
 	{
 		public SQLiteTransformationProvider(Dialect dialect, string connectionString)
-			: base(dialect, connectionString)
+			: base(dialect, connectionString, null)
 		{
 			_connection = new SqliteConnection(_connectionString);
 			_connection.ConnectionString = _connectionString;

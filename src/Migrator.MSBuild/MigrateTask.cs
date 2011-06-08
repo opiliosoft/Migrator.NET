@@ -55,6 +55,8 @@ namespace Migrator.MSBuild
 		[Required]
 		public string Provider { set; get; }
 
+		public string DefaultSchema { get; set; }
+
 		[Required]
 		public string ConnectionString { set; get; }
 
@@ -124,7 +126,7 @@ namespace Migrator.MSBuild
 
 		void Execute(Assembly asm)
 		{
-			var mig = new Migrator(Provider, ConnectionString, asm, Trace, new TaskLogger(this));
+			var mig = new Migrator(Provider, ConnectionString, DefaultSchema, asm, Trace, new TaskLogger(this));
 			mig.DryRun = DryRun;
 			if (ScriptChanges)
 			{
