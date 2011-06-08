@@ -45,28 +45,45 @@ namespace Migrator.Providers.SqlServer
 			return new SqlServerTransformationProvider(dialect, connectionString);
 		}
 
-        public override bool SupportsIndex
-        {
-            get { return false; }
-        }
+		public override bool SupportsIndex
+		{
+			get { return false; }
+		}
 
-        public override bool ColumnNameNeedsQuote
-        {
-            get { return false; }
-        }
+		public override bool ColumnNameNeedsQuote
+		{
+			get { return true; }
+		}
 
-        public override string QuoteTemplate
-        {
-            get { return "[{0}]"; }
-        }
+		public override bool TableNameNeedsQuote
+		{
+			get { return true; }
+		}
 
-        public override string Default(object defaultValue)
-        {
-            if (defaultValue.GetType().Equals(typeof (bool)))
-            {
-                defaultValue = ((bool) defaultValue) ? 1 : 0;
-            }
-            return String.Format("DEFAULT {0}", defaultValue);
-        }
+		public override string QuoteTemplate
+		{
+			get { return "[{0}]"; }
+		}
+
+		public override string Quote(string value)
+		{
+			int firstDotIndex = value.IndexOf('.');
+			if (firstDotIndex >= 0)
+			{
+				string owner = value.Substring(0, firstDotIndex);
+				string table = value.Substring(firstDotIndex + 1);
+				return (string.Format(this.QuoteTemplate, owner) + "." + string.Format(this.QuoteTemplate, table));
+			}
+			return string.Format(this.QuoteTemplate, value);
+		}
+
+		public override string Default(object defaultValue)
+		{
+			if (defaultValue.GetType().Equals(typeof(bool)))
+			{
+				defaultValue = ((bool)defaultValue) ? 1 : 0;
+			}
+			return String.Format("DEFAULT {0}", defaultValue);
+		}
     }
 }
