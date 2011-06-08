@@ -13,7 +13,8 @@ namespace Migrator.Providers
     {
         private readonly Dictionary<ColumnProperty, string> propertyMap = new Dictionary<ColumnProperty, string>();
         private readonly TypeNames typeNames = new TypeNames();
-        
+				readonly HashSet<string> reservedWords = new HashSet<string>();
+			
         protected Dialect()
         {
             RegisterProperty(ColumnProperty.Null, "NULL");
@@ -21,6 +22,34 @@ namespace Migrator.Providers
             RegisterProperty(ColumnProperty.Unique, "UNIQUE");
             RegisterProperty(ColumnProperty.PrimaryKey, "PRIMARY KEY");
         }
+
+				protected void AddReservedWord(string reservedWord)
+				{
+					reservedWords.Add(reservedWord.ToUpperInvariant());
+				}
+
+				protected void AddReservedWords(params string[] words)
+				{
+					if (words == null) return;
+					foreach (var word in words) reservedWords.Add(word);
+				}
+
+				public virtual bool IsReservedWord(string reservedWord)
+				{
+					if (string.IsNullOrEmpty(reservedWord)) throw new ArgumentNullException("reservedWord");
+
+					if (reservedWords == null) return false;
+
+					bool isReserved = reservedWords.Contains(reservedWord.ToUpperInvariant());
+
+					if (isReserved)
+					{
+						Console.WriteLine("Reserved word: {0}", reservedWord);
+					}
+
+					return isReserved;
+				}
+
 
 		public abstract ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString);
 

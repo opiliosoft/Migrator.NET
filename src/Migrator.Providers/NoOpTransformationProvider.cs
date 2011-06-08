@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using Migrator.Framework;
 using ForeignKeyConstraint=Migrator.Framework.ForeignKeyConstraint;
@@ -10,7 +11,6 @@ namespace Migrator.Providers
     /// </summary>
     public class NoOpTransformationProvider : ITransformationProvider
     {
-        
         public static readonly NoOpTransformationProvider Instance = new NoOpTransformationProvider();
         
         private NoOpTransformationProvider()
@@ -34,7 +34,12 @@ namespace Migrator.Providers
             return null;
         }
 
-        public Column[] GetColumns(string table)
+    	public int Insert(string table, string[] columns, object[] values)
+    	{
+    		return 0;
+    	}
+
+    	public Column[] GetColumns(string table)
         {
             return null;
         }
@@ -328,7 +333,22 @@ namespace Migrator.Providers
             // No Op
         }
 
-        public void Dispose()
+    	public string[] QuoteColumnNamesIfRequired(params string[] columnNames)
+    	{
+    		throw new NotImplementedException();
+    	}
+
+    	public string QuoteColumnNameIfRequired(string name)
+    	{
+    		throw new NotImplementedException();
+    	}
+
+    	public string QuoteTableNameIfRequired(string name)
+    	{
+    		throw new NotImplementedException();
+    	}
+
+    	public void Dispose()
         {
             //No Op
         }

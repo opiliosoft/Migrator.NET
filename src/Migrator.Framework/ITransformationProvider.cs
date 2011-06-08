@@ -9,7 +9,6 @@ namespace Migrator.Framework
     /// </summary>
     public interface ITransformationProvider : IDisposable
     {
-        
         /// <summary>
         /// Get this provider or a NoOp provider if you are not running in the context of 'provider'.
         /// </summary>
@@ -315,15 +314,15 @@ namespace Migrator.Framework
         /// </summary>
         /// <returns>The names of all the tables.</returns>
         string[] GetTables();
-        
-        /// <summary>
-        /// Insert data into a table
-        /// </summary>
-        /// <param name="table">The table that will get the new data</param>
-        /// <param name="columns">The names of the columns</param>
-        /// <param name="values">The values in the same order as the columns</param>
-        /// <returns></returns>
-        int Insert(string table, string[] columns, string[] values);
+
+    		/// <summary>
+    		/// Insert data into a table
+    		/// </summary>
+    		/// <param name="table">The table that will get the new data</param>
+    		/// <param name="columns">The names of the columns</param>
+    		/// <param name="values">The values in the same order as the columns</param>
+    		/// <returns></returns>
+    		int Insert(string table, string[] columns, object[] values);
 
         /// <summary>
         /// Delete data from a table
@@ -461,9 +460,38 @@ namespace Migrator.Framework
         /// <param name="where">A where clause to limit the update</param>
         /// <returns></returns>
         int Update(string table, string[] columns, string[] values, string where);
-        
+      
+				/// <summary>
+				/// Get a command instance
+				/// </summary>
+				/// <returns></returns>
         IDbCommand GetCommand();
-
+			
+				/// <summary>
+				/// Execute a schema builder
+				/// </summary>
+				/// <param name="schemaBuilder"></param>
         void ExecuteSchemaBuilder(SchemaBuilder.SchemaBuilder schemaBuilder);
+
+				/// <summary>
+				/// Quote a multiple column names, if required
+				/// </summary>
+				/// <param name="columnNames"></param>
+				/// <returns></returns>
+        string[] QuoteColumnNamesIfRequired(params string[] columnNames);
+
+				/// <summary>
+				/// Quaote column if required
+				/// </summary>
+				/// <param name="name"></param>
+				/// <returns></returns>
+        string QuoteColumnNameIfRequired(string name);
+
+				/// <summary>
+				/// Quote table name if required
+				/// </summary>
+				/// <param name="name"></param>
+				/// <returns></returns>
+        string QuoteTableNameIfRequired(string name);     
     }
 }
