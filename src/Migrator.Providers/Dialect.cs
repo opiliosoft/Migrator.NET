@@ -121,7 +121,7 @@ namespace Migrator.Providers
 			typeNames.Put(code, name);
 		}
 
-		public ColumnPropertiesMapper GetColumnMapper(Column column)
+		public virtual ColumnPropertiesMapper GetColumnMapper(Column column)
 		{
 			string type = column.Size > 0 ? GetTypeName(column.Type, column.Size) : GetTypeName(column.Type);
 			if (! IdentityNeedsType && column.IsIdentity)

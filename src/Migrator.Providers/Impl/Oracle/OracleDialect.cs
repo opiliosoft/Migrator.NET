@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using Migrator.Framework;
+using Migrator.Providers.Impl.Oracle;
 
 namespace Migrator.Providers.Oracle
 {
@@ -38,7 +39,12 @@ namespace Migrator.Providers.Oracle
 			RegisterColumnType(DbType.String, 1073741823, "NCLOB");
 			RegisterColumnType(DbType.Time, "DATE");
 			RegisterColumnType(DbType.Guid, "RAW(16)");
-			RegisterProperty(ColumnProperty.Null, String.Empty);
+			
+			// the original Migrator.Net code had this, but it's a bad idea - when
+			// apply a "null" migration to a "not-null" field, it just leaves it as "not-null" and silent fails
+			// because Oracle doesn't consider ALTER TABLE <table> MODIFY (column <type>) as being a request to make the field null.
+			
+			//RegisterProperty(ColumnProperty.Null, String.Empty);
 
 			AddReservedWords("ABORT", "ABS", "ABSOLUTE", "ACCESS", "ACTION", "ADA", "ADD", "ADMIN", "AFTER", "AGGREGATE", "ALIAS", "ALL", "ALLOCATE", "ALTER", "ANALYSE", "ANALYZE", "AND", "ANY", "ARE",
 			                 "ARRAY", "AS", "ASC", "ASENSITIVE", "ASSERTION", "ASSIGNMENT", "ASYMMETRIC", "AT", "ATOMIC", "AUTHORIZATION", "AVG", "BACKWARD", "BEFORE", "BEGIN", "BETWEEN", "BIGINT", "BINARY",
@@ -99,6 +105,15 @@ namespace Migrator.Providers.Oracle
 		public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema)
 		{
 			return new OracleTransformationProvider(dialect, connectionString, defaultSchema);
+		}
+
+		public override ColumnPropertiesMapper GetColumnMapper(Column column)
+		{
+			string type = column.Size > 0 ? GetTypeName(column.Type, column.Size) : GetTypeName(column.Type);
+			if (!IdentityNeedsType && column.IsIdentity)
+				type = String.Empty;
+
+			return new OracleColumnPropertiesMapper(this, type);
 		}
 	}
 }

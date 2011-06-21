@@ -10,28 +10,28 @@ namespace Migrator.Providers
 	/// </summary>
 	public class ColumnPropertiesMapper
 	{
-		protected Dialect dialect;
-
-		/// <summary>The SQL type</summary>
-		protected string type;
-
-		/// <summary>The name of the column</summary>
-		protected string name;
-
 		/// <summary>
 		/// the type of the column
 		/// </summary>
 		protected string columnSql;
 
 		/// <summary>
-		/// Sql if This column is Indexed
-		/// </summary>
-		protected bool indexed = false;
-
-		/// <summary>
 		/// Sql if this column has a default value
 		/// </summary>
 		protected object defaultVal;
+
+		protected Dialect dialect;
+
+		/// <summary>
+		/// Sql if This column is Indexed
+		/// </summary>
+		protected bool indexed;
+
+		/// <summary>The name of the column</summary>
+		protected string name;
+
+		/// <summary>The SQL type</summary>
+		protected string type;
 
 		public ColumnPropertiesMapper(Dialect dialect, string type)
 		{
@@ -74,46 +74,105 @@ namespace Migrator.Providers
 			}
 		}
 
-		public void MapColumnProperties(Column column)
+		public virtual void MapColumnProperties(Column column)
 		{
 			Name = column.Name;
+
 			indexed = PropertySelected(column.ColumnProperty, ColumnProperty.Indexed);
 
-			List<string> vals = new List<string>();
-			vals.Add(dialect.ColumnNameNeedsQuote || dialect.IsReservedWord(Name) ? QuotedName : Name);
+			var vals = new List<string>();
 
-			vals.Add(type);
+			AddName(vals);
 
-			if (!dialect.IdentityNeedsType)
-				AddValueIfSelected(column, ColumnProperty.Identity, vals);
+			AddType(vals);
 
-			if (dialect.IsUnsignedCompatible(column.Type))
-				AddValueIfSelected(column, ColumnProperty.Unsigned, vals);
+			AddIdentity(column, vals);
 
-			if (!PropertySelected(column.ColumnProperty, ColumnProperty.PrimaryKey) || dialect.NeedsNotNullForIdentity)
-			{
-				AddValueIfSelected(column, ColumnProperty.NotNull, vals);
-			}
-			else if (dialect.NeedsNullForNullableWhenAlteringTable)
-			{
-				AddValueIfSelected(column, ColumnProperty.Null, vals);
-			}
+			AddUnsigned(column, vals);
 
-			AddValueIfSelected(column, ColumnProperty.PrimaryKey, vals);
+			AddNotNull(column, vals);
 
-			if (dialect.IdentityNeedsType)
-				AddValueIfSelected(column, ColumnProperty.Identity, vals);
+			AddNull(column, vals);
 
-			AddValueIfSelected(column, ColumnProperty.Unique, vals);
-			AddValueIfSelected(column, ColumnProperty.ForeignKey, vals);
+			AddPrimaryKey(column, vals);
 
-			if (column.DefaultValue != null)
-				vals.Add(dialect.Default(column.DefaultValue));
+			AddIdentityAgain(column, vals);
+
+			AddUnique(column, vals);
+
+			AddForeignKey(column, vals);
+
+			AddDefaultValue(column, vals);
 
 			columnSql = String.Join(" ", vals.ToArray());
 		}
 
-		private void AddValueIfSelected(Column column, ColumnProperty property, ICollection<string> vals)
+		protected virtual void AddDefaultValue(Column column, List<string> vals)
+		{
+			if (column.DefaultValue != null)
+				vals.Add(dialect.Default(column.DefaultValue));
+		}
+
+		protected virtual void AddForeignKey(Column column, List<string> vals)
+		{
+			AddValueIfSelected(column, ColumnProperty.ForeignKey, vals);
+		}
+
+		protected virtual void AddUnique(Column column, List<string> vals)
+		{
+			AddValueIfSelected(column, ColumnProperty.Unique, vals);
+		}
+
+		protected virtual void AddIdentityAgain(Column column, List<string> vals)
+		{
+			if (dialect.IdentityNeedsType)
+				AddValueIfSelected(column, ColumnProperty.Identity, vals);
+		}
+
+		protected virtual void AddPrimaryKey(Column column, List<string> vals)
+		{
+			AddValueIfSelected(column, ColumnProperty.PrimaryKey, vals);
+		}
+
+		protected virtual void AddNull(Column column, List<string> vals)
+		{
+			if (!PropertySelected(column.ColumnProperty, ColumnProperty.PrimaryKey))
+			{
+				if (dialect.NeedsNullForNullableWhenAlteringTable) AddValueIfSelected(column, ColumnProperty.Null, vals);
+			}
+		}
+
+		protected virtual void AddNotNull(Column column, List<string> vals)
+		{
+			if (!PropertySelected(column.ColumnProperty, ColumnProperty.PrimaryKey) || dialect.NeedsNotNullForIdentity)
+			{
+				AddValueIfSelected(column, ColumnProperty.NotNull, vals);
+			}
+		}
+
+		protected virtual void AddUnsigned(Column column, List<string> vals)
+		{
+			if (dialect.IsUnsignedCompatible(column.Type))
+				AddValueIfSelected(column, ColumnProperty.Unsigned, vals);
+		}
+
+		protected virtual void AddIdentity(Column column, List<string> vals)
+		{
+			if (!dialect.IdentityNeedsType)
+				AddValueIfSelected(column, ColumnProperty.Identity, vals);
+		}
+
+		protected virtual void AddType(List<string> vals)
+		{
+			vals.Add(type);
+		}
+
+		protected virtual void AddName(List<string> vals)
+		{
+			vals.Add(dialect.ColumnNameNeedsQuote || dialect.IsReservedWord(Name) ? QuotedName : Name);
+		}
+
+		protected virtual void AddValueIfSelected(Column column, ColumnProperty property, ICollection<string> vals)
 		{
 			if (PropertySelected(column.ColumnProperty, property))
 				vals.Add(dialect.SqlForProperty(property));

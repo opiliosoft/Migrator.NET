@@ -96,6 +96,7 @@
     <Compile Include="ForeignKeyConstraintMapper.cs" />
     <Compile Include="Impl\Mysql\MysqlDialect.cs" />
     <Compile Include="Impl\Mysql\MySqlTransformationProvider.cs" />
+    <Compile Include="Impl\Oracle\OracleColumnPropertiesMapper.cs" />
     <Compile Include="Impl\PostgreSQL\PostgreSQL82Dialect.cs" />
     <Compile Include="Impl\SqlServer\SqlServer2005Dialect.cs" />
     <Compile Include="Impl\SqlServer\SqlServerCeDialect.cs" />
