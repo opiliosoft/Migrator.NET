@@ -106,7 +106,7 @@ namespace Migrator.Providers.Oracle
 		{
 			return new OracleTransformationProvider(dialect, connectionString, defaultSchema);
 		}
-
+		
 		public override ColumnPropertiesMapper GetColumnMapper(Column column)
 		{
 			string type = column.Size > 0 ? GetTypeName(column.Type, column.Size) : GetTypeName(column.Type);

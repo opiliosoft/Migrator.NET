@@ -124,7 +124,23 @@ namespace Migrator.Providers.Oracle
 
 			table = QuoteTableNameIfRequired(table);
 			sqlColumn = QuoteColumnNameIfRequired(sqlColumn);
-			ExecuteNonQuery(String.Format("ALTER TABLE {0} MODIFY {1}", table, sqlColumn));
+			try
+			{
+				ExecuteNonQuery(String.Format(@"DECLARE
+   allready_null EXCEPTION;
+   PRAGMA EXCEPTION_INIT(allready_null, -1451);
+BEGIN
+   execute immediate 'ALTER TABLE {0} MODIFY {1}';
+EXCEPTION
+   WHEN allready_null THEN
+      null; -- handle the error
+END;", table, sqlColumn));
+			}
+			catch (OracleException ex)
+			{
+				//ORA-01451: column to be modified to NULL cannot be modified to NULL
+				if (ex.Number == 1451) return;
+			}
 		}
 
 		public override void AddColumn(string table, string sqlColumn)
