@@ -58,6 +58,11 @@ namespace Migrator.Providers
 			get { return "\"{0}\""; }
 		}
 
+		public virtual bool NeedsNullForNullableWhenAlteringTable
+		{
+			get { return false; }
+		}
+
 		protected void AddReservedWord(string reservedWord)
 		{
 			reservedWords.Add(reservedWord.ToUpperInvariant());

@@ -84,6 +84,7 @@
     <Compile Include="MigratorTestDates.cs" />
     <Compile Include="ProviderFactoryTest.cs" />
     <Compile Include="Providers\GenericProviderTests.cs" />
+    <Compile Include="Providers\OracleWithDefaultSchemaNameTransformationProviderTest.cs" />
     <Compile Include="Providers\SqlServer2005TransformationProviderTest.cs" />
     <Compile Include="Providers\MySqlTransformationProviderTest.cs" />
     <Compile Include="Providers\OracleTransformationProviderTest.cs" />
@@ -117,6 +118,7 @@
   <ItemGroup>
     <None Include="..\config\app.config">
       <Link>app.config</Link>
+      <SubType>Designer</SubType>
     </None>
   </ItemGroup>
   <ItemGroup>

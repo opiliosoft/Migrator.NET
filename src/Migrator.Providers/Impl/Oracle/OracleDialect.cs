@@ -79,6 +79,13 @@ namespace Migrator.Providers.Oracle
 			                 "WITHOUT", "WORK", "WRITE", "YEAR", "ZONE");
 		}
 
+		// in Oracle, this:  ALTER TABLE EXTERNALSYSTEMREFERENCES MODIFY (TestScriptId RAW(16)) will no make the column nullable, it just leaves it at it's current null/not-null state
+		
+		public override bool NeedsNullForNullableWhenAlteringTable
+		{
+			get { return true; }
+		}
+
 		public override bool ColumnNameNeedsQuote
 		{
 			get { return false; }

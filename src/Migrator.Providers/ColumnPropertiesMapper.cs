@@ -91,7 +91,13 @@ namespace Migrator.Providers
 				AddValueIfSelected(column, ColumnProperty.Unsigned, vals);
 
 			if (!PropertySelected(column.ColumnProperty, ColumnProperty.PrimaryKey) || dialect.NeedsNotNullForIdentity)
+			{
 				AddValueIfSelected(column, ColumnProperty.NotNull, vals);
+			}
+			else if (dialect.NeedsNullForNullableWhenAlteringTable)
+			{
+				AddValueIfSelected(column, ColumnProperty.Null, vals);
+			}
 
 			AddValueIfSelected(column, ColumnProperty.PrimaryKey, vals);
 
