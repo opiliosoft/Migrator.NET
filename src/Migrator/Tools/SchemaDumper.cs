@@ -20,7 +20,7 @@ namespace Migrator.Tools
 {
 	public class SchemaDumper
 	{
-		readonly ITransformationProvider _provider;
+	    private readonly ITransformationProvider _provider;
 
 		public SchemaDumper(string provider, string connectionString, string defaultSchema)
 		{
