@@ -56,6 +56,8 @@ namespace Migrator.Providers.Oracle
 				return;
 			}
 
+			var existingColumn = GetColumnByName(table, column.Name);
+			
 			if (column.Type == DbType.String)
 			{
 				RenameColumn(table, column.Name, TemporaryColumnName);
@@ -68,24 +70,32 @@ namespace Migrator.Providers.Oracle
 
 				AddColumn(table, column);
 				CopyDataFromOneColumnToAnother(table, TemporaryColumnName, column.Name);
-				RemoveColumn(table, column.Name);
-				RenameColumn(table, TemporaryColumnName, column.Name);
+				RemoveColumn(table, TemporaryColumnName);
+				//RenameColumn(table, TemporaryColumnName, column.Name);
+				
 				string columnName = QuoteColumnNameIfRequired(column.Name);
-
-				using (IDataReader reader = ExecuteQuery("SELECT * FROM " + QuoteTableNameIfRequired(table)))
-				{
-					while (reader.Read())
-					{
-						Console.WriteLine(reader[0]);
-					}
-				}
-
+				
 				// now set the column to not-null
 				if (isNotNull) ExecuteQuery(String.Format("ALTER TABLE {0} MODIFY ({1} NOT NULL)", table, columnName));
 			}
 			else
 			{
+				if (((existingColumn.ColumnProperty & ColumnProperty.NotNull) == ColumnProperty.NotNull)
+					&& ((column.ColumnProperty & ColumnProperty.NotNull) == ColumnProperty.NotNull))
+				{
+					// was not null, 	and is being change to not-null - drop the not-null all together
+					column.ColumnProperty = column.ColumnProperty & ~ColumnProperty.NotNull;
+				}
+				else if 
+					(((existingColumn.ColumnProperty & ColumnProperty.Null) == ColumnProperty.Null)
+					&& ((column.ColumnProperty & ColumnProperty.Null) == ColumnProperty.Null))
+				{
+					// was null, and is being changed to null - drop the null all together
+					column.ColumnProperty = column.ColumnProperty & ~ColumnProperty.Null;
+				}
+			
 				ColumnPropertiesMapper mapper = _dialect.GetAndMapColumnProperties(column);
+
 				ChangeColumn(table, mapper.ColumnSql);
 			}
 		}
@@ -95,26 +105,41 @@ namespace Migrator.Providers.Oracle
 			table = QuoteTableNameIfRequired(table);
 			fromColumn = QuoteColumnNameIfRequired(fromColumn);
 			toColumn = QuoteColumnNameIfRequired(toColumn);
-			ExecuteNonQuery(string.Format("UPDATE {0} SET {1} = {2}", table, fromColumn, toColumn));
+
+			ExecuteNonQuery(string.Format("UPDATE {0} SET {1} = {2}", table, toColumn, fromColumn));
 		}
 
 		public override void RenameTable(string oldName, string newName)
 		{
 			GuardAgainstMaximumIdentifierLengthForOracle(newName);
+			GuardAgainstExistingTableWithSameName(newName, oldName);
 
 			oldName = QuoteTableNameIfRequired(oldName);
 			newName = QuoteTableNameIfRequired(newName);
+
 			ExecuteNonQuery(String.Format("ALTER TABLE {0} RENAME TO {1}", oldName, newName));
+		}
+
+		void GuardAgainstExistingTableWithSameName(string newName, string oldName)
+		{
+			if (TableExists(newName)) throw new MigrationException(string.Format("Can not rename table \"{0}\" to \"{1}\", a table with that name already exists", oldName, newName));
 		}
 
 		public override void RenameColumn(string tableName, string oldColumnName, string newColumnName)
 		{
 			GuardAgainstMaximumIdentifierLengthForOracle(newColumnName);
-
+			GuardAgainstExistingColumnWithSameName(newColumnName, tableName);
+			
 			tableName = QuoteTableNameIfRequired(tableName);
 			oldColumnName = QuoteColumnNameIfRequired(oldColumnName);
 			newColumnName = QuoteColumnNameIfRequired(newColumnName);
+			
 			ExecuteNonQuery(string.Format("ALTER TABLE {0} RENAME COLUMN {1} TO {2}", tableName, oldColumnName, newColumnName));
+		}
+
+		void GuardAgainstExistingColumnWithSameName(string newColumnName, string tableName)
+		{
+			if (ColumnExists(tableName, newColumnName)) throw new MigrationException(string.Format("A column with the name \"{0}\" already exists in the table \"{1}\"", newColumnName, tableName));
 		}
 
 		public override void ChangeColumn(string table, string sqlColumn)
@@ -124,23 +149,7 @@ namespace Migrator.Providers.Oracle
 
 			table = QuoteTableNameIfRequired(table);
 			sqlColumn = QuoteColumnNameIfRequired(sqlColumn);
-			try
-			{
-				ExecuteNonQuery(String.Format(@"DECLARE
-   allready_null EXCEPTION;
-   PRAGMA EXCEPTION_INIT(allready_null, -1451);
-BEGIN
-   execute immediate 'ALTER TABLE {0} MODIFY {1}';
-EXCEPTION
-   WHEN allready_null THEN
-      null; -- handle the error
-END;", table, sqlColumn));
-			}
-			catch (OracleException ex)
-			{
-				//ORA-01451: column to be modified to NULL cannot be modified to NULL
-				if (ex.Number == 1451) return;
-			}
+			ExecuteNonQuery(String.Format("ALTER TABLE {0} MODIFY {1}", table, sqlColumn));
 		}
 
 		public override void AddColumn(string table, string sqlColumn)
@@ -209,18 +218,20 @@ END;", table, sqlColumn));
 				IDataReader reader =
 					ExecuteQuery(
 						string.Format(
-							"select column_name, data_type, data_length, data_precision, data_scale FROM USER_TAB_COLUMNS WHERE lower(table_name) = '{0}'",
-							table)))
+							"select column_name, data_type, data_length, data_precision, data_scale, NULLABLE FROM USER_TAB_COLUMNS WHERE lower(table_name) = '{0}'",
+							table.ToLower())))
 			{
 				while (reader.Read())
 				{
 					string colName = reader[0].ToString();
 					DbType colType = DbType.String;
 					string dataType = reader[1].ToString().ToLower();
+					bool isNullable = ParseBoolean(reader.GetValue(5));
+
 					if (dataType.Equals("number"))
 					{
-						int precision = reader.GetInt32(3);
-						int scale = reader.GetInt32(4);
+						int precision = Convert.ToInt32(reader.GetValue(3));
+						int scale = Convert.ToInt32(reader.GetValue(4));
 						if (scale == 0)
 						{
 							colType = precision <= 10 ? DbType.Int16 : DbType.Int64;
@@ -234,11 +245,25 @@ END;", table, sqlColumn));
 					{
 						colType = DbType.DateTime;
 					}
-					columns.Add(new Column(colName, colType));
+
+					var columnProperties = (isNullable) ? ColumnProperty.Null : ColumnProperty.NotNull;
+
+					columns.Add(new Column(colName, colType, columnProperties));
 				}
 			}
 
 			return columns.ToArray();
+		}
+
+		bool ParseBoolean(object value)
+		{
+			if (value is string)
+			{
+				if ("N" == (string)value) return false;
+				if ("Y" == (string)value) return true;
+			}
+
+			return Convert.ToBoolean(value);
 		}
 
 		protected override string GenerateParameterName(int index)

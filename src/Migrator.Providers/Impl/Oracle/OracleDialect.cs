@@ -115,5 +115,14 @@ namespace Migrator.Providers.Oracle
 
 			return new OracleColumnPropertiesMapper(this, type);
 		}
+
+		public override string Default(object defaultValue)
+		{
+			if (defaultValue.GetType().Equals(typeof(bool)))
+			{
+				defaultValue = ((bool)defaultValue) ? 1 : 0;
+			}
+			return String.Format("DEFAULT {0}", defaultValue);
+		}
 	}
 }

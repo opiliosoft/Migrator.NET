@@ -95,7 +95,8 @@ namespace Migrator.Providers
 
 		public virtual Column GetColumnByName(string table, string columnName)
 		{
-			return Array.Find(GetColumns(table), column => column.Name == columnName);
+			var columns = GetColumns(table);
+			return columns.First(column => column.Name.Equals(columnName, StringComparison.OrdinalIgnoreCase));
 		}
 
 		public virtual string[] GetTables()
@@ -517,7 +518,7 @@ namespace Migrator.Providers
 				catch (Exception ex)
 				{
 					Logger.Warn(ex.Message);
-					throw;
+					throw new Exception(string.Format("Error occured executing sql: {0}, see inner exception for details, error: " + ex, sql), ex);
 				}
 			}
 		}

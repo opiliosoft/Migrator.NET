@@ -84,7 +84,6 @@
     <Compile Include="MigratorTestDates.cs" />
     <Compile Include="ProviderFactoryTest.cs" />
     <Compile Include="Providers\GenericProviderTests.cs" />
-    <Compile Include="Providers\OracleWithDefaultSchemaNameTransformationProviderTest.cs" />
     <Compile Include="Providers\SqlServer2005TransformationProviderTest.cs" />
     <Compile Include="Providers\MySqlTransformationProviderTest.cs" />
     <Compile Include="Providers\OracleTransformationProviderTest.cs" />
@@ -147,6 +146,28 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\lib\oci.dll">
+      <Link>oci.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\lib\orannzsbb11.dll">
+      <Link>orannzsbb11.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\lib\oraocci11.dll">
+      <Link>oraocci11.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\lib\oraociei11.dll">
+      <Link>oraociei11.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\lib\OraOps11w.dll">
+      <Link>OraOps11w.dll</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

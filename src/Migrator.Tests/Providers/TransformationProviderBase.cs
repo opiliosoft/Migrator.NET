@@ -32,7 +32,7 @@ namespace Migrator.Tests.Providers
 		public void AddDefaultTable()
 		{
 			_provider.AddTable("TestTwo",
-			                   new Column("Id", DbType.Int32, ColumnProperty.PrimaryKeyWithIdentity),
+			                   new Column("Id", DbType.Int32, ColumnProperty.PrimaryKey),
 			                   new Column("TestId", DbType.Int32, ColumnProperty.ForeignKey)
 				);
 		}
@@ -195,7 +195,16 @@ namespace Migrator.Tests.Providers
 		{
 			_provider.ChangeColumn("TestTwo", new Column("TestId", DbType.String, 50));
 			Assert.IsTrue(_provider.ColumnExists("TestTwo", "TestId"));
-			_provider.Insert("TestTwo", new[] {"TestId"}, new[] {"Not an Int val."});
+			_provider.Insert("TestTwo", new[] {"Id", "TestId"}, new object[] {1, "Not an Int val."});
+		}
+
+		[Test]
+		public void ChangeColumn_FromNullToNull()
+		{
+			_provider.ChangeColumn("TestTwo", new Column("TestId", DbType.String, 50, ColumnProperty.Null));
+			_provider.ChangeColumn("TestTwo", new Column("TestId", DbType.String, 50, ColumnProperty.Null));
+			_provider.ChangeColumn("TestTwo", new Column("TestId", DbType.String, 50, ColumnProperty.Null));
+			_provider.Insert("TestTwo", new[] { "Id", "TestId" }, new object[] {2, "Not an Int val." });
 		}
 
 		[Test]
@@ -330,8 +339,8 @@ namespace Migrator.Tests.Providers
 		[Test]
 		public void InsertData()
 		{
-			_provider.Insert("TestTwo", new[] {"TestId"}, new[] {"1"});
-			_provider.Insert("TestTwo", new[] {"TestId"}, new[] {"2"});
+			_provider.Insert("TestTwo", new[] {"Id", "TestId"}, new object[] {1, "1"});
+			_provider.Insert("TestTwo", new[] {"Id", "TestId"}, new object[] {2, "2"});
 			using (IDataReader reader = _provider.Select("TestId", "TestTwo"))
 			{
 				int[] vals = GetVals(reader);
@@ -387,7 +396,7 @@ namespace Migrator.Tests.Providers
 		public void DeleteDataWithArrays()
 		{
 			InsertData();
-			_provider.Delete("TestTwo", new[] {"TestId"}, new[] {"1"});
+			_provider.Delete("TestTwo", new[] {"TestId"}, new [] { "1"});
 
 			using (IDataReader reader = _provider.Select("TestId", "TestTwo"))
 			{
@@ -400,8 +409,8 @@ namespace Migrator.Tests.Providers
 		[Test]
 		public void UpdateData()
 		{
-			_provider.Insert("TestTwo", new[] {"TestId"}, new[] {"1"});
-			_provider.Insert("TestTwo", new[] {"TestId"}, new[] {"2"});
+			_provider.Insert("TestTwo", new[] {"Id","TestId"}, new object[] { 20, "1"});
+			_provider.Insert("TestTwo", new[] { "Id", "TestId" }, new object[] { 21, "2" });
 
 			_provider.Update("TestTwo", new[] {"TestId"}, new[] {"3"});
 
@@ -436,10 +445,10 @@ namespace Migrator.Tests.Providers
 		[Test]
 		public void UpdateDataWithWhere()
 		{
-			_provider.Insert("TestTwo", new[] {"TestId"}, new[] {"1"});
-			_provider.Insert("TestTwo", new[] {"TestId"}, new[] {"2"});
+			_provider.Insert("TestTwo", new[] {"Id","TestId"}, new object[] {10,"1"});
+			_provider.Insert("TestTwo", new[] {"Id","TestId"}, new object[] {11,"2"});
 
-			_provider.Update("TestTwo", new[] {"TestId"}, new[] {"3"}, "TestId='1'");
+			_provider.Update("TestTwo", new[] {"TestId"}, new[] { "3"}, "TestId='1'");
 
 			using (IDataReader reader = _provider.Select("TestId", "TestTwo"))
 			{
