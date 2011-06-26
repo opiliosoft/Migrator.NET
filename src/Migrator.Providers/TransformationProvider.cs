@@ -102,7 +102,7 @@ namespace Migrator.Providers
 		public virtual string[] GetTables()
 		{
 			var tables = new List<string>();
-			using (IDataReader reader = ExecuteQuery("SELECT table_name FROM information_schema.tables"))
+			using (IDataReader reader = ExecuteQuery("SELECT table_name FROM INFORMATION_SCHEMA.TABLES"))
 			{
 				while (reader.Read())
 				{
