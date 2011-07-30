@@ -7,7 +7,13 @@ using ForeignKeyConstraint = Migrator.Framework.ForeignKeyConstraint;
 using SqliteConnection = System.Data.SQLite.SQLiteConnection;
 
 #else
+using System;
+using System.Collections.Generic;
+using System.Data;
+using Migrator.Framework;
 using Mono.Data.Sqlite;
+using ForeignKeyConstraint = Migrator.Framework.ForeignKeyConstraint;
+
 #endif
 
 namespace Migrator.Providers.SQLite
