@@ -78,13 +78,21 @@ namespace Migrator.Providers.SqlServer
 			return string.Format(QuoteTemplate, value);
 		}
 
-		public override string Default(object defaultValue)
-		{
-			if (defaultValue.GetType().Equals(typeof (bool)))
-			{
-				defaultValue = ((bool) defaultValue) ? 1 : 0;
-			}
-			return String.Format("DEFAULT {0}", defaultValue);
-		}
-	}
+        public override string Default(object defaultValue)
+        {
+            if (defaultValue.GetType().Equals(typeof (bool)))
+            {
+                defaultValue = ((bool) defaultValue) ? 1 : 0;
+            }
+            else if (defaultValue.GetType().Equals(typeof(Guid)))
+            {
+                defaultValue = "'" + ((Guid) defaultValue).ToString("D") + "'";
+            }
+            else if (defaultValue.GetType().Equals(typeof(string)) && !string.IsNullOrEmpty((string)defaultValue))
+            {
+                defaultValue = "'" + defaultValue + "'";
+            }
+            return String.Format("DEFAULT {0}", defaultValue);
+        }
+    }
 }
