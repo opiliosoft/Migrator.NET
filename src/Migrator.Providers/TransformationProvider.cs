@@ -761,7 +761,7 @@ namespace Migrator.Providers
 		public void MigrationApplied(long version)
 		{
 			CreateSchemaInfoTable();
-			Insert("SchemaInfo", new string[] { "Version" }, new object[] { version });
+			Insert("SchemaInfo", new string[] { "Version","TimeStamp" }, new object[] { version, DateTime.Now });
 			_appliedMigrations.Add(version);
 		}
 
@@ -942,7 +942,11 @@ namespace Migrator.Providers
 			EnsureHasConnection();
 			if (!TableExists("SchemaInfo"))
 			{
-				AddTable("SchemaInfo", new Column("Version", DbType.Int64, ColumnProperty.PrimaryKey));
+				AddTable("SchemaInfo",  
+                    new Column("Version", DbType.Int64, ColumnProperty.PrimaryKey),
+                    new Column("TimeStamp", DbType.DateTime));
+
+                 
 			}
 		}
 
