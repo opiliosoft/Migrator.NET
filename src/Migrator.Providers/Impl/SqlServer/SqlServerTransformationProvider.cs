@@ -37,12 +37,9 @@ namespace Migrator.Providers.SqlServer
 			_connection.Open();
 		}
 
-		// FIXME: We should look into implementing this with INFORMATION_SCHEMA if possible
-		// so that it would be usable by all the SQL Server implementations
 		public override bool ConstraintExists(string table, string name)
 		{
-			using (IDataReader reader =
-				ExecuteQuery(string.Format("SELECT TOP 1 * FROM sysobjects WHERE id = object_id('{0}')", name)))
+			using (IDataReader reader = ExecuteQuery(string.Format("SELECT TOP 1 * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE CONSTRAINT_NAME ='{0}'", name)))
 			{
 				return reader.Read();
 			}
@@ -146,11 +143,19 @@ namespace Migrator.Providers.SqlServer
 		// so that it would be usable by all the SQL Server implementations
 		protected virtual string FindConstraints(string table, string column)
 		{
-			return string.Format(
+		    return string.Format(@"SELECT DISTINCT CU.CONSTRAINT_NAME FROM INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE CU
+INNER JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC
+ON CU.CONSTRAINT_NAME = TC.CONSTRAINT_NAME
+WHERE TC.CONSTRAINT_TYPE = 'FOREIGN KEY'
+AND CU.TABLE_NAME = '{0}'
+AND CU.COLUMN_NAME = '{1}'",
+		            table, column);
+
+		    /*return string.Format(
 				"SELECT cont.name FROM sysobjects cont, syscolumns col, sysconstraints cnt  "
 				+ "WHERE cont.parent_obj = col.id AND cnt.constid = cont.id AND cnt.colid=col.colid "
 				+ "AND col.name = '{1}' AND col.id = object_id('{0}')",
-				table, column);
+				table, column);*/
 		}
 	}
 }
