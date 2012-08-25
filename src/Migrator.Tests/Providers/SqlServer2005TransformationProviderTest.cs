@@ -15,6 +15,7 @@ using System;
 using System.Configuration;
 using Migrator.Providers.SqlServer;
 using NUnit.Framework;
+using Migrator.Providers.Utility;
 
 namespace Migrator.Tests.Providers
 {
@@ -27,11 +28,12 @@ namespace Migrator.Tests.Providers
 		[SetUp]
 		public void SetUp()
 		{
-			string constr = ConfigurationManager.AppSettings["SqlServer2005ConnectionString"];
-			if (constr == null)
+            string constr = ConfigurationManager.AppSettings["SqlServer2005ConnectionString"];
+			
+            if (constr == null)
 				throw new ArgumentNullException("SqlServer2005ConnectionString", "No config file");
 
-			_provider = new SqlServerTransformationProvider(new SqlServer2005Dialect(), constr, null);
+            _provider = new SqlServerTransformationProvider(new SqlServer2005Dialect(), constr, null);
 			_provider.BeginTransaction();
 
 			AddDefaultTable();

@@ -235,5 +235,14 @@ namespace Migrator.Providers.SQLite
 		{
 			return columnDef.StartsWith(column + " ") || columnDef.StartsWith(_dialect.Quote(column));
 		}
+
+        public override bool IndexExists(string table, string name)
+		{
+			using (IDataReader reader =
+				ExecuteQuery(String.Format("SELECT name FROM sqlite_master WHERE type='index' and name='{0}'", name)))
+			{
+				return reader.Read();
+			}
+		}
 	}
 }

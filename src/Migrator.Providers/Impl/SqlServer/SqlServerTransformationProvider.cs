@@ -157,5 +157,24 @@ AND CU.COLUMN_NAME = '{1}'",
 				+ "AND col.name = '{1}' AND col.id = object_id('{0}')",
 				table, column);*/
 		}
+
+        public override bool IndexExists(string table, string name)
+		{
+			using (IDataReader reader =
+				ExecuteQuery(string.Format("SELECT top 1 * FROM sys.indexes WHERE object_id = OBJECT_ID('{0}') AND name = '{1}'", table, name)))
+			{
+				return reader.Read();
+			}
+		}
+
+        public override void RemoveIndex(string table, string name)
+		{
+			if (TableExists(table) && IndexExists(table, name))
+			{
+				table = _dialect.TableNameNeedsQuote ? _dialect.Quote(table) : table;
+				name = _dialect.ConstraintNameNeedsQuote ? _dialect.Quote(name) : name;
+				ExecuteNonQuery(String.Format("DROP INDEX {0} ON {1}", name, table));
+			}
+		}
 	}
 }

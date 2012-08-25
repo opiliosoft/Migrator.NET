@@ -132,5 +132,14 @@ namespace Migrator.Providers.PostgreSQL
 			// Duplicate because of the lower case issue
 			return Array.Find(GetColumns(table), column => column.Name == columnName.ToLower());
 		}
+
+        public override bool IndexExists(string table, string name)
+        {
+            using (IDataReader reader =
+                ExecuteQuery(string.Format("SELECT indexname FROM pg_catalog.pg_indexes WHERE indexname = lower('{0}')", name)))
+            {
+                return reader.Read();
+            }
+        }
 	}
 }

@@ -1036,5 +1036,26 @@ namespace Migrator.Providers
 				primaryColumns[i] = QuoteColumnNameIfRequired(primaryColumns[i]);
 			}
 		}
+
+        public virtual void RemoveIndex(string table, string name)
+		{
+			if (TableExists(table) && IndexExists(table, name))
+			{
+				name = _dialect.ConstraintNameNeedsQuote ? _dialect.Quote(name) : name;
+				ExecuteNonQuery(String.Format("DROP INDEX {0}", name));
+			}
+		}
+
+        public virtual void AddIndex(string name, string table, params string[] columns)
+		{
+			if (IndexExists(table, name))
+			{
+				Logger.Warn("Index {0} already exists", name);
+				return;
+			}
+			ExecuteNonQuery(String.Format("CREATE INDEX {0} ON {1} ({2}) ", name, table, string.Join(", ", columns)));
+		}
+
+        public abstract bool IndexExists(string table, string name);
 	}
 }
