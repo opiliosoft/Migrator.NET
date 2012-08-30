@@ -165,7 +165,8 @@ namespace Migrator.Providers.Mysql
 		{
 			if (IndexExists(table, name))
 			{
-				ExecuteNonQuery(String.Format("DROP INDEX {1} ON {0}", table, _dialect.Quote(name)));
+
+                ExecuteNonQuery(String.Format("DROP INDEX {1} ON {0}", QuoteTableNameIfRequired(table), _dialect.Quote(name)));
 			}
 		}
 

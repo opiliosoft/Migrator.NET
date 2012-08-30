@@ -1041,7 +1041,7 @@ namespace Migrator.Providers
 		{
 			if (TableExists(table) && IndexExists(table, name))
 			{
-				name = _dialect.ConstraintNameNeedsQuote ? _dialect.Quote(name) : name;
+			    name = QuoteConstraintNameIfRequired(name);
 				ExecuteNonQuery(String.Format("DROP INDEX {0}", name));
 			}
 		}
@@ -1053,9 +1053,21 @@ namespace Migrator.Providers
 				Logger.Warn("Index {0} already exists", name);
 				return;
 			}
-			ExecuteNonQuery(String.Format("CREATE INDEX {0} ON {1} ({2}) ", name, table, string.Join(", ", columns)));
+
+            name = QuoteConstraintNameIfRequired(name);
+
+            table = QuoteTableNameIfRequired(table);
+
+            columns = QuoteColumnNamesIfRequired(columns);
+
+            ExecuteNonQuery(String.Format("CREATE INDEX {0} ON {1} ({2}) ", name, table, string.Join(", ", columns)));
 		}
 
-        public abstract bool IndexExists(string table, string name);
+	    protected string QuoteConstraintNameIfRequired(string name)
+	    {
+	        return _dialect.ConstraintNameNeedsQuote ? _dialect.Quote(name) : name;
+	    }
+
+	    public abstract bool IndexExists(string table, string name);
 	}
 }

@@ -60,7 +60,7 @@ namespace Migrator.Providers.Mysql
 			RegisterUnsignedCompatible(DbType.Single);
 
 			AddReservedWords("KEY");
-		}
+	   }
 
 		public override string QuoteTemplate
 		{
