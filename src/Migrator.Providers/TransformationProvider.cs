@@ -505,7 +505,11 @@ namespace Migrator.Providers
 			return ConstraintExists(table, name);
 		}
 
-		public virtual int ExecuteNonQuery(string sql)
+        public virtual int ExecuteNonQuery(string sql)
+        {
+            return ExecuteNonQuery(sql, 30);
+        }
+		public virtual int ExecuteNonQuery(string sql, int timeout)
 		{
 			Logger.Trace(sql);
 			Logger.ApplyingDBChange(sql);
@@ -513,6 +517,7 @@ namespace Migrator.Providers
 			{
 				try
 				{
+				    cmd.CommandTimeout = timeout;
 					return cmd.ExecuteNonQuery();
 				}
 				catch (Exception ex)

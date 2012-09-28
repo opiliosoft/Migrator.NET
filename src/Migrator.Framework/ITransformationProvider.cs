@@ -280,9 +280,11 @@ namespace Migrator.Framework
 		/// Execute an arbitrary SQL query
 		/// </summary>
 		/// <param name="sql">The SQL to execute.</param>
+		/// <param name="timeout">timeout</param>
 		/// <returns></returns>
-		int ExecuteNonQuery(string sql);
+		int ExecuteNonQuery(string sql,int timeout);
 
+	    int ExecuteNonQuery(string sql);
 		/// <summary>
 		/// Execute an arbitrary SQL query
 		/// </summary>
