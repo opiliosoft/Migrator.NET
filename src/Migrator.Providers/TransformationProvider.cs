@@ -601,7 +601,7 @@ namespace Migrator.Providers
 			{
 				query += " WHERE " + where;
 			}
-
+            table = _dialect.TableNameNeedsQuote ? _dialect.Quote(table) : table;
 			return ExecuteNonQuery(String.Format(query, table, namesAndValues));
 		}
 
