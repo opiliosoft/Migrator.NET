@@ -118,17 +118,7 @@ namespace Migrator.Providers.SqlServer
             }
         }
 
-		public override bool IndexExists(string table, string name)
-		{
-			using (IDataReader reader =
-				ExecuteQuery(string.Format("SELECT top 1 * FROM sys.indexes WHERE object_id = OBJECT_ID('{0}') AND name = '{1}'", table, name)))
-			{
-				return reader.Read();
-			}
-		}
-
-
-        public override void AddColumn(string table, string sqlColumn)
+		public override void AddColumn(string table, string sqlColumn)
         {
             table = _dialect.TableNameNeedsQuote ? _dialect.Quote(table) : table;
             ExecuteNonQuery(string.Format("ALTER TABLE {0} ADD {1}", table, sqlColumn));
@@ -203,17 +193,7 @@ namespace Migrator.Providers.SqlServer
 				ExecuteNonQuery(String.Format("EXEC sp_rename '{0}', '{1}'", oldName, newName));
         }
 
-		public override void RemoveIndex(string table, string name)
-		{
-			if (TableExists(table) && IndexExists(table, name))
-			{
-				table = _dialect.TableNameNeedsQuote ? _dialect.Quote(table) : table;
-				name = _dialect.ConstraintNameNeedsQuote ? _dialect.Quote(name) : name;
-				ExecuteNonQuery(String.Format("DROP INDEX {0} ON {1}", name, table));
-			}
-		}
-
-        // Deletes all constraints linked to a column. Sql Server
+		// Deletes all constraints linked to a column. Sql Server
         // doesn't seems to do this.
 		void DeleteColumnConstraints(string table, string column)
         {
