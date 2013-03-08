@@ -47,6 +47,7 @@ namespace Migrator.Providers.SqlServer
 
 		public override void AddColumn(string table, string sqlColumn)
 		{
+            table = _dialect.TableNameNeedsQuote ? _dialect.Quote(table) : table;
 			ExecuteNonQuery(string.Format("ALTER TABLE {0} ADD {1}", table, sqlColumn));
 		}
 

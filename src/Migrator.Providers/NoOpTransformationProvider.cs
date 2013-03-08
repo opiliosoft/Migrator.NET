@@ -206,7 +206,10 @@ namespace Migrator.Providers
 		{
 			return 0;
 		}
-
+        public int ExecuteNonQuery(string sql, int timeout)
+        {
+            return 0;
+        }
 		public IDataReader ExecuteQuery(string sql)
 		{
 			return null;

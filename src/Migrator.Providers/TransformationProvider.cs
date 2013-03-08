@@ -505,7 +505,11 @@ namespace Migrator.Providers
 			return ConstraintExists(table, name);
 		}
 
-		public virtual int ExecuteNonQuery(string sql)
+        public virtual int ExecuteNonQuery(string sql)
+        {
+            return ExecuteNonQuery(sql, 30);
+        }
+		public virtual int ExecuteNonQuery(string sql, int timeout)
 		{
 			Logger.Trace(sql);
 			Logger.ApplyingDBChange(sql);
@@ -513,6 +517,7 @@ namespace Migrator.Providers
 			{
 				try
 				{
+				    cmd.CommandTimeout = timeout;
 					return cmd.ExecuteNonQuery();
 				}
 				catch (Exception ex)
@@ -596,7 +601,7 @@ namespace Migrator.Providers
 			{
 				query += " WHERE " + where;
 			}
-
+            table = _dialect.TableNameNeedsQuote ? _dialect.Quote(table) : table;
 			return ExecuteNonQuery(String.Format(query, table, namesAndValues));
 		}
 
@@ -761,7 +766,7 @@ namespace Migrator.Providers
 		public void MigrationApplied(long version)
 		{
 			CreateSchemaInfoTable();
-			Insert("SchemaInfo", new string[] { "Version" }, new object[] { version });
+			Insert("SchemaInfo", new string[] { "Version","TimeStamp" }, new object[] { version, DateTime.Now });
 			_appliedMigrations.Add(version);
 		}
 
@@ -942,7 +947,11 @@ namespace Migrator.Providers
 			EnsureHasConnection();
 			if (!TableExists("SchemaInfo"))
 			{
-				AddTable("SchemaInfo", new Column("Version", DbType.Int64, ColumnProperty.PrimaryKey));
+				AddTable("SchemaInfo",  
+                    new Column("Version", DbType.Int64, ColumnProperty.PrimaryKey),
+                    new Column("TimeStamp", DbType.DateTime));
+
+                 
 			}
 		}
 

@@ -302,8 +302,31 @@ namespace Migrator.Providers.Oracle
 			GuardAgainstMaximumColumnNameLengthForOracle(name, columns);
 
 			base.AddTable(name, columns);
-		}
 
+            if (columns.Any(c => c.ColumnProperty == ColumnProperty.PrimaryKeyWithIdentity))
+            {
+                var identityColumn = columns.First(c => c.ColumnProperty == ColumnProperty.PrimaryKeyWithIdentity);
+
+                // Create a sequence for the table
+                ExecuteQuery(String.Format("CREATE SEQUENCE {0}_SEQUENCE", name));
+
+                // Create identity trigger (This all has to be in one line (no whitespace), I learned the hard way :) )
+                ExecuteQuery(String.Format(
+                    @"CREATE OR REPLACE TRIGGER {0}_TRIGGER BEFORE INSERT ON {0} FOR EACH ROW BEGIN SELECT {0}_SEQUENCE.NEXTVAL INTO :NEW.{1} FROM DUAL; END;", name, identityColumn.Name));
+            }
+		}
+        public override void RemoveTable(string name)
+        {
+            base.RemoveTable(name);
+            try
+            {
+                ExecuteQuery(String.Format(@"DROP SEQUENCE {0}_SEQUENCE", name));
+            }
+            catch (Exception e)
+            {
+                // swallow this because sequence may not have originally existed.
+            }
+        }
 		void GuardAgainstMaximumColumnNameLengthForOracle(string name, Column[] columns)
 		{
 			foreach (Column column in columns)
