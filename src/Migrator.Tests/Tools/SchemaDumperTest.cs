@@ -48,7 +48,7 @@ namespace Migrator.Tests.Tools
             if (constr == null)
                 throw new ArgumentNullException("SqlServerConnectionString", "No config file");
 
-            SchemaDumper dumper = new SchemaDumper("SqlServer", constr);
+            SchemaDumper dumper = new SchemaDumper("SqlServer", constr, "");
             string output = dumper.Dump();
 
             Assert.IsNotNull(output);

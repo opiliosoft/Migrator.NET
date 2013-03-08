@@ -270,6 +270,28 @@ namespace Migrator.Providers
             }
         }
 
+        public void SwitchDatabase(string databaseName)
+        {
+            _connection.ChangeDatabase(databaseName);
+        }
+
+        public abstract List<string> GetDatabases();
+
+        public bool DatabaseExists(string name)
+        {
+            return GetDatabases().Any(c => c == name);
+        }
+
+        public virtual void CreateDatabases(string databaseName)
+        {
+            ExecuteNonQuery(string.Format("CREATE DATABASE {0}", databaseName));
+        }
+
+        public virtual void DropDatabases(string databaseName)
+        {
+            ExecuteNonQuery(string.Format("DROP DATABASE {0}", databaseName));
+        }
+
         /// <summary>
         /// Add a new column to an existing table.
         /// </summary>
@@ -528,6 +550,30 @@ namespace Migrator.Providers
 					throw new Exception(string.Format("Error occured executing sql: {0}, see inner exception for details, error: " + ex, sql), ex);
                 }
             }
+        }
+
+        public List<string> ExecuteStringQuery(string sql, params object[] args)
+        {
+            var values = new List<string>();
+
+            using (var reader = ExecuteQuery(string.Format(sql, args)))
+            {
+                while (reader.Read())
+                {
+                    var value = reader[0];
+
+                    if (value == null || value == DBNull.Value)
+                    {
+                        values.Add(null);
+                    }
+                    else
+                    {
+                        values.Add(value.ToString());
+                    }
+                }
+            }
+
+            return values;
         }
 
         /// <summary>

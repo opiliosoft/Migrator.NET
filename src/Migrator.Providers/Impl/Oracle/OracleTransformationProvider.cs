@@ -194,7 +194,12 @@ namespace Migrator.Providers.Oracle
 			return Convert.ToInt32(count) == 1;
 		}
 
-		public override string[] GetTables()
+	    public override List<string> GetDatabases()
+	    {
+	        throw new NotImplementedException();
+	    }
+
+	    public override string[] GetTables()
 		{
 			var tables = new List<string>();
 

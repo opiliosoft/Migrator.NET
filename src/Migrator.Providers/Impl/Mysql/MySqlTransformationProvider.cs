@@ -193,6 +193,11 @@ namespace Migrator.Providers.Mysql
             }
         }
 
+        public override List<string> GetDatabases()
+        {
+            throw new NotImplementedException();
+        }
+
         public override bool IndexExists(string table, string name)
         {
             return ConstraintExists(table, name);

@@ -512,6 +512,35 @@ namespace Migrator.Framework
 		string Encode(Guid guid);
 
         /// <summary>
+        /// Change the target database
+        /// </summary>
+        /// <param name="databaseName">Name of the new target database</param>
+        void SwitchDatabase(string databaseName);
+
+
+        /// <summary>
+        /// Get a list of databases available on the server
+        /// </summary>
+        List<string> GetDatabases();
+
+        /// <summary>
+        /// Checks to see if a database with specific name exists on the server
+        /// </summary>
+        bool DatabaseExists(string name);
+
+        /// <summary>
+        /// Create a new database on the server
+        /// </summary>
+        /// <param name="databaseName">Name of the new database</param>
+        void CreateDatabases(string databaseName);
+
+        /// <summary>
+        /// Delete a database from the server
+        /// </summary>
+        /// <param name="databaseName">Name of the database to delete</param>
+        void DropDatabases(string databaseName);
+
+        /// <summary>
 		/// Add a multi-column index to a table
 		/// </summary>
 		/// <param name="name">The name of the index to add.</param>

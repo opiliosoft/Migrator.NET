@@ -67,7 +67,12 @@ namespace Migrator.Providers.PostgreSQL
 			}
 		}
 
-		public override void ChangeColumn(string table, Column column)
+	    public override List<string> GetDatabases()
+	    {
+	        throw new NotImplementedException();
+	    }
+
+	    public override void ChangeColumn(string table, Column column)
 		{
 			if (!ColumnExists(table, column.Name))
 			{

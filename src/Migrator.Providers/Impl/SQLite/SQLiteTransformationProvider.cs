@@ -110,7 +110,12 @@ namespace Migrator.Providers.SQLite
 			}
 		}
 
-		public override bool ConstraintExists(string table, string name)
+	    public override List<string> GetDatabases()
+	    {
+	        throw new NotImplementedException();
+	    }
+
+	    public override bool ConstraintExists(string table, string name)
 		{
 			return false;
 		}

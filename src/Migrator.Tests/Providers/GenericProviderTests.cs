@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 using Migrator.Providers;
 using NUnit.Framework;
 
@@ -27,7 +29,12 @@ namespace Migrator.Tests.Providers
 			return false;
 		}
 
-        public override bool IndexExists(string table, string name)
+	    public override List<string> GetDatabases()
+	    {
+	        throw new System.NotImplementedException();
+	    }
+
+	    public override bool IndexExists(string table, string name)
 		{
 			return false;
 		}

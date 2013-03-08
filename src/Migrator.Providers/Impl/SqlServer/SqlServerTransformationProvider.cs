@@ -169,6 +169,11 @@ namespace Migrator.Providers.SqlServer
 			}
         }
 
+        public override List<string> GetDatabases()
+        {
+            return ExecuteStringQuery("SELECT name FROM sys.databases");
+        }
+
         public override void RemoveColumn(string table, string column)
         {
             DeleteColumnConstraints(table, column);

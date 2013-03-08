@@ -345,7 +345,32 @@ namespace Migrator.Providers
 			return guid.ToString();
 		}
 
-		public void Dispose()
+	    public void SwitchDatabase(string databaseName)
+	    {
+	        
+	    }
+
+	    public List<string> GetDatabases()
+	    {
+	        return new List<string>();
+	    }
+
+	    public bool DatabaseExists(string name)
+	    {
+	        return true;
+	    }
+
+	    public void CreateDatabases(string databaseName)
+	    {
+	        
+	    }
+
+	    public void DropDatabases(string databaseName)
+	    {
+	        
+	    }
+
+	    public void Dispose()
 		{
 			//No Op
 		}
