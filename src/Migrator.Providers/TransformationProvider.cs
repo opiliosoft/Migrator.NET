@@ -29,6 +29,9 @@ namespace Migrator.Providers
     /// </summary>
     public abstract class TransformationProvider : ITransformationProvider
     {
+        private string _schemaInfotable = "SchemaInfo";
+
+        private string _subSchemaName;
         protected readonly string _connectionString;
 		protected readonly string _defaultSchema;
         readonly ForeignKeyConstraintMapper constraintMapper = new ForeignKeyConstraintMapper();
@@ -38,12 +41,13 @@ namespace Migrator.Providers
         ILogger _logger;
         IDbTransaction _transaction;
 
-		protected TransformationProvider(Dialect dialect, string connectionString, string defaultSchema)
+        protected TransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string subSchemaName)
         {
             _dialect = dialect;
             _connectionString = connectionString;
 			_defaultSchema = defaultSchema;
             _logger = new Logger(false);
+            _subSchemaName = subSchemaName;
         }
 
         public Dialect Dialect
@@ -788,7 +792,7 @@ namespace Migrator.Providers
 
                     versionColumn = QuoteColumnNameIfRequired(versionColumn);
 
-                    using (IDataReader reader = Select(versionColumn, "SchemaInfo"))
+                    using (IDataReader reader = Select(versionColumn, _schemaInfotable))
                     {
                         while (reader.Read())
                         {
@@ -814,7 +818,7 @@ namespace Migrator.Providers
         public virtual void MigrationApplied(long version)
         {
             CreateSchemaInfoTable();
-			Insert("SchemaInfo", new string[] { "Version","TimeStamp" }, new object[] { version, DateTime.Now });
+            Insert(_schemaInfotable, new string[] { "Name", "Version", "TimeStamp" }, new object[] { _subSchemaName, version, DateTime.Now });
             _appliedMigrations.Add(version);
         }
 
@@ -825,7 +829,7 @@ namespace Migrator.Providers
         public virtual void MigrationUnApplied(long version)
         {
             CreateSchemaInfoTable();
-            Delete("SchemaInfo", "Version", version.ToString());
+            Delete(_schemaInfotable, new[] { "Name", "Version" }, new[] { _subSchemaName, version.ToString() });
             _appliedMigrations.Remove(version);
         }
 
@@ -994,13 +998,12 @@ namespace Migrator.Providers
         protected virtual void CreateSchemaInfoTable()
         {
             EnsureHasConnection();
-            if (!TableExists("SchemaInfo"))
+            if (!TableExists(_schemaInfotable))
             {
-				AddTable("SchemaInfo",  
+				AddTable(_schemaInfotable,
+                    new Column("Name", DbType.StringFixedLength, 50, ColumnProperty.PrimaryKey),
                     new Column("Version", DbType.Int64, ColumnProperty.PrimaryKey),
-                    new Column("TimeStamp", DbType.DateTime));
-
-                 
+                    new Column("TimeStamp", DbType.DateTime));                 
             }
         }
 

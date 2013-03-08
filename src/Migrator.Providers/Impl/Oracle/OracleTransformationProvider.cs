@@ -13,8 +13,8 @@ namespace Migrator.Providers.Oracle
 	{
 		public const string TemporaryColumnName = "TEMPCOL";
 
-		public OracleTransformationProvider(Dialect dialect, string connectionString, string defaultSchema)
-			: base(dialect, connectionString, defaultSchema)
+        public OracleTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string subSchemaName = "default")
+			: base(dialect, connectionString, defaultSchema, subSchemaName)
 		{
 			_connection = new OracleConnection();
 			_connection.ConnectionString = _connectionString;

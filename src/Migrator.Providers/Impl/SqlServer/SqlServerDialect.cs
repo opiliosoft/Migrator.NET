@@ -63,9 +63,9 @@ namespace Migrator.Providers.SqlServer
 			get { return "[{0}]"; }
 		}
 
-		public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema)
+        public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string subSchemaName)
 		{
-			return new SqlServerTransformationProvider(dialect, connectionString, defaultSchema ?? DboSchemaName);
+			return new SqlServerTransformationProvider(dialect, connectionString, defaultSchema ?? DboSchemaName, subSchemaName);
 		}
 
 		public override string Quote(string value)

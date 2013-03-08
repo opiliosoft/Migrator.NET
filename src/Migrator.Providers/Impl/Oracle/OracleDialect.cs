@@ -102,9 +102,9 @@ namespace Migrator.Providers.Oracle
 			get { return false; }
 		}
 
-		public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema)
+        public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string subSchemaName)
 		{
-			return new OracleTransformationProvider(dialect, connectionString, defaultSchema);
+			return new OracleTransformationProvider(dialect, connectionString, defaultSchema, subSchemaName);
 		}
 		
 		public override ColumnPropertiesMapper GetColumnMapper(Column column)

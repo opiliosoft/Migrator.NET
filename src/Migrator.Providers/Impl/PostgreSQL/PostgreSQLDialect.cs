@@ -89,9 +89,9 @@ namespace Migrator.Providers.PostgreSQL
 			get { return false; }
 		}
 
-		public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema)
+        public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string subSchemaName)
 		{
-			return new PostgreSQLTransformationProvider(dialect, connectionString, defaultSchema);
+			return new PostgreSQLTransformationProvider(dialect, connectionString, defaultSchema, subSchemaName);
 		}
 	}
 }

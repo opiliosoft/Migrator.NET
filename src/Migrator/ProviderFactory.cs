@@ -33,11 +33,11 @@ namespace Migrator
 			LoadDialects();
 		}
 
-		public static ITransformationProvider Create(string providerName, string connectionString, string defaultSchema)
+        public static ITransformationProvider Create(string providerName, string connectionString, string defaultSchema, string subSchemaName = "default")
 		{
 			Dialect dialectInstance = DialectForProvider(providerName);
 
-			return dialectInstance.NewProviderForDialect(connectionString, defaultSchema);
+			return dialectInstance.NewProviderForDialect(connectionString, defaultSchema, subSchemaName);
 		}
 
 		public static Dialect DialectForProvider(string providerName)
