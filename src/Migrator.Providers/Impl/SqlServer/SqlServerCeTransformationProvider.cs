@@ -44,18 +44,36 @@ namespace Migrator.Providers.SqlServer
 			}
 		}
 
-        public override bool TableExists(string table) {
-            string tableWithoutBrackets = this.RemoveBrackets(table);
-            string tableName = this.GetTableName(tableWithoutBrackets);
-            using (IDataReader reader = 
-                ExecuteQuery(String.Format("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME='{0}'", tableName))) {
+        protected string GetSchemaName(string longTableName)
+        {
+            throw new MigrationException("SQL CE does not support database schemas.");
+        }
+
+        public override bool TableExists(string table)
+        {
+            using (IDataReader reader = base.ExecuteQuery(string.Format("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME='{0}'", table)))
+            {
                 return reader.Read();
             }
         }
 
-        protected new string GetSchemaName(string longTableName)
+        public override bool ColumnExists(string table, string column)
         {
-            throw new MigrationException("SQL CE does not support database schemas.");
+            if (!TableExists(table))
+            {
+                return false;
+            }
+            int firstIndex = table.IndexOf(".");
+            if (firstIndex >= 0)
+            {
+                table = table.Substring(firstIndex + 1);
+            }
+
+            using (
+                IDataReader reader = base.ExecuteQuery(string.Format("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='{0}' AND COLUMN_NAME='{1}'", table, column)))
+            {
+                return reader.Read();
+            }
         }
 
 		public override void RenameColumn(string tableName, string oldColumnName, string newColumnName)
@@ -73,15 +91,11 @@ namespace Migrator.Providers.SqlServer
 			}
 		}
 
-		// Not supported by SQLCe when we have a better schemadumper which gives the exact sql construction including constraints we may use it to insert into a new table and then drop the old table...but this solution is dangerous for big tables.
-		public override void RenameTable(string oldName, string newName)
-		{
-			if (TableExists(newName))
-				throw new MigrationException(String.Format("Table with name '{0}' already exists", newName));
-
-			//if (TableExists(oldName))
-			//    ExecuteNonQuery(String.Format("EXEC sp_rename {0}, {1}", oldName, newName));
-		}
+        // Not supported by SQLCe when we have a better schemadumper which gives the exact sql construction including constraints we may use it to insert into a new table and then drop the old table...but this solution is dangerous for big tables.
+        public override void RenameTable(string oldName, string newName)
+        {
+            throw new NotSupportedException("Table Rename is not supported in SQL CE");
+        }
 
 		protected override string FindConstraints(string table, string column)
 		{

@@ -919,6 +919,7 @@ namespace Migrator.Providers
 
 		IDbCommand BuildCommand(string sql)
 		{
+            EnsureHasConnection();
 			IDbCommand cmd = _connection.CreateCommand();
 			cmd.CommandText = sql;
 			cmd.CommandType = CommandType.Text;
