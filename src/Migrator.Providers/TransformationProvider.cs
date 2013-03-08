@@ -32,7 +32,7 @@ namespace Migrator.Providers
         protected readonly string _connectionString;
 		protected readonly string _defaultSchema;
         readonly ForeignKeyConstraintMapper constraintMapper = new ForeignKeyConstraintMapper();
-        List<long> _appliedMigrations;
+        protected List<long> _appliedMigrations;
         protected IDbConnection _connection;
         protected Dialect _dialect;
         ILogger _logger;
@@ -279,7 +279,7 @@ namespace Migrator.Providers
 
         public bool DatabaseExists(string name)
         {
-            return GetDatabases().Any(c => c == name);
+            return GetDatabases().Any(c => string.Equals(name, c, StringComparison.InvariantCultureIgnoreCase));
         }
 
         public virtual void CreateDatabases(string databaseName)
@@ -811,7 +811,7 @@ namespace Migrator.Providers
         /// Marks a Migration version number as having been applied
         /// </summary>
         /// <param name="version">The version number of the migration that was applied</param>
-        public void MigrationApplied(long version)
+        public virtual void MigrationApplied(long version)
         {
             CreateSchemaInfoTable();
 			Insert("SchemaInfo", new string[] { "Version","TimeStamp" }, new object[] { version, DateTime.Now });
@@ -822,7 +822,7 @@ namespace Migrator.Providers
         /// Marks a Migration version number as having been rolled back from the database
         /// </summary>
         /// <param name="version">The version number of the migration that was removed</param>
-        public void MigrationUnApplied(long version)
+        public virtual void MigrationUnApplied(long version)
         {
             CreateSchemaInfoTable();
             Delete("SchemaInfo", "Version", version.ToString());
@@ -991,7 +991,7 @@ namespace Migrator.Providers
             }
         }
 
-        protected void CreateSchemaInfoTable()
+        protected virtual void CreateSchemaInfoTable()
         {
             EnsureHasConnection();
             if (!TableExists("SchemaInfo"))

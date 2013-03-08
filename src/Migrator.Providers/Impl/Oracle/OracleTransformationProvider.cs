@@ -185,14 +185,17 @@ namespace Migrator.Providers.Oracle
 			return Convert.ToInt32(scalar) == 1;
 		}
 
-		public override bool TableExists(string table)
-		{
-			string sql = string.Format("SELECT COUNT(table_name) FROM user_tables WHERE lower(table_name) = '{0}'",
-			                           table.ToLower());
-			Logger.Log(sql);
-			object count = ExecuteScalar(sql);
-			return Convert.ToInt32(count) == 1;
-		}
+        public override bool TableExists(string table)
+        {
+            string sql = string.Format("SELECT COUNT(table_name) FROM user_tables WHERE lower(table_name) = '{0}'", table.ToLower());
+
+            if (_defaultSchema != null)
+                sql = string.Format("SELECT COUNT(table_name) FROM all_tables WHERE lower(owner) = '{0}' and lower(table_name) = '{1}'", _defaultSchema.ToLower(), table.ToLower());
+
+            Logger.Log(sql);
+            object count = ExecuteScalar(sql);
+            return Convert.ToInt32(count) == 1;
+        }
 
 	    public override List<string> GetDatabases()
 	    {
@@ -214,6 +217,26 @@ namespace Migrator.Providers.Oracle
 
 			return tables.ToArray();
 		}
+
+        public override List<long> AppliedMigrations
+        {
+            get
+            {
+                if (_appliedMigrations == null)
+                {
+                    _appliedMigrations = new List<long>();
+                    CreateSchemaInfoTable();
+                    using (IDataReader reader = Select("version", SchemaInfoTableName))
+                    {
+                        while (reader.Read())
+                        {
+                            _appliedMigrations.Add(Convert.ToInt64(reader.GetValue(0)));
+                        }
+                    }
+                }
+                return _appliedMigrations;
+            }
+        }
 
 		public override Column[] GetColumns(string table)
 		{
@@ -363,5 +386,46 @@ namespace Migrator.Providers.Oracle
 			object scalar = ExecuteScalar(sql);
 			return Convert.ToInt32(scalar) == 1;
 		}
+
+        /// <summary>
+        /// Marks a Migration attribute as having been applied
+        /// </summary>
+        /// <param name="attribute">The migration attribute that was applied</param>
+        public override void MigrationApplied(long version)
+        {
+            CreateSchemaInfoTable();
+            Insert(SchemaInfoTableName, new[] { "version" }, new[] { version.ToString() });
+            _appliedMigrations.Add(version);
+        }
+
+        /// <summary>
+        /// Marks a Migration attribute as having been rolled back from the database
+        /// </summary>
+        /// <param name="attribute">The migration attribute that was removed</param>
+        public override void MigrationUnApplied(long version)
+        {
+            CreateSchemaInfoTable();
+            Delete(SchemaInfoTableName, "version", version.ToString());
+            _appliedMigrations.Remove(version);
+        }
+
+        protected override void CreateSchemaInfoTable()
+        {
+            EnsureHasConnection();
+            if (!TableExists("SchemaInfo"))
+            {
+                AddTable(SchemaInfoTableName, new Column("Version", DbType.Int64, ColumnProperty.PrimaryKey));
+            }
+        }
+
+        private string SchemaInfoTableName
+        {
+            get
+            {
+                if (_defaultSchema == null)
+                    return "SchemaInfo";
+                return string.Format("{0}.{1}", _defaultSchema, "SchemaInfo");
+            }
+        }
 	}
 }
