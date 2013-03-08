@@ -265,7 +265,12 @@ namespace Migrator.Providers
 			return 0;
 		}
 
-		public void BeginTransaction()
+	    public int TruncateTable(string table)
+	    {
+	        return 0;
+	    }
+
+	    public void BeginTransaction()
 		{
 			// No Op
 		}

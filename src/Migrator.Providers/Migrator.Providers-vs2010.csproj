@@ -39,7 +39,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;DOTNET2</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
@@ -54,6 +54,15 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FirebirdSql.Data.FirebirdClient">
+      <HintPath>..\..\lib\FirebirdSql.Data.FirebirdClient.dll</HintPath>
+    </Reference>
+    <Reference Include="IBM.Data.DB2">
+      <HintPath>..\..\lib\IBM.Data.DB2.dll</HintPath>
+    </Reference>
+    <Reference Include="IBM.Data.Informix">
+      <HintPath>..\..\lib\IBM.Data.Informix.dll</HintPath>
+    </Reference>
     <Reference Include="Mono.Data.Sqlite, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\Mono.Data.Sqlite.dll</HintPath>
@@ -98,6 +107,12 @@
     <Compile Include="ColumnPropertiesMapper.cs" />
     <Compile Include="Dialect.cs" />
     <Compile Include="ForeignKeyConstraintMapper.cs" />
+    <Compile Include="Impl\DB2\DB2Dialect.cs" />
+    <Compile Include="Impl\DB2\DB2TransformationProvider.cs" />
+    <Compile Include="Impl\Firebird\FirebirdDialect.cs" />
+    <Compile Include="Impl\Firebird\FirebirdTransformationProvider.cs" />
+    <Compile Include="Impl\Informix\InformixDialect.cs" />
+    <Compile Include="Impl\Informix\InformixTransformationProvider.cs" />
     <Compile Include="Impl\Mysql\MysqlDialect.cs" />
     <Compile Include="Impl\Mysql\MySqlTransformationProvider.cs" />
     <Compile Include="Impl\Oracle\OracleColumnPropertiesMapper.cs" />
@@ -160,6 +175,7 @@
       <Name>Migrator.Framework-vs2010</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

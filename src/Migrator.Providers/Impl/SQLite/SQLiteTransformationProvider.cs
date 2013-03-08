@@ -12,6 +12,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using Migrator.Framework;
+
+using Mono.Data.Sqlite;
+
 using ForeignKeyConstraint = Migrator.Framework.ForeignKeyConstraint;
 
 #endif

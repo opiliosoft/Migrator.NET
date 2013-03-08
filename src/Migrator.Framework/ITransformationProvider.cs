@@ -352,6 +352,13 @@ namespace Migrator.Framework
 		/// <returns></returns>
 		int Delete(string table, string whereColumn, string whereValue);
 
+	    /// <summary>
+	    /// Truncate data from a table
+	    /// </summary>
+        /// <param name="table">The table that will have the data deleted</param>
+	    /// <returns></returns>
+	    int TruncateTable(string table);
+
 		/// <summary>
 		/// Marks a Migration version number as having been applied
 		/// </summary>

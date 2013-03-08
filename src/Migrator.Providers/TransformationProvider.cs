@@ -726,6 +726,11 @@ namespace Migrator.Providers
             return ExecuteNonQuery(String.Format("DELETE FROM {0} WHERE {1} = {2}", table, wherecolumn, QuoteValues(wherevalue)));
         }
 
+        public virtual int TruncateTable(string table)
+        {
+            return ExecuteNonQuery(String.Format("TRUNCATE TABLE {0} ", table));
+        }
+
         /// <summary>
         /// Starts a transaction. Called by the migration mediator.
         /// </summary>
@@ -924,6 +929,14 @@ namespace Migrator.Providers
                     pks.Add(col.Name);
             }
             return pks;
+        }
+
+        public virtual void AddColumnDefaultValue(string table, string column, object defaultValue)
+        {
+            table = QuoteTableNameIfRequired(table);
+            column = this.QuoteColumnNameIfRequired(column);
+            var def = Dialect.Default(defaultValue);
+            ExecuteNonQuery(String.Format("ALTER TABLE {0} ADD DEFAULT('{1}') FOR {2}", table, def, column));                       
         }
 
         public virtual void AddColumn(string table, string sqlColumn)
