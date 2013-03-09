@@ -44,8 +44,12 @@ namespace Migrator.Tools
 				var columnLines = new List<string>();
 				foreach (Column column in _provider.GetColumns(table))
 				{
-                    if (column.Size>0)
-				        columnLines.Add(string.Format("\t\t\tnew Column(\"{0}\", DbType.{1}, {2}, {3})", column.Name, column.Type, column.Size, getColumnPropertyString(column.ColumnProperty)));
+                    if (column.Size>0 && column.DefaultValue!=null)
+				        columnLines.Add(string.Format("\t\t\tnew Column(\"{0}\", DbType.{1}, {2}, {3}, \"{4}\")", column.Name, column.Type, column.Size, getColumnPropertyString(column.ColumnProperty), column.DefaultValue));
+                    if (column.Size > 0)
+                        columnLines.Add(string.Format("\t\t\tnew Column(\"{0}\", DbType.{1}, {2}, {3})", column.Name, column.Type, column.Size, getColumnPropertyString(column.ColumnProperty)));
+                    if (column.DefaultValue != null)
+                        columnLines.Add(string.Format("\t\t\tnew Column(\"{0}\", DbType.{1}, {2}, \"{3}\")", column.Name, column.Type, getColumnPropertyString(column.ColumnProperty), column.DefaultValue));                    
                     else
                         columnLines.Add(string.Format("\t\t\tnew Column(\"{0}\", DbType.{1}, {2})", column.Name, column.Type, getColumnPropertyString(column.ColumnProperty)));
 				}
@@ -73,15 +77,15 @@ namespace Migrator.Tools
         private string getColumnPropertyString(ColumnProperty prp)
         {
             string retVal = "";
-            if ((prp & ColumnProperty.ForeignKey) > 0) retVal += "ColumnProperty.ForeignKey | ";
-            if ((prp & ColumnProperty.Identity) > 0) retVal += "ColumnProperty.Identity | ";
-            if ((prp & ColumnProperty.Indexed) > 0) retVal += "ColumnProperty.Indexed | ";
-            if ((prp & ColumnProperty.NotNull) > 0) retVal += "ColumnProperty.NotNull | ";
-            if ((prp & ColumnProperty.Null) > 0) retVal += "ColumnProperty.Null | ";
-            if ((prp & ColumnProperty.PrimaryKey) > 0) retVal += "ColumnProperty.PrimaryKey | ";
-            if ((prp & ColumnProperty.PrimaryKeyWithIdentity) > 0) retVal += "ColumnProperty.PrimaryKeyWithIdentity | ";
-            if ((prp & ColumnProperty.Unique) > 0) retVal += "ColumnProperty.Unique | ";
-            if ((prp & ColumnProperty.Unsigned) > 0) retVal += "ColumnProperty.Unsigned | ";
+            if ((prp & ColumnProperty.ForeignKey) == ColumnProperty.ForeignKey) retVal += "ColumnProperty.ForeignKey | ";
+            if ((prp & ColumnProperty.Identity) == ColumnProperty.Identity) retVal += "ColumnProperty.Identity | ";
+            if ((prp & ColumnProperty.Indexed) == ColumnProperty.Indexed) retVal += "ColumnProperty.Indexed | ";
+            if ((prp & ColumnProperty.NotNull) == ColumnProperty.NotNull) retVal += "ColumnProperty.NotNull | ";
+            if ((prp & ColumnProperty.Null) == ColumnProperty.Null) retVal += "ColumnProperty.Null | ";
+            if ((prp & ColumnProperty.PrimaryKey) == ColumnProperty.PrimaryKey) retVal += "ColumnProperty.PrimaryKey | ";
+            if ((prp & ColumnProperty.PrimaryKeyWithIdentity) == ColumnProperty.PrimaryKeyWithIdentity) retVal += "ColumnProperty.PrimaryKeyWithIdentity | ";
+            if ((prp & ColumnProperty.Unique) == ColumnProperty.Unique) retVal += "ColumnProperty.Unique | ";
+            if ((prp & ColumnProperty.Unsigned) == ColumnProperty.Unsigned) retVal += "ColumnProperty.Unsigned | ";
 
             if (retVal != "") retVal = retVal.Substring(0, retVal.Length - 3);
 

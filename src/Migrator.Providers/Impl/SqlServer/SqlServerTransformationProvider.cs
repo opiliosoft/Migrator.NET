@@ -98,15 +98,27 @@ namespace Migrator.Providers.SqlServer
 
         public override Column[] GetColumns(string table)
         {
+            var pkColumns = new List<string>();
+            try
+            {
+                pkColumns = this.ExecuteStringQuery("SELECT cu.COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE cu WHERE EXISTS ( SELECT tc.* FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS tc WHERE tc.TABLE_NAME = '{0}' AND tc.CONSTRAINT_TYPE = 'PRIMARY KEY' AND tc.CONSTRAINT_NAME = cu.CONSTRAINT_NAME )", table);
+            }
+            catch (Exception ex)
+            { }
+
             var columns = new List<Column>();
             using (
-                IDataReader reader =
+                    IDataReader reader =
                     ExecuteQuery(
-                        String.Format("select COLUMN_NAME, IS_NULLABLE, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH from INFORMATION_SCHEMA.COLUMNS where table_name = '{0}'", table)))
+                        String.Format("select COLUMN_NAME, IS_NULLABLE, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, COLUMN_DEFAULT from INFORMATION_SCHEMA.COLUMNS where table_name = '{0}'", table)))
             {
                 while (reader.Read())
                 {
                     var column = new Column(reader.GetString(0), DbType.String);
+
+                    if (pkColumns.Contains(column.Name)) 
+                        column.ColumnProperty |= ColumnProperty.PrimaryKey;
+
                     string nullableStr = reader.GetString(1);
                     bool isNullable = nullableStr == "YES";
                     if (!reader.IsDBNull(2))
@@ -117,6 +129,10 @@ namespace Migrator.Providers.SqlServer
                     if (!reader.IsDBNull(3))
                     {
                         column.Size = reader.GetInt32(3);
+                    }
+                    if (!reader.IsDBNull(4))
+                    {
+                        column.DefaultValue = reader.GetValue(4);                        
                     }
 
                     column.ColumnProperty |= isNullable ? ColumnProperty.Null : ColumnProperty.NotNull;
