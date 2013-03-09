@@ -290,7 +290,9 @@ namespace Migrator.Providers
 			get { return this; }
 		}
 
-		public void MigrationApplied(long version, string scope)
+	    public string SchemaInfoTable { get; set; }
+
+	    public void MigrationApplied(long version, string scope)
 		{
 			//no op
 		}

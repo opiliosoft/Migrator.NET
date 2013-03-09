@@ -14,6 +14,8 @@ namespace Migrator.Framework
 		/// </summary>
 		ITransformationProvider this[string provider] { get; }
 
+        string SchemaInfoTable { get; set; }
+
 		/// <summary>
 		/// The list of Migrations currently applied to the database.
 		/// </summary>

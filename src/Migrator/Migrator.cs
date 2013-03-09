@@ -74,6 +74,23 @@ namespace Migrator
 			get { return _migrationLoader.MigrationsTypes; }
 		}
 
+        /// <summary>
+        /// Set or get the Schema Info table name, where the migration applied are saved
+        /// Default is: SchemaInfo
+        /// </summary>
+        public string SchemaInfoTableName
+        {
+            get
+            {
+                return _provider.SchemaInfoTable;
+            }
+
+            set
+            {
+                _provider.SchemaInfoTable = value;
+            }
+        }
+
 		/// <summary>
 		/// Returns the current migrations applied to the database.
 		/// </summary>

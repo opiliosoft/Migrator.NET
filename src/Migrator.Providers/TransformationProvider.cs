@@ -29,8 +29,6 @@ namespace Migrator.Providers
     /// </summary>
     public abstract class TransformationProvider : ITransformationProvider
     {
-        private string _schemaInfotable = "SchemaInfo";
-
         private string _scope;
         protected readonly string _connectionString;
 		protected readonly string _defaultSchema;
@@ -48,6 +46,19 @@ namespace Migrator.Providers
 			_defaultSchema = defaultSchema;
             _logger = new Logger(false);
             _scope = scope;
+        }
+
+        private string _schemaInfotable = "SchemaInfo";
+        public string SchemaInfoTable
+        {
+            get
+            {
+                return _schemaInfotable;
+            }
+            set
+            {
+                _schemaInfotable = value;
+            }
         }
 
         public Dialect Dialect
