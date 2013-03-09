@@ -13,9 +13,9 @@ namespace Migrator.Providers.SqlServer
 			RegisterColumnType(DbType.Xml, "XML");
 		}
 
-        public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string subSchemaName)
+        public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope)
 		{
-			return new SqlServerTransformationProvider(dialect, connectionString, defaultSchema ?? DboSchemaName, subSchemaName);
+			return new SqlServerTransformationProvider(dialect, connectionString, defaultSchema ?? DboSchemaName, scope);
 		}
 	}
 }

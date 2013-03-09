@@ -23,8 +23,8 @@ namespace Migrator.Providers.SqlServer
 	/// </summary>
 	public class SqlServerCeTransformationProvider : SqlServerTransformationProvider
 	{
-        public SqlServerCeTransformationProvider(Dialect dialect, string connectionString, string subSchemaName = "default")
-			: base(dialect, connectionString, null, subSchemaName)
+        public SqlServerCeTransformationProvider(Dialect dialect, string connectionString, string scope = "default")
+			: base(dialect, connectionString, null, scope)
 		{
 		}
 

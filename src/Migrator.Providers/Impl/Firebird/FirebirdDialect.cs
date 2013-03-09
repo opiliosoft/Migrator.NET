@@ -45,9 +45,9 @@ namespace Migrator.Providers.Impl.Firebird
 	   }
 
 		
-        public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string subSchemaName)
+        public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope)
 		{
-			return new FirebirdTransformationProvider(dialect, connectionString, subSchemaName);
+			return new FirebirdTransformationProvider(dialect, connectionString, scope);
 		}		
 	}
 }

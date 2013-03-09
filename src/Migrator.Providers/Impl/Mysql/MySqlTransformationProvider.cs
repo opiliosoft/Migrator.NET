@@ -11,8 +11,8 @@ namespace Migrator.Providers.Mysql
     /// </summary>
     public class MySqlTransformationProvider : TransformationProvider
     {
-        public MySqlTransformationProvider(Dialect dialect, string connectionString, string subSchemaName="default")
-            : base(dialect, connectionString, null, subSchemaName) // we ignore schemas for MySql (schema == database for MySql)
+        public MySqlTransformationProvider(Dialect dialect, string connectionString, string scope="default")
+            : base(dialect, connectionString, null, scope) // we ignore schemas for MySql (schema == database for MySql)
         {
             _connection = new MySqlConnection(_connectionString) {ConnectionString = _connectionString};
             _connection.Open();

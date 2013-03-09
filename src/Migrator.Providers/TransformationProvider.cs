@@ -31,7 +31,7 @@ namespace Migrator.Providers
     {
         private string _schemaInfotable = "SchemaInfo";
 
-        private string _subSchemaName;
+        private string _scope;
         protected readonly string _connectionString;
 		protected readonly string _defaultSchema;
         readonly ForeignKeyConstraintMapper constraintMapper = new ForeignKeyConstraintMapper();
@@ -41,13 +41,13 @@ namespace Migrator.Providers
         ILogger _logger;
         IDbTransaction _transaction;
 
-        protected TransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string subSchemaName)
+        protected TransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope)
         {
             _dialect = dialect;
             _connectionString = connectionString;
 			_defaultSchema = defaultSchema;
             _logger = new Logger(false);
-            _subSchemaName = subSchemaName;
+            _scope = scope;
         }
 
         public Dialect Dialect
@@ -99,6 +99,23 @@ namespace Migrator.Providers
             return columns.ToArray();
         }
 
+        public virtual string[] GetConstraints(string table)
+        {
+            var constraints = new List<string>();
+            using (
+                IDataReader reader =
+                    ExecuteQuery(
+                        String.Format("SELECT CONSTRAINT_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE TABLE_NAME = '{0}'", table)))
+            {
+                while (reader.Read())
+                {
+                    constraints.Add(reader.GetString(0));
+                }
+            }
+
+            return constraints.ToArray();
+        }
+
         public virtual Column GetColumnByName(string table, string columnName)
         {
 			var columns = GetColumns(table);
@@ -130,6 +147,14 @@ namespace Migrator.Providers
                 table = _dialect.TableNameNeedsQuote ? _dialect.Quote(table) : table;
                 name = _dialect.ConstraintNameNeedsQuote ? _dialect.Quote(name) : name;
                 ExecuteNonQuery(String.Format("ALTER TABLE {0} DROP CONSTRAINT {1}", table, name));
+            }
+        }
+
+        public virtual void RemoveAllConstraints(string table)
+        {
+            foreach (var constraint in GetConstraints(table))
+            {
+                this.RemoveConstraint(table, constraint);
             }
         }
 
@@ -820,10 +845,10 @@ namespace Migrator.Providers
         /// Marks a Migration version number as having been applied
         /// </summary>
         /// <param name="version">The version number of the migration that was applied</param>
-        public virtual void MigrationApplied(long version)
+        public virtual void MigrationApplied(long version, string scope)
         {
             CreateSchemaInfoTable();
-            Insert(_schemaInfotable, new string[] { "Name", "Version", "TimeStamp" }, new object[] { _subSchemaName, version, DateTime.Now });
+            Insert(_schemaInfotable, new string[] { "Scope", "Version", "TimeStamp" }, new object[] { scope ?? _scope, version, DateTime.Now });
             _appliedMigrations.Add(version);
         }
 
@@ -831,10 +856,10 @@ namespace Migrator.Providers
         /// Marks a Migration version number as having been rolled back from the database
         /// </summary>
         /// <param name="version">The version number of the migration that was removed</param>
-        public virtual void MigrationUnApplied(long version)
+        public virtual void MigrationUnApplied(long version, string scope)
         {
             CreateSchemaInfoTable();
-            Delete(_schemaInfotable, new[] { "Name", "Version" }, new[] { _subSchemaName, version.ToString() });
+            Delete(_schemaInfotable, new[] { "Scope", "Version" }, new[] { scope ?? _scope, version.ToString() });
             _appliedMigrations.Remove(version);
         }
 
@@ -1014,9 +1039,15 @@ namespace Migrator.Providers
             if (!TableExists(_schemaInfotable))
             {
 				AddTable(_schemaInfotable,
-                    new Column("Name", DbType.StringFixedLength, 50, ColumnProperty.PrimaryKey),
-                    new Column("Version", DbType.Int64, ColumnProperty.PrimaryKey),
+                    new Column("Version", DbType.Int64, ColumnProperty.NotNull | ColumnProperty.PrimaryKey),
+                    new Column("Scope", DbType.String, 50, ColumnProperty.NotNull | ColumnProperty.PrimaryKey, "default"),
                     new Column("TimeStamp", DbType.DateTime));                 
+            }
+            else if (!ColumnExists(_schemaInfotable, "Scope"))
+            {
+                AddColumn(_schemaInfotable, "Scope", DbType.String, 50, ColumnProperty.NotNull, "default");
+                RemoveAllConstraints(_schemaInfotable);
+                AddPrimaryKey("PK_SchemaInfo", _schemaInfotable, new[] { "Version", "Scope" });
             }
         }
 

@@ -10,8 +10,8 @@ namespace Migrator.Providers.Impl.Informix
     /// </summary>
     public class InformixTransformationProvider : TransformationProvider
     {
-        public InformixTransformationProvider(Dialect dialect, string connectionString, string subSchemaName = "default")
-            : base(dialect, connectionString, null, subSchemaName)
+        public InformixTransformationProvider(Dialect dialect, string connectionString, string scope = "default")
+            : base(dialect, connectionString, null, scope)
         {
             this._connection = new IfxConnection(this._connectionString);
             this._connection.Open();

@@ -10,8 +10,8 @@ namespace Migrator.Providers.Impl.DB2
     /// </summary>
     public class DB2TransformationProvider : TransformationProvider
     {
-        public DB2TransformationProvider(Dialect dialect, string connectionString, string subSchemaName = "default")
-            : base(dialect, connectionString, null, subSchemaName)
+        public DB2TransformationProvider(Dialect dialect, string connectionString, string scope = "default")
+            : base(dialect, connectionString, null, scope)
         {
             this._connection = new DB2Connection(this._connectionString);
             this._connection.Open();

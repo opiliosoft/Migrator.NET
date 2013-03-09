@@ -81,7 +81,7 @@ namespace Migrator
 			if (! DryRun)
 			{
 				migration.Up();
-				_provider.MigrationApplied(attr.Version);
+				_provider.MigrationApplied(attr.Version, attr.Scope);
 				_provider.Commit();
 				migration.AfterUp();
 			}
@@ -94,7 +94,7 @@ namespace Migrator
 			if (! DryRun)
 			{
 				migration.Down();
-				_provider.MigrationUnApplied(attr.Version);
+				_provider.MigrationUnApplied(attr.Version, attr.Scope);
 				_provider.Commit();
 				migration.AfterDown();
 			}

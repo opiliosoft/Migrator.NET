@@ -23,6 +23,8 @@ namespace Migrator.Framework
         private long _version;
         private bool _ignore = false;
 
+        public string Scope { get; set; }
+
         /// <summary>
         /// Describe the migration
         /// </summary>

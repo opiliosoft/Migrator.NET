@@ -90,11 +90,11 @@ namespace Migrator.Providers
 			return isReserved;
 		}
 
-        public abstract ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string subSchemaName);
+        public abstract ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope);
 
-        public ITransformationProvider NewProviderForDialect(string connectionString, string defaultSchema, string subSchemaName)
+        public ITransformationProvider NewProviderForDialect(string connectionString, string defaultSchema, string scope)
 		{
-			return GetTransformationProvider(this, connectionString, defaultSchema, subSchemaName);
+			return GetTransformationProvider(this, connectionString, defaultSchema, scope);
 		}
 
 		/// <summary>

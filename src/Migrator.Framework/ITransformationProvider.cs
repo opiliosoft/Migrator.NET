@@ -363,13 +363,13 @@ namespace Migrator.Framework
 		/// Marks a Migration version number as having been applied
 		/// </summary>
 		/// <param name="version">The version number of the migration that was applied</param>
-		void MigrationApplied(long version);
+		void MigrationApplied(long version, string scope);
 
 		/// <summary>
 		/// Marks a Migration version number as having been rolled back from the database
 		/// </summary>
 		/// <param name="version">The version number of the migration that was removed</param>
-		void MigrationUnApplied(long version);
+		void MigrationUnApplied(long version, string scope);
 
 		/// <summary>
 		/// Remove an existing column from a table

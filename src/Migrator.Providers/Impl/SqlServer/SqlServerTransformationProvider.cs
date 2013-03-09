@@ -97,8 +97,8 @@ namespace Migrator.Providers.SqlServer
     /// </summary>
     public class SqlServerTransformationProvider : TransformationProvider
     {
-        public SqlServerTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string subSchemaName = "default")
-			: base(dialect, connectionString, defaultSchema, subSchemaName)
+        public SqlServerTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope = "default")
+			: base(dialect, connectionString, defaultSchema, scope)
         {
             CreateConnection();
         }

@@ -314,12 +314,12 @@ namespace Migrator.Tests.Providers
             Assert.IsTrue(_provider.TableExists("SchemaInfo"), "No SchemaInfo table created");
 
             // Check that a "set" called after the first run works.
-            _provider.MigrationApplied(1);
+            _provider.MigrationApplied(1, null);
             Assert.AreEqual(1, _provider.AppliedMigrations[0]);
 
             _provider.RemoveTable("SchemaInfo");
             // Check that a "set" call works on the first run.
-            _provider.MigrationApplied(1);
+            _provider.MigrationApplied(1, null);
             Assert.AreEqual(1, _provider.AppliedMigrations[0]);
             Assert.IsTrue(_provider.TableExists("SchemaInfo"), "No SchemaInfo table created");
         }

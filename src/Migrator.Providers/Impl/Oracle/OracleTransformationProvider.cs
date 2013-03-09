@@ -13,8 +13,8 @@ namespace Migrator.Providers.Oracle
 	{
 		public const string TemporaryColumnName = "TEMPCOL";
 
-        public OracleTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string subSchemaName = "default")
-			: base(dialect, connectionString, defaultSchema, subSchemaName)
+        public OracleTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope = "default")
+			: base(dialect, connectionString, defaultSchema, scope)
 		{
 			_connection = new OracleConnection();
 			_connection.ConnectionString = _connectionString;
@@ -387,7 +387,7 @@ namespace Migrator.Providers.Oracle
 			return Convert.ToInt32(scalar) == 1;
 		}
 
-        /// <summary>
+        /*/// <summary>
         /// Marks a Migration attribute as having been applied
         /// </summary>
         /// <param name="attribute">The migration attribute that was applied</param>
@@ -407,7 +407,7 @@ namespace Migrator.Providers.Oracle
             CreateSchemaInfoTable();
             Delete(SchemaInfoTableName, "version", version.ToString());
             _appliedMigrations.Remove(version);
-        }
+        }*/
 
         protected override void CreateSchemaInfoTable()
         {

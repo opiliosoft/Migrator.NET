@@ -13,8 +13,8 @@ namespace Migrator.Providers.Impl.Firebird
     /// </summary>
     public class FirebirdTransformationProvider : TransformationProvider
     {
-        public FirebirdTransformationProvider(Dialect dialect, string connectionString, string subSchemaName = "default")
-            : base(dialect, connectionString, null, subSchemaName)
+        public FirebirdTransformationProvider(Dialect dialect, string connectionString, string scope = "default")
+            : base(dialect, connectionString, null, scope)
         {
             this._connection = new FbConnection(this._connectionString);
             this._connection.Open();
