@@ -44,11 +44,14 @@ namespace Migrator.Tools
 				var columnLines = new List<string>();
 				foreach (Column column in _provider.GetColumns(table))
 				{
-					columnLines.Add(string.Format("\t\t\tnew Column(\"{0}\", DbType.{1}, {2}, (ColumnProperty){3})", 
-						column.Name, column.Type, column.Size, (int)column.ColumnProperty));
+                    if (column.Size>0)
+				        columnLines.Add(string.Format("\t\t\tnew Column(\"{0}\", DbType.{1}, {2}, {3})", column.Name, column.Type, column.Size, getColumnPropertyString(column.ColumnProperty)));
+                    else
+                        columnLines.Add(string.Format("\t\t\tnew Column(\"{0}\", DbType.{1}, {2})", column.Name, column.Type, getColumnPropertyString(column.ColumnProperty)));
 				}
 				writer.WriteLine(string.Join(string.Format(",{0}", Environment.NewLine), columnLines.ToArray()));
 				writer.WriteLine("\t\t);");
+                writer.WriteLine("");
 			}
 
 			writer.WriteLine("\t}\n");
@@ -58,6 +61,7 @@ namespace Migrator.Tools
 			foreach (string table in _provider.GetTables())
 			{
 				writer.WriteLine("\t\tDatabase.RemoveTable(\"{0}\");", table);
+                writer.WriteLine("");
 			}
 
 			writer.WriteLine("\t}");
@@ -65,6 +69,26 @@ namespace Migrator.Tools
 
 			return writer.ToString();
 		}
+
+        private string getColumnPropertyString(ColumnProperty prp)
+        {
+            string retVal = "";
+            if ((prp & ColumnProperty.ForeignKey) > 0) retVal += "ColumnProperty.ForeignKey | ";
+            if ((prp & ColumnProperty.Identity) > 0) retVal += "ColumnProperty.Identity | ";
+            if ((prp & ColumnProperty.Indexed) > 0) retVal += "ColumnProperty.Indexed | ";
+            if ((prp & ColumnProperty.NotNull) > 0) retVal += "ColumnProperty.NotNull | ";
+            if ((prp & ColumnProperty.Null) > 0) retVal += "ColumnProperty.Null | ";
+            if ((prp & ColumnProperty.PrimaryKey) > 0) retVal += "ColumnProperty.PrimaryKey | ";
+            if ((prp & ColumnProperty.PrimaryKeyWithIdentity) > 0) retVal += "ColumnProperty.PrimaryKeyWithIdentity | ";
+            if ((prp & ColumnProperty.Unique) > 0) retVal += "ColumnProperty.Unique | ";
+            if ((prp & ColumnProperty.Unsigned) > 0) retVal += "ColumnProperty.Unsigned | ";
+
+            if (retVal != "") retVal = retVal.Substring(0, retVal.Length - 3);
+
+            if (retVal == "") retVal = "ColumnProperty.None";
+
+            return retVal;
+        }
 
 		public void DumpTo(string file)
 		{

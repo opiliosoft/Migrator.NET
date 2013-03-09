@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+
 using Migrator.Framework;
 
 namespace Migrator.Providers
@@ -49,7 +51,13 @@ namespace Migrator.Providers
 		readonly Dictionary<DbType, SortedList<int, string>> weighted =
 			new Dictionary<DbType, SortedList<int, string>>();
 
-		/// <summary>
+	    public DbType GetDbType(string type)
+	    {
+	        type = type.Trim().ToLower();
+	        return defaults.Where(x => x.Value.Trim().ToLower().StartsWith(type)).Select(x => x.Key).FirstOrDefault();
+	    }
+
+	    /// <summary>
 		/// Get default type name for specified type
 		/// </summary>
 		/// <param name="typecode">the type key</param>

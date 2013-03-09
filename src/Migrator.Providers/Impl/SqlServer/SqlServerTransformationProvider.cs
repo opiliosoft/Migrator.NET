@@ -20,79 +20,6 @@ using Migrator.Framework;
 namespace Migrator.Providers.SqlServer
 {
     /// <summary>
-	/// Simple mapping
-	/// </summary>
-	public class SqlServerDataTypes
-	{
-	    /// <summary>
-	    /// http://msdn.microsoft.com/en-us/library/cc716729.aspx
-	    /// </summary>
-	    private static readonly object[][] Mapping = new[]
-	                                                         {
-	                                                             new object[] {"uniqueidentifier", typeof (Guid), DbType.Guid},
-	                                                             new object[] {"int", typeof (Int32), DbType.Int32},
-	                                                             new object[] {"float", typeof (double), DbType.Double},
-	                                                             new object[] {"smallint", typeof (Int16), DbType.Int16},
-	                                                             new object[] {"tinyint", typeof (Byte), DbType.Byte},
-	                                                             new object[] {"decimal", typeof (Decimal), DbType.Decimal},
-	                                                             new object[] {"numeric", typeof (Decimal), DbType.Decimal},
-	                                                             new object[] {"real", typeof (Single), DbType.Single},
-	                                                             new object[] {"bigint", typeof (Int64), DbType.Int64},
-	                                                             new object[] {"bit", typeof (Boolean), DbType.Boolean},
-	                                                             new object[] {"nvarchar", typeof (String), DbType.String},
-	                                                             new object[] {"varchar", typeof (String), DbType.AnsiString},
-	                                                             new object[] {"nchar", typeof (String), DbType.StringFixedLength},
-	                                                             new object[] {"ntext", typeof (String), DbType.String},
-	                                                             new object[] {"text", typeof (String), DbType.AnsiString},
-	                                                             new object[] {"char", typeof (String), DbType.StringFixedLength},//Or ansistring fixed length
-	                                                             new object[] {"datetime", typeof (DateTime), DbType.DateTime},
-	                                                             new object[] {"datetime2", typeof (DateTime), DbType.DateTime2},
-	                                                             new object[] {"smalldatetime", typeof (DateTime), DbType.DateTime},
-	                                                             new object[] {"rowversion", typeof (Byte[]), DbType.Binary},
-	                                                             new object[] {"timestamp", typeof (Byte[]), DbType.Binary},
-	                                                             new object[] {"xml", typeof (System.Xml.XmlElement), DbType.Xml},
-	                                                         };
-
-
-	    private readonly Dictionary<string, Type> _mappingDictionary;
-	    private readonly Dictionary<string, DbType> _mappingDbTypeDictionary;
-
-	    public SqlServerDataTypes()
-	    {
-	        _mappingDictionary = new Dictionary<string, Type>(Mapping.Length);
-	        _mappingDbTypeDictionary = new Dictionary<string, DbType>(Mapping.Length);
-	        for (int i = 0; i < Mapping.Length; i++)
-	        {
-	            _mappingDictionary.Add((string)Mapping[i][0], (Type)Mapping[i][1]);
-	            _mappingDbTypeDictionary.Add((string)Mapping[i][0], (DbType)Mapping[i][2]);
-	        }
-	    }
-
-	    public Type GetDataType(string columnType)
-	    {
-	        if (!_mappingDictionary.ContainsKey(columnType))
-	            throw new Exception(string.Format("Well, couldnt find the right type:{0}",
-	                                              columnType));
-	        return _mappingDictionary[columnType];
-	    }
-
-	    public Type GetDataTypeNullable(string columnType)
-	    {
-	        if (!_mappingDictionary.ContainsKey(columnType))
-	            return null;
-	        return _mappingDictionary[columnType];
-	    }
-
-
-	    public DbType GetDbType(string columnType)
-	    {
-	        if (!_mappingDbTypeDictionary.ContainsKey(columnType))
-	            throw new Exception(string.Format("Well, couldnt find the right type:{0}",
-	                                              columnType));
-	        return _mappingDbTypeDictionary[columnType];
-	    }
-	}
-    /// <summary>
     /// Migration transformations provider for Microsoft SQL Server.
     /// </summary>
     public class SqlServerTransformationProvider : TransformationProvider
@@ -167,6 +94,38 @@ namespace Migrator.Providers.SqlServer
         {
 				return reader.Read();
 			}
+        }
+
+        public override Column[] GetColumns(string table)
+        {
+            var columns = new List<Column>();
+            using (
+                IDataReader reader =
+                    ExecuteQuery(
+                        String.Format("select COLUMN_NAME, IS_NULLABLE, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH from INFORMATION_SCHEMA.COLUMNS where table_name = '{0}'", table)))
+            {
+                while (reader.Read())
+                {
+                    var column = new Column(reader.GetString(0), DbType.String);
+                    string nullableStr = reader.GetString(1);
+                    bool isNullable = nullableStr == "YES";
+                    if (!reader.IsDBNull(2))
+                    {
+                        string type = reader.GetString(2);
+                        column.Type = Dialect.GetDbTypeFromString(type);
+                    }
+                    if (!reader.IsDBNull(3))
+                    {
+                        column.Size = reader.GetInt32(3);
+                    }
+
+                    column.ColumnProperty |= isNullable ? ColumnProperty.Null : ColumnProperty.NotNull;
+
+                    columns.Add(column);
+                }
+            }
+
+            return columns.ToArray();
         }
 
         public override List<string> GetDatabases()

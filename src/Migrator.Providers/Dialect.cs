@@ -130,7 +130,12 @@ namespace Migrator.Providers
 			return new ColumnPropertiesMapper(this, type);
 		}
 
-		/// <summary>
+        public virtual DbType GetDbTypeFromString(string type)
+        {
+            return typeNames.GetDbType(type);            
+        }
+
+        /// <summary>
 		/// Get the name of the database type associated with the given 
 		/// </summary>
 		/// <param name="type">The DbType</param>
