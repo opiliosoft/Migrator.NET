@@ -46,9 +46,9 @@ namespace Migrator.Tools
 				{
                     if (column.Size>0 && column.DefaultValue!=null)
 				        columnLines.Add(string.Format("\t\t\tnew Column(\"{0}\", DbType.{1}, {2}, {3}, \"{4}\")", column.Name, column.Type, column.Size, getColumnPropertyString(column.ColumnProperty), column.DefaultValue));
-                    if (column.Size > 0)
+                    else if (column.Size > 0)
                         columnLines.Add(string.Format("\t\t\tnew Column(\"{0}\", DbType.{1}, {2}, {3})", column.Name, column.Type, column.Size, getColumnPropertyString(column.ColumnProperty)));
-                    if (column.DefaultValue != null)
+                    else if (column.DefaultValue != null)
                         columnLines.Add(string.Format("\t\t\tnew Column(\"{0}\", DbType.{1}, {2}, \"{3}\")", column.Name, column.Type, getColumnPropertyString(column.ColumnProperty), column.DefaultValue));                    
                     else
                         columnLines.Add(string.Format("\t\t\tnew Column(\"{0}\", DbType.{1}, {2})", column.Name, column.Type, getColumnPropertyString(column.ColumnProperty)));
