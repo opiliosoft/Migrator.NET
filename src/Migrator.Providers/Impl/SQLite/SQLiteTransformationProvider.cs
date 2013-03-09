@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using Migrator.Framework;
-using ForeignKeyConstraint = Migrator.Framework.ForeignKeyConstraint;
+using ForeignKeyConstraintType = Migrator.Framework.ForeignKeyConstraintType;
 using SqliteConnection = System.Data.SQLite.SQLiteConnection;
 
 #else
@@ -14,8 +14,6 @@ using System.Data.SQLite;
 using Migrator.Framework;
 
 using Mono.Data.Sqlite;
-
-using ForeignKeyConstraint = Migrator.Framework.ForeignKeyConstraint;
 
 #endif
 
@@ -35,7 +33,7 @@ namespace Migrator.Providers.SQLite
 		}
 
 		public override void AddForeignKey(string name, string primaryTable, string[] primaryColumns, string refTable,
-		                                   string[] refColumns, ForeignKeyConstraint constraint)
+		                                   string[] refColumns, ForeignKeyConstraintType constraint)
 		{
 			// NOOP Because SQLite doesn't support foreign keys
 		}

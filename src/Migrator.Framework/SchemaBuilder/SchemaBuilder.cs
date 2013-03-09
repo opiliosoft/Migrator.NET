@@ -102,7 +102,7 @@ namespace Migrator.Framework.SchemaBuilder
 
 		public SchemaBuilder ReferencedTo(string primaryKeyTable, string primaryKeyColumn)
 		{
-			_currentColumn.Constraint = ForeignKeyConstraint.NoAction;
+			_currentColumn.Constraint = ForeignKeyConstraintType.NoAction;
 			_currentColumn.ForeignKey = new ForeignKey(primaryKeyTable, primaryKeyColumn);
 			return this;
 		}
@@ -159,7 +159,7 @@ namespace Migrator.Framework.SchemaBuilder
 			return this;
 		}
 
-		public SchemaBuilder WithConstraint(ForeignKeyConstraint action)
+		public SchemaBuilder WithConstraint(ForeignKeyConstraintType action)
 		{
 			_currentColumn.Constraint = action;
 

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using Migrator.Framework;
 using Oracle.DataAccess.Client;
-using ForeignKeyConstraint = Migrator.Framework.ForeignKeyConstraint;
 
 namespace Migrator.Providers.Oracle
 {
@@ -22,7 +21,7 @@ namespace Migrator.Providers.Oracle
 		}
 
 		public override void AddForeignKey(string name, string primaryTable, string[] primaryColumns, string refTable,
-		                                   string[] refColumns, ForeignKeyConstraint constraint)
+		                                   string[] refColumns, ForeignKeyConstraintType constraint)
 		{
 			GuardAgainstMaximumIdentifierLengthForOracle(name);
 

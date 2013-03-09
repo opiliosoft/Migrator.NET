@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using Migrator.Framework;
 using Migrator.Framework.SchemaBuilder;
+
 using ForeignKeyConstraint = Migrator.Framework.ForeignKeyConstraint;
 
 namespace Migrator.Providers
@@ -39,7 +40,12 @@ namespace Migrator.Providers
 			return null;
 		}
 
-		public int Insert(string table, string[] columns, object[] values)
+	    public ForeignKeyConstraint[] GetForeignKeyConstraints(string table)
+	    {
+	        return null;
+	    }
+
+	    public int Insert(string table, string[] columns, object[] values)
 		{
 			return 0;
 		}
@@ -149,13 +155,13 @@ namespace Migrator.Providers
 			// No Op
 		}
 
-		public void GenerateForeignKey(string primaryTable, string primaryColumn, string refTable, string refColumn, ForeignKeyConstraint constraint)
+		public void GenerateForeignKey(string primaryTable, string primaryColumn, string refTable, string refColumn, ForeignKeyConstraintType constraint)
 		{
 			// No Op
 		}
 
 		public void GenerateForeignKey(string primaryTable, string[] primaryColumns, string refTable,
-		                               string[] refColumns, ForeignKeyConstraint constraint)
+		                               string[] refColumns, ForeignKeyConstraintType constraint)
 		{
 			// No Op
 		}
@@ -171,13 +177,13 @@ namespace Migrator.Providers
 			// No Op
 		}
 
-		public void AddForeignKey(string name, string primaryTable, string primaryColumn, string refTable, string refColumn, ForeignKeyConstraint constraint)
+		public void AddForeignKey(string name, string primaryTable, string primaryColumn, string refTable, string refColumn, ForeignKeyConstraintType constraint)
 		{
 			// No Op
 		}
 
 		public void AddForeignKey(string name, string primaryTable, string[] primaryColumns, string refTable,
-		                          string[] refColumns, ForeignKeyConstraint constraint)
+		                          string[] refColumns, ForeignKeyConstraintType constraint)
 		{
 			// No Op
 		}
@@ -317,7 +323,7 @@ namespace Migrator.Providers
 			// No Op
 		}
 
-		public void GenerateForeignKey(string primaryTable, string refTable, ForeignKeyConstraint constraint)
+		public void GenerateForeignKey(string primaryTable, string refTable, ForeignKeyConstraintType constraint)
 		{
 			// No Op
 		}

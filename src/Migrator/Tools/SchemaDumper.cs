@@ -58,6 +58,21 @@ namespace Migrator.Tools
                 writer.WriteLine("");
 			}
 
+            writer.WriteLine("");
+            writer.WriteLine("");
+
+            foreach (string table in _provider.GetTables())
+            {
+                foreach (var constraint in _provider.GetForeignKeyConstraints(table))
+                {
+                    writer.WriteLine("\t\tDatabase.AddForeignKey(\"{0}\", \"{1}\", \"{2}\", \"{3}\", \"{4}\");", constraint.Name, constraint.Table, constraint.Column, constraint.PkTable, constraint.PkColumn);
+                    writer.WriteLine("");
+                }                                                                
+            }
+
+            writer.WriteLine("");
+            writer.WriteLine("");
+
 			writer.WriteLine("\t}\n");
 			writer.WriteLine("\tpublic override void Down()");
 			writer.WriteLine("\t{");

@@ -65,12 +65,13 @@
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="ForeignKeyConstraint.cs" />
     <Compile Include="Maximums.cs" />
     <Compile Include="JoiningTableTransformationProviderExtensions.cs" />
     <Compile Include="DataRecordExtensions.cs" />
     <Compile Include="Column.cs" />
     <Compile Include="ColumnProperty.cs" />
-    <Compile Include="ForeignKeyConstraint.cs" />
+    <Compile Include="ForeignKeyConstraintType.cs" />
     <Compile Include="IColumn.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="IMigration.cs" />

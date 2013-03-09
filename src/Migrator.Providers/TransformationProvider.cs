@@ -19,6 +19,7 @@ using System.Text;
 using Migrator.Framework;
 using Migrator.Framework.Loggers;
 using Migrator.Framework.SchemaBuilder;
+using ForeignKeyConstraintType = Migrator.Framework.ForeignKeyConstraintType;
 using ForeignKeyConstraint = Migrator.Framework.ForeignKeyConstraint;
 
 namespace Migrator.Providers
@@ -108,6 +109,30 @@ namespace Migrator.Providers
             }
 
             return columns.ToArray();
+        }
+
+        public ForeignKeyConstraint[] GetForeignKeyConstraints(string table)
+        {
+            var constraints = new List<ForeignKeyConstraint>();
+            using (
+                IDataReader reader =
+                    ExecuteQuery(
+                        String.Format("SELECT K_Table = FK.TABLE_NAME, FK_Column = CU.COLUMN_NAME, PK_Table = PK.TABLE_NAME, PK_Column = PT.COLUMN_NAME, Constraint_Name = C.CONSTRAINT_NAME FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS C INNER JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS FK ON C.CONSTRAINT_NAME = FK.CONSTRAINT_NAME INNER JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS PK ON C.UNIQUE_CONSTRAINT_NAME = PK.CONSTRAINT_NAME INNER JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE CU ON C.CONSTRAINT_NAME = CU.CONSTRAINT_NAME INNER JOIN ( SELECT i1.TABLE_NAME, i2.COLUMN_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS i1 INNER JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE i2 ON i1.CONSTRAINT_NAME = i2.CONSTRAINT_NAME WHERE i1.CONSTRAINT_TYPE = 'PRIMARY KEY' ) PT ON PT.TABLE_NAME = PK.TABLE_NAME  WHERE FK.table_name = '{0}'", table)))
+            {
+                while (reader.Read())
+                {
+                    var constraint = new ForeignKeyConstraint();
+                    constraint.Name = reader.GetString(4);
+                    constraint.Table = reader.GetString(0);
+                    constraint.Column = reader.GetString(1);
+                    constraint.PkTable = reader.GetString(2);
+                    constraint.PkColumn = reader.GetString(3);
+
+                    constraints.Add(constraint);
+                }
+            }
+
+            return constraints.ToArray();
         }
 
         public virtual string[] GetConstraints(string table)
@@ -478,7 +503,7 @@ namespace Migrator.Providers
         /// Guesses the name of the foreign key and add it
         /// </summary>
         public virtual void GenerateForeignKey(string primaryTable, string primaryColumn, string refTable,
-                                               string refColumn, ForeignKeyConstraint constraint)
+                                               string refColumn, ForeignKeyConstraintType constraint)
         {
             AddForeignKey("FK_" + primaryTable + "_" + refTable, primaryTable, primaryColumn, refTable, refColumn,
                           constraint);
@@ -489,7 +514,7 @@ namespace Migrator.Providers
 		/// </see>
         /// </summary>
         public virtual void GenerateForeignKey(string primaryTable, string[] primaryColumns, string refTable,
-                                               string[] refColumns, ForeignKeyConstraint constraint)
+                                               string[] refColumns, ForeignKeyConstraintType constraint)
         {
             AddForeignKey("FK_" + primaryTable + "_" + refTable, primaryTable, primaryColumns, refTable, refColumns,
                           constraint);
@@ -524,17 +549,17 @@ namespace Migrator.Providers
         /// </summary>
         public virtual void AddForeignKey(string name, string primaryTable, string[] primaryColumns, string refTable, string[] refColumns)
         {
-            AddForeignKey(name, primaryTable, primaryColumns, refTable, refColumns, ForeignKeyConstraint.NoAction);
+            AddForeignKey(name, primaryTable, primaryColumns, refTable, refColumns, ForeignKeyConstraintType.NoAction);
         }
 
-        public virtual void AddForeignKey(string name, string primaryTable, string primaryColumn, string refTable, string refColumn, ForeignKeyConstraint constraint)
+        public virtual void AddForeignKey(string name, string primaryTable, string primaryColumn, string refTable, string refColumn, ForeignKeyConstraintType constraint)
         {
             AddForeignKey(name, primaryTable, new[] { primaryColumn }, refTable, new[] { refColumn },
                           constraint);
         }
 
         public virtual void AddForeignKey(string name, string primaryTable, string[] primaryColumns, string refTable,
-                                          string[] refColumns, ForeignKeyConstraint constraint)
+                                          string[] refColumns, ForeignKeyConstraintType constraint)
         {
             if (ConstraintExists(primaryTable, name))
             {
@@ -881,10 +906,10 @@ namespace Migrator.Providers
 
         public virtual void GenerateForeignKey(string primaryTable, string refTable)
         {
-            GenerateForeignKey(primaryTable, refTable, ForeignKeyConstraint.NoAction);
+            GenerateForeignKey(primaryTable, refTable, ForeignKeyConstraintType.NoAction);
         }
 
-        public virtual void GenerateForeignKey(string primaryTable, string refTable, ForeignKeyConstraint constraint)
+        public virtual void GenerateForeignKey(string primaryTable, string refTable, ForeignKeyConstraintType constraint)
         {
             GenerateForeignKey(primaryTable, refTable + "Id", refTable, "Id", constraint);
         }

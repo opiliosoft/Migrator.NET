@@ -49,10 +49,10 @@ namespace Migrator.Framework
 			string rhsTableNameWithSchema = TransformationProviderUtility.FormatTableName(schema, rhsTableName);
 
 			string lhsFkName = TransformationProviderUtility.CreateForeignKeyName(lhsTableName, joiningTableName);
-			database.AddForeignKey(lhsFkName, joiningTableWithSchema, joinLhsKey, lhsTableNameWithSchema, lhsKey, ForeignKeyConstraint.NoAction);
+			database.AddForeignKey(lhsFkName, joiningTableWithSchema, joinLhsKey, lhsTableNameWithSchema, lhsKey, ForeignKeyConstraintType.NoAction);
 
 			string rhsFkName = TransformationProviderUtility.CreateForeignKeyName(rhsTableName, joiningTableName);
-			database.AddForeignKey(rhsFkName, joiningTableWithSchema, joinRhsKey, rhsTableNameWithSchema, rhsKey, ForeignKeyConstraint.NoAction);
+			database.AddForeignKey(rhsFkName, joiningTableWithSchema, joinRhsKey, rhsTableNameWithSchema, rhsKey, ForeignKeyConstraintType.NoAction);
 
 			return database;
 		}
