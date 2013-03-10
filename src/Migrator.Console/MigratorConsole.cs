@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Migrator.Framework;
+using Migrator.Providers;
 using Migrator.Tools;
 
 namespace Migrator.MigratorConsole
@@ -32,7 +33,7 @@ namespace Migrator.MigratorConsole
 		bool _list;
 		long _migrateTo = -1;
 		string _migrationsAssembly;
-		string _provider;
+        ProviderTypes _provider;
 		bool _trace;
 		string _defaultSchema;
 
@@ -201,7 +202,7 @@ namespace Migrator.MigratorConsole
 				}
 				else
 				{
-					if (i == 0) _provider = argv[i];
+					if (i == 0) _provider = (ProviderTypes)Enum.Parse(typeof(ProviderTypes), argv[i]);
 					if (i == 1) _connectionString = argv[i];
 					if (i == 2) _migrationsAssembly = argv[i];
 				}

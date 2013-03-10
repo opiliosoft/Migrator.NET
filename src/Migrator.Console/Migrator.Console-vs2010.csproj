@@ -67,6 +67,10 @@
     <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Migrator.Providers\Migrator.Providers-vs2010.csproj">
+      <Project>{d58c68e4-d789-40f7-9078-c9f587d4363c}</Project>
+      <Name>Migrator.Providers-vs2010</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Migrator\Migrator-vs2008.csproj">
       <Project>{1FEE70A4-AAD7-4C60-BE60-3F7DC03A8C4D}</Project>
       <Name>Migrator-vs2008</Name>

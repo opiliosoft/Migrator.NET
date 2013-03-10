@@ -117,6 +117,8 @@
     <Compile Include="Impl\Mysql\MySqlTransformationProvider.cs" />
     <Compile Include="Impl\Oracle\OracleColumnPropertiesMapper.cs" />
     <Compile Include="Impl\PostgreSQL\PostgreSQL82Dialect.cs" />
+    <Compile Include="Impl\SQLite\SQLiteMonoDialect.cs" />
+    <Compile Include="Impl\SQLite\SQLiteMonoTransformationProvider.cs" />
     <Compile Include="Impl\SqlServer\SqlServer2005Dialect.cs" />
     <Compile Include="Impl\SqlServer\SqlServerCeDialect.cs" />
     <Compile Include="Impl\SqlServer\SqlServerCeTransformationProvider.cs" />

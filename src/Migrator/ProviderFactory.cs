@@ -16,6 +16,11 @@ using System.Collections.Generic;
 using System.Reflection;
 using Migrator.Framework;
 using Migrator.Providers;
+using Migrator.Providers.Mysql;
+using Migrator.Providers.Oracle;
+using Migrator.Providers.PostgreSQL;
+using Migrator.Providers.SQLite;
+using Migrator.Providers.SqlServer;
 
 namespace Migrator
 {
@@ -24,50 +29,41 @@ namespace Migrator
 	/// </summary>
 	public class ProviderFactory
 	{
-		static readonly Dictionary<string, Dialect> dialects = new Dictionary<string, Dialect>();
-		static readonly Assembly providerAssembly;
-
 		static ProviderFactory()
-		{
-			providerAssembly = Assembly.GetAssembly(typeof (TransformationProvider));
-			LoadDialects();
-		}
-
-        public static ITransformationProvider Create(string providerName, string connectionString, string defaultSchema, string scope = "default")
-		{
-			Dialect dialectInstance = DialectForProvider(providerName);
-
-			return dialectInstance.NewProviderForDialect(connectionString, defaultSchema, scope);
-		}
+		{ }       
 
         public static ITransformationProvider Create(ProviderTypes providerType, string connectionString, string defaultSchema, string scope = "default")
         {
-            return Create(providerType.ToString(), connectionString, defaultSchema, scope);
+            Dialect dialectInstance = DialectForProvider(providerType);
+
+            return dialectInstance.NewProviderForDialect(connectionString, defaultSchema, scope);            
         }
+      
+        public static Dialect DialectForProvider(ProviderTypes providerType)
+        {
+            switch (providerType)
+            {
+                case ProviderTypes.SQLite:
+                    return (Dialect)Activator.CreateInstance(typeof(SQLiteDialect));
+                case ProviderTypes.MonoSQLite:
+                    return (Dialect)Activator.CreateInstance(typeof(SQLiteMonoDialect));
+                case ProviderTypes.Mysql:
+                    return (Dialect)Activator.CreateInstance(typeof(MysqlDialect));
+                case ProviderTypes.Oracle:
+                    return (Dialect)Activator.CreateInstance(typeof(OracleDialect));
+                case ProviderTypes.PostgreSQL:
+                    return (Dialect)Activator.CreateInstance(typeof(PostgreSQLDialect));
+                case ProviderTypes.PostgreSQL82:
+                    return (Dialect)Activator.CreateInstance(typeof(PostgreSQL82Dialect));
+                case ProviderTypes.SqlServer:
+                    return (Dialect)Activator.CreateInstance(typeof(SqlServerDialect));
+                case ProviderTypes.SqlServer2005:
+                    return (Dialect)Activator.CreateInstance(typeof(SqlServer2005Dialect));
+                case ProviderTypes.SqlServerCe:
+                    return (Dialect)Activator.CreateInstance(typeof(SqlServerCeDialect));
+            }
 
-		public static Dialect DialectForProvider(string providerName)
-		{
-			if (String.IsNullOrEmpty(providerName))
-				return null;
-
-			foreach (string key in dialects.Keys)
-			{
-				if (key.IndexOf(providerName, StringComparison.InvariantCultureIgnoreCase) >= 0)
-					return dialects[key];
-			}
-			return null;
-		}
-
-		public static void LoadDialects()
-		{
-			Type dialectType = typeof (Dialect);
-			foreach (Type t in providerAssembly.GetTypes())
-			{
-				if (t.IsSubclassOf(dialectType))
-				{
-					dialects.Add(t.FullName, (Dialect) Activator.CreateInstance(t, null));
-				}
-			}
-		}        
+            return null;
+        }              
 	}
 }

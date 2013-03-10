@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Migrator.Framework;
+using Migrator.Providers;
 
 namespace Migrator.Tools
 {
@@ -22,7 +23,7 @@ namespace Migrator.Tools
 	{
 	    private readonly ITransformationProvider _provider;
 
-		public SchemaDumper(string provider, string connectionString, string defaultSchema)
+		public SchemaDumper(ProviderTypes provider, string connectionString, string defaultSchema)
 		{
 			_provider = ProviderFactory.Create(provider, connectionString, defaultSchema);
 		}

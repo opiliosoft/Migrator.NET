@@ -13,6 +13,8 @@
 
 using System;
 using System.Configuration;
+
+using Migrator.Providers;
 using Migrator.Tools;
 using NUnit.Framework;
 
@@ -30,7 +32,7 @@ namespace Migrator.Tests.Tools
 			if (constr == null)
 				throw new ArgumentNullException("MySqlConnectionString", "No config file");
 
-			var dumper = new SchemaDumper("MySql", constr, null);
+            var dumper = new SchemaDumper(ProviderTypes.Mysql, constr, null);
 			string output = dumper.Dump();
 
 			Assert.IsNotNull(output);
@@ -48,7 +50,7 @@ namespace Migrator.Tests.Tools
             if (constr == null)
                 throw new ArgumentNullException("SqlServerConnectionString", "No config file");
 
-            SchemaDumper dumper = new SchemaDumper("SqlServer", constr, "");
+            SchemaDumper dumper = new SchemaDumper(ProviderTypes.SqlServer, constr, "");
             string output = dumper.Dump();
 
             Assert.IsNotNull(output);

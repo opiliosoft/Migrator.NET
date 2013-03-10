@@ -1,21 +1,9 @@
-#if DOTNET2
-using System;
-using System.Collections.Generic;
-using System.Data;
-using Migrator.Framework;
-using ForeignKeyConstraintType = Migrator.Framework.ForeignKeyConstraintType;
-using SqliteConnection = System.Data.SQLite.SQLiteConnection;
-
-#else
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
+
 using Migrator.Framework;
-
-using Mono.Data.Sqlite;
-
-#endif
 
 namespace Migrator.Providers.SQLite
 {
@@ -27,7 +15,7 @@ namespace Migrator.Providers.SQLite
         public SQLiteTransformationProvider(Dialect dialect, string connectionString, string scope = "default")
 			: base(dialect, connectionString, null, scope)
 		{
-			_connection = new SqliteConnection(_connectionString);
+            _connection = new SQLiteConnection(_connectionString);
 			_connection.ConnectionString = _connectionString;
 			_connection.Open();
 		}

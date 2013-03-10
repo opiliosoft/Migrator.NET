@@ -17,6 +17,8 @@ using System.Reflection;
 using Migrator.Compile;
 using Migrator.Framework.Loggers;
 using Migrator.NAnt.Loggers;
+using Migrator.Providers;
+
 using NAnt.Core;
 using NAnt.Core.Attributes;
 
@@ -46,7 +48,7 @@ namespace Migrator.NAnt
 		public string DefaultSchema { get; set; }
 
 		[TaskAttribute("provider", Required = true)]
-		public string Provider { set; get; }
+        public ProviderTypes Provider { set; get; }
 
 		[TaskAttribute("connectionstring", Required = true)]
 		public string ConnectionString { set; get; }

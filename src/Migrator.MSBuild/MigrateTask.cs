@@ -19,6 +19,7 @@ using Microsoft.Build.Utilities;
 using Migrator.Compile;
 using Migrator.Framework.Loggers;
 using Migrator.MSBuild.Logger;
+using Migrator.Providers;
 
 namespace Migrator.MSBuild
 {
@@ -53,7 +54,7 @@ namespace Migrator.MSBuild
 		long _to = -1; // To last revision
 
 		[Required]
-		public string Provider { set; get; }
+        public ProviderTypes Provider { set; get; }
 
 		public string DefaultSchema { get; set; }
 

@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Migrator.Framework;
 using Migrator.Framework.Loggers;
+using Migrator.Providers;
 
 namespace Migrator
 {
@@ -31,17 +32,17 @@ namespace Migrator
 		protected bool _dryrun;
 		ILogger _logger = new Logger(false);
 
-		public Migrator(string provider, string connectionString, string defaultSchema, Assembly migrationAssembly)
+        public Migrator(ProviderTypes provider, string connectionString, string defaultSchema, Assembly migrationAssembly)
 			: this(provider, connectionString, defaultSchema, migrationAssembly, false)
 		{
 		}
 
-		public Migrator(string provider, string connectionString, string defaultSchema, Assembly migrationAssembly, bool trace)
+        public Migrator(ProviderTypes provider, string connectionString, string defaultSchema, Assembly migrationAssembly, bool trace)
 			: this(ProviderFactory.Create(provider, connectionString, defaultSchema), migrationAssembly, trace)
 		{
 		}
 
-		public Migrator(string provider, string connectionString, string defaultSchema, Assembly migrationAssembly, bool trace, ILogger logger)
+        public Migrator(ProviderTypes provider, string connectionString, string defaultSchema, Assembly migrationAssembly, bool trace, ILogger logger)
 			: this(ProviderFactory.Create(provider, connectionString, defaultSchema), migrationAssembly, trace, logger)
 		{
 		}
