@@ -306,6 +306,8 @@ namespace Migrator.Framework
 		/// <returns>A single value that is returned.</returns>
 		object ExecuteScalar(string sql);
 
+	    Index[] GetIndexes(string table);
+
 		/// <summary>
 		/// Get the information about the columns in a table
 		/// </summary>
@@ -550,6 +552,8 @@ namespace Migrator.Framework
         /// </summary>
         /// <param name="databaseName">Name of the database to delete</param>
         void DropDatabases(string databaseName);
+
+	    void AddIndex(string table, Index index);
 
         /// <summary>
 		/// Add a multi-column index to a table

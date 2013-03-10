@@ -89,6 +89,11 @@ namespace Migrator.Providers
             }
         }
 
+        public virtual Index[] GetIndexes(string table)
+        {
+            return new Index[] { };
+        }
+
         public virtual Column[] GetColumns(string table)
         {
             var columns = new List<Column>();
@@ -1186,6 +1191,11 @@ namespace Migrator.Providers
 				ExecuteNonQuery(String.Format("DROP INDEX {0}", name));
 			}
 		}
+
+        public virtual void AddIndex(string table, Index index)
+        {
+            AddIndex(index.Name, table, index.KeyColumns);
+        }
 
         public virtual void AddIndex(string name, string table, params string[] columns)
 		{

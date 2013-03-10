@@ -65,6 +65,7 @@
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Index.cs" />
     <Compile Include="ForeignKeyConstraint.cs" />
     <Compile Include="Maximums.cs" />
     <Compile Include="JoiningTableTransformationProviderExtensions.cs" />

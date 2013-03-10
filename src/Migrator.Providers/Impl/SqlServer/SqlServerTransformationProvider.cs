@@ -51,6 +51,31 @@ namespace Migrator.Providers.SqlServer
             ExecuteNonQuery(string.Format("ALTER TABLE {0} ADD {1}", table, sqlColumn));
         }
 
+        public override void AddIndex(string table, Index index)
+        {
+            if (IndexExists(table, index.Name))
+            {
+                Logger.Warn("Index {0} already exists", index.Name);
+                return;
+            }
+
+            var name = QuoteConstraintNameIfRequired(index.Name);
+
+            table = QuoteTableNameIfRequired(table);
+
+            var columns = QuoteColumnNamesIfRequired(index.KeyColumns);
+
+            if (index.IncludeColumns != null && index.IncludeColumns.Length > 0)
+            {
+                var include = QuoteColumnNamesIfRequired(index.IncludeColumns);
+                ExecuteNonQuery(String.Format("CREATE {0}{1} INDEX {2} ON {3} ({4}) INCLUDE ({5})", (index.Unique ? "UNIQUE" : ""), (index.Clustered ? "CLUSTERED" : "NONCLUSTERED"), name, table, string.Join(", ", columns), string.Join(", ", include)));
+            }
+            else
+            {
+                ExecuteNonQuery(String.Format("CREATE {0}{1} INDEX {2} ON {3} ({4})", (index.Unique ? "UNIQUE" : ""), (index.Clustered ? "CLUSTERED" : "NONCLUSTERED"), name, table, string.Join(", ", columns)));
+            }
+        }
+
 		public override bool ColumnExists(string table, string column)
 		{
 			string schema;
@@ -94,6 +119,62 @@ namespace Migrator.Providers.SqlServer
         {
 				return reader.Read();
 			}
+        }
+
+        public override Index[] GetIndexes(string table)
+        {
+            var retVal = new List<Index>();
+
+            var sql = @"SELECT  Tab.[name] AS TableName,
+                        Ind.[name] AS IndexName,
+                        Ind.[type_desc] AS IndexType,
+                        Ind.[is_unique_constraint] AS IndexUnique,
+                        SUBSTRING(( SELECT  ',' + AC.name
+                    FROM    sys.[tables] AS T
+                            INNER JOIN sys.[indexes] I ON T.[object_id] = I.[object_id]
+                            INNER JOIN sys.[index_columns] IC ON I.[object_id] = IC.[object_id]
+                                                                 AND I.[index_id] = IC.[index_id]
+                            INNER JOIN sys.[all_columns] AC ON T.[object_id] = AC.[object_id]
+                                                               AND IC.[column_id] = AC.[column_id]
+                    WHERE   Ind.[object_id] = I.[object_id]
+                            AND Ind.index_id = I.index_id
+                            AND IC.is_included_column = 0
+                    ORDER BY IC.key_ordinal 
+                  FOR
+                    XML PATH('') ), 2, 8000) AS KeyCols,
+        SUBSTRING(( SELECT  ',' + AC.name
+                    FROM    sys.[tables] AS T
+                            INNER JOIN sys.[indexes] I ON T.[object_id] = I.[object_id]
+                            INNER JOIN sys.[index_columns] IC ON I.[object_id] = IC.[object_id]
+                                                                 AND I.[index_id] = IC.[index_id]
+                            INNER JOIN sys.[all_columns] AC ON T.[object_id] = AC.[object_id]
+                                                               AND IC.[column_id] = AC.[column_id]
+                    WHERE   Ind.[object_id] = I.[object_id]
+                            AND Ind.index_id = I.index_id
+                            AND IC.is_included_column = 1
+                    ORDER BY IC.key_ordinal 
+                  FOR
+                    XML PATH('') ), 2, 8000) AS IncludeCols
+FROM    sys.[indexes] Ind
+        INNER JOIN sys.[tables] AS Tab ON Tab.[object_id] = Ind.[object_id]
+        INNER JOIN sys.[schemas] AS Sch ON Sch.[schema_id] = Tab.[schema_id]
+        WHERE Ind.[name] NOT IN (SELECT CONSTRAINT_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS) AND Tab.[name] = '{0}'";
+
+            using (var reader=ExecuteQuery(string.Format(sql, table)))
+            {
+                while (reader.Read())
+                {
+                    var idx = new Index();
+                    idx.Name = reader.GetString(1);
+                    idx.Clustered = reader.GetString(2) == "CLUSTERED";
+                    idx.Unique = reader.GetBoolean(3);
+                    if (!reader.IsDBNull(4)) idx.KeyColumns = (reader.GetString(4).Split(','));
+                    if (!reader.IsDBNull(5)) idx.IncludeColumns = (reader.GetString(5).Split(','));
+                    retVal.Add(idx);
+                }
+            }
+
+            return retVal.ToArray();
         }
 
         public override Column[] GetColumns(string table)

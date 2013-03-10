@@ -50,7 +50,12 @@ namespace Migrator.Providers
 			return 0;
 		}
 
-		public Column[] GetColumns(string table)
+	    public Index[] GetIndexes(string table)
+	    {
+	        return null;
+	    }
+
+	    public Column[] GetColumns(string table)
 		{
 			return null;
 		}
@@ -379,6 +384,11 @@ namespace Migrator.Providers
 	    }
 
 	    public void DropDatabases(string databaseName)
+	    {
+	        
+	    }
+
+	    public void AddIndex(string table, Index index)
 	    {
 	        
 	    }
