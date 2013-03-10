@@ -25,6 +25,7 @@ namespace Migrator.Providers.SQLite
 			RegisterColumnType(DbType.AnsiStringFixedLength, "TEXT");
 			RegisterColumnType(DbType.StringFixedLength, "TEXT");
 			RegisterColumnType(DbType.DateTime, "DATETIME");
+            RegisterColumnType(DbType.Date, "DATETIME");
 			RegisterColumnType(DbType.Time, "DATETIME");
 			RegisterColumnType(DbType.Boolean, "INTEGER");
 			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");

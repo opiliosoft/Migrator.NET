@@ -208,6 +208,11 @@ namespace Migrator.Providers
             {
                 defaultValue = "''";
             }
+            else if (defaultValue is String)
+            {
+                if (!defaultValue.ToString().StartsWith("'")) 
+                    defaultValue = "'" + defaultValue + "'";
+            }
 
 			return String.Format("DEFAULT {0}", defaultValue);
 		}

@@ -238,5 +238,45 @@ namespace Migrator.Providers.SQLite
 				return reader.Read();
 			}
 		}
+
+        public override void AddTable(string name, string engine, params Column[] columns)
+        {
+            if (TableExists(name))
+            {
+                Logger.Warn("Table {0} already exists", name);
+                return;
+            }
+
+            List<string> pks = GetPrimaryKeys(columns);
+            bool compoundPrimaryKey = pks.Count > 1;
+
+            var columnProviders = new List<ColumnPropertiesMapper>(columns.Length);
+            foreach (Column column in columns)
+            {
+                // Remove the primary key notation if compound primary key because we'll add it back later
+                if (compoundPrimaryKey && column.IsPrimaryKey)
+                {
+                    column.ColumnProperty = column.ColumnProperty ^ ColumnProperty.PrimaryKey;
+                    column.ColumnProperty = column.ColumnProperty | ColumnProperty.NotNull; // PK is always not-null
+                }
+
+                ColumnPropertiesMapper mapper = _dialect.GetAndMapColumnProperties(column);
+                columnProviders.Add(mapper);
+            }
+
+            string columnsAndIndexes = JoinColumnsAndIndexes(columnProviders);
+            
+            var table = _dialect.TableNameNeedsQuote ? _dialect.Quote(name) : name;
+            string sqlCreate;
+            if (compoundPrimaryKey)
+            {
+                sqlCreate = String.Format("CREATE TABLE {0} ({1}, {2})", table, columnsAndIndexes, String.Format(" PRIMARY KEY ({0}) ", String.Join(",", pks.ToArray())));                
+            }
+            else
+            {
+                sqlCreate = String.Format("CREATE TABLE {0} ({1})", table, columnsAndIndexes);
+            }
+            ExecuteNonQuery(sqlCreate);            
+        }
 	}
 }
