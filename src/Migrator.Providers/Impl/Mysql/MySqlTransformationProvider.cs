@@ -8,7 +8,7 @@ namespace Migrator.Providers.Mysql
 {
     /// <summary>
     /// MySql transformation provider
-    /// </summary>
+    /// </summary>    
     public class MySqlTransformationProvider : TransformationProvider
     {
         public MySqlTransformationProvider(Dialect dialect, string connectionString, string scope="default")

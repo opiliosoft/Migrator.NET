@@ -129,6 +129,7 @@
     <Compile Include="Impl\SQLite\SQLiteTransformationProvider.cs" />
     <Compile Include="Impl\SqlServer\SqlServerDialect.cs" />
     <Compile Include="Impl\SqlServer\SqlServerTransformationProvider.cs" />
+    <Compile Include="ProviderTypes.cs" />
     <Compile Include="TransformationProvider.cs" />
     <Compile Include="TypeNames.cs" />
     <Compile Include="Utility\MySqlServerUtility.cs" />

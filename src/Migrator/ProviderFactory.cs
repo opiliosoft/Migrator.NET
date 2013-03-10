@@ -40,6 +40,11 @@ namespace Migrator
 			return dialectInstance.NewProviderForDialect(connectionString, defaultSchema, scope);
 		}
 
+        public static ITransformationProvider Create(ProviderTypes providerType, string connectionString, string defaultSchema, string scope = "default")
+        {
+            return Create(providerType.ToString(), connectionString, defaultSchema, scope);
+        }
+
 		public static Dialect DialectForProvider(string providerName)
 		{
 			if (String.IsNullOrEmpty(providerName))
@@ -63,6 +68,6 @@ namespace Migrator
 					dialects.Add(t.FullName, (Dialect) Activator.CreateInstance(t, null));
 				}
 			}
-		}
+		}        
 	}
 }

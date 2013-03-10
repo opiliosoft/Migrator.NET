@@ -22,7 +22,7 @@ namespace Migrator.Providers.SQLite
 	/// <summary>
 	/// Summary description for SQLiteTransformationProvider.
 	/// </summary>
-	public class SQLiteTransformationProvider : TransformationProvider
+    public class SQLiteTransformationProvider : TransformationProvider
 	{
         public SQLiteTransformationProvider(Dialect dialect, string connectionString, string scope = "default")
 			: base(dialect, connectionString, null, scope)
