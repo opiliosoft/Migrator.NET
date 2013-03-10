@@ -132,7 +132,15 @@ namespace Migrator.Providers.SqlServer
                     }
                     if (!reader.IsDBNull(4))
                     {
-                        column.DefaultValue = reader.GetValue(4);                        
+                        column.DefaultValue = reader.GetValue(4);
+
+                        column.DefaultValue = column.DefaultValue.ToString().Substring(2, column.DefaultValue.ToString().Length - 4);
+                        
+                        if (column.Type == DbType.Int16 || column.Type == DbType.Int32 || column.Type == DbType.Int64) 
+                            column.DefaultValue = Int64.Parse(column.DefaultValue.ToString());
+
+                        if (column.Type == DbType.UInt16 || column.Type == DbType.UInt32 || column.Type == DbType.UInt64)
+                            column.DefaultValue = UInt64.Parse(column.DefaultValue.ToString());
                     }
 
                     column.ColumnProperty |= isNullable ? ColumnProperty.Null : ColumnProperty.NotNull;
