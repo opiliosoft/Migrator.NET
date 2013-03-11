@@ -18,7 +18,7 @@ namespace Migrator.Framework
 	/// <summary>
 	/// Represents a table column.
 	/// </summary>
-	public class Column : IColumn
+    public class Column : IColumn, IDbField
 	{
 		public Column(string name)
 		{

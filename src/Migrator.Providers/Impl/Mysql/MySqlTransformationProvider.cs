@@ -128,7 +128,7 @@ namespace Migrator.Providers.Mysql
             ExecuteNonQuery(String.Format("ALTER TABLE {0} MODIFY {1}", table, sqlColumn));
         }
 
-        public override void AddTable(string name, params Column[] columns)
+        public override void AddTable(string name, params IDbField[] columns)
         {
             AddTable(name, "INNODB", columns);
         }

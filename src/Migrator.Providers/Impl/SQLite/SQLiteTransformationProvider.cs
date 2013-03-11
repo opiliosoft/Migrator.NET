@@ -2,8 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
+using System.Linq;
 
 using Migrator.Framework;
+
+using ForeignKeyConstraint = Migrator.Framework.ForeignKeyConstraint;
 
 namespace Migrator.Providers.SQLite
 {
@@ -239,13 +242,15 @@ namespace Migrator.Providers.SQLite
 			}
 		}
 
-        public override void AddTable(string name, string engine, params Column[] columns)
+        public override void AddTable(string name, string engine, params IDbField[] fields)
         {
             if (TableExists(name))
             {
                 Logger.Warn("Table {0} already exists", name);
                 return;
             }
+
+            var columns = fields.Where(x => x is Column).Cast<Column>().ToArray();
 
             List<string> pks = GetPrimaryKeys(columns);
             bool compoundPrimaryKey = pks.Count > 1;
@@ -268,15 +273,29 @@ namespace Migrator.Providers.SQLite
             
             var table = _dialect.TableNameNeedsQuote ? _dialect.Quote(name) : name;
             string sqlCreate;
+
+            sqlCreate = String.Format("CREATE TABLE {0} ({1}", table, columnsAndIndexes);
+            
             if (compoundPrimaryKey)
             {
-                sqlCreate = String.Format("CREATE TABLE {0} ({1}, {2})", table, columnsAndIndexes, String.Format(" PRIMARY KEY ({0}) ", String.Join(",", pks.ToArray())));                
+                sqlCreate += String.Format(", PRIMARY KEY ({0}) ", String.Join(",", pks.ToArray()));
             }
-            else
+
+            var foreignKeys = fields.Where(x => x is ForeignKeyConstraint).Cast<ForeignKeyConstraint>().ToArray();
+            foreach (var fk in foreignKeys)
             {
-                sqlCreate = String.Format("CREATE TABLE {0} ({1})", table, columnsAndIndexes);
+                sqlCreate += String.Format(", FOREIGN KEY ({0}) REFERENCES {1}({2})", String.Join(",", fk.Columns), fk.PkTable, String.Join(",", fk.PkColumns));
             }
-            ExecuteNonQuery(sqlCreate);            
+
+            sqlCreate += ")";
+
+            ExecuteNonQuery(sqlCreate);
+
+            var indexes = fields.Where(x => x is Index).Cast<Index>().ToArray();
+            foreach (var index in indexes)
+            {
+                AddIndex(name, index);
+            }
         }
 	}
 }

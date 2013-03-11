@@ -129,9 +129,9 @@ namespace Migrator.Providers
                     var constraint = new ForeignKeyConstraint();
                     constraint.Name = reader.GetString(4);
                     constraint.Table = reader.GetString(0);
-                    constraint.Column = reader.GetString(1);
+                    constraint.Columns = new[] { reader.GetString(1) };
                     constraint.PkTable = reader.GetString(2);
-                    constraint.PkColumn = reader.GetString(3);
+                    constraint.PkColumns = new[] { reader.GetString(3) };
 
                     constraints.Add(constraint);
                 }
@@ -213,7 +213,7 @@ namespace Migrator.Providers
         ///	                 );
         /// </code>
         /// </example>
-        public virtual void AddTable(string name, params Column[] columns)
+        public virtual void AddTable(string name, params IDbField[] columns)
         {
             // Most databases don't have the concept of a storage engine, so default is to not use it.
             AddTable(name, null, columns);
@@ -234,7 +234,7 @@ namespace Migrator.Providers
         ///	                 );
         /// </code>
         /// </example>
-        public virtual void AddTable(string name, string engine, params Column[] columns)
+        public virtual void AddTable(string name, string engine, params IDbField[] fields)
         {
             if (TableExists(name))
             {
@@ -242,10 +242,12 @@ namespace Migrator.Providers
                 return;
             }
 
+            var columns = fields.Where(x => x is Column).Cast<Column>().ToArray();
+
             List<string> pks = GetPrimaryKeys(columns);
             bool compoundPrimaryKey = pks.Count > 1;
 
-            var columnProviders = new List<ColumnPropertiesMapper>(columns.Length);
+            var columnProviders = new List<ColumnPropertiesMapper>(columns.Count());
             foreach (Column column in columns)
             {
                 // Remove the primary key notation if compound primary key because we'll add it back later
@@ -266,6 +268,18 @@ namespace Migrator.Providers
             {
                 AddPrimaryKey(String.Format("PK_{0}", name), name, pks.ToArray());
             }
+
+            var indexes = fields.Where(x => x is Index).Cast<Index>().ToArray();
+            foreach (var index in indexes)
+            {
+                AddIndex(name, index);    
+            }
+
+            var foreignKeys = fields.Where(x => x is ForeignKeyConstraint).Cast<ForeignKeyConstraint>().ToArray();
+            foreach (var foreignKey in foreignKeys)
+            {
+                this.AddForeignKey(name, foreignKey);
+            }                                   
         }
 
         public virtual void RemoveTable(string name)
@@ -525,28 +539,16 @@ namespace Migrator.Providers
                           constraint);
         }
 
-        /// <summary>
-        /// Append a foreign key (relation) between two tables.
-        /// tables.
-        /// </summary>
-        /// <param name="name">Constraint name</param>
-        /// <param name="primaryTable">Table name containing the primary key</param>
-        /// <param name="primaryColumn">Primary key column name</param>
-        /// <param name="refTable">Foreign table name</param>
-        /// <param name="refColumn">Foreign column name</param>
-        public virtual void AddForeignKey(string name, string primaryTable, string primaryColumn, string refTable,
-                                          string refColumn)
+        public virtual void AddForeignKey(string table, ForeignKeyConstraint fk)
         {
-            try
-            {
-                AddForeignKey(name, primaryTable, new[] { primaryColumn }, refTable, new[] { refColumn });
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(string.Format("Error occured while adding foreign key: \"{0}\" between table: \"{1}\" and table: \"{2}\" - see inner exception for details", name, primaryTable, refTable), ex);
-            }
+            AddForeignKey(fk.Name, table, fk.Columns, fk.PkTable, fk.PkColumns);            
         }
 
+        public virtual void AddForeignKey(string name, string primaryTable, string primaryColumn, string refTable, string refColumn)
+        {
+        }
+
+       
         /// <summary>
         /// <see cref="ITransformationProvider.AddForeignKey(string, string, string, string, string)">
         /// AddForeignKey(string, string, string, string, string)

@@ -75,12 +75,12 @@ namespace Migrator.Providers
 			// No Op
 		}
 
-		public void AddTable(string name, params Column[] columns)
+		public void AddTable(string name, params IDbField[] columns)
 		{
 			// No Op
 		}
 
-		public void AddTable(string name, string engine, params Column[] columns)
+		public void AddTable(string name, string engine, params IDbField[] columns)
 		{
 			// No Op
 		}

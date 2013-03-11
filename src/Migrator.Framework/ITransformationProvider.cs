@@ -232,7 +232,7 @@ namespace Migrator.Framework
 		/// </summary>
 		/// <param name="name">The name of the table to add.</param>
 		/// <param name="columns">The columns that are part of the table.</param>
-		void AddTable(string name, params Column[] columns);
+        void AddTable(string name, params IDbField[] columns);
 
 		/// <summary>
 		/// Add a table
@@ -240,7 +240,7 @@ namespace Migrator.Framework
 		/// <param name="name">The name of the table to add.</param>
 		/// <param name="engine">The name of the database engine to use. (MySQL)</param>
 		/// <param name="columns">The columns that are part of the table.</param>
-		void AddTable(string name, string engine, params Column[] columns);
+        void AddTable(string name, string engine, params IDbField[] columns);
 
 		/// <summary>
 		/// Start a transction

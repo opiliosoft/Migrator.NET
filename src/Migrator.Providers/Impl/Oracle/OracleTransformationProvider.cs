@@ -322,9 +322,11 @@ namespace Migrator.Providers.Oracle
 			}
 		}
 
-		public override void AddTable(string name, params Column[] columns)
+		public override void AddTable(string name, params IDbField[] fields)
 		{
 			GuardAgainstMaximumIdentifierLengthForOracle(name);
+
+            var columns = fields.Where(x => x is Column).Cast<Column>().ToArray();
 
 			GuardAgainstMaximumColumnNameLengthForOracle(name, columns);
 

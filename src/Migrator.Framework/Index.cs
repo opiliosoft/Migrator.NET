@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Migrator.Framework
 {
-    public class Index
+    public class Index : IDbField
     {
         public string Name { get; set; }
         public bool Unique { get; set; }

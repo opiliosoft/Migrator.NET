@@ -54,12 +54,16 @@ namespace Migrator.Tools
                     else
                         columnLines.Add(string.Format("\t\t\tnew Column(\"{0}\", DbType.{1}, {2})", column.Name, column.Type, getColumnPropertyString(column.ColumnProperty)));
 				}
+                foreach (var constraint in _provider.GetForeignKeyConstraints(table))
+                {
+                    columnLines.Add(string.Format("\t\t\tnew ForeignKeyConstraint(\"{0}\", \"{1}\", new[] {{\"{2}\"}}, \"{3}\", new[] {{\"{4}\"}})", constraint.Name, constraint.Table, string.Join("\",\"", constraint.Columns), constraint.PkTable, string.Join("\",\"", constraint.PkColumns)));                    
+                }
 				writer.WriteLine(string.Join(string.Format(",{0}", Environment.NewLine), columnLines.ToArray()));
 				writer.WriteLine("\t\t);");
                 
                 foreach (Index index in _provider.GetIndexes(table))
                 {
-                    writer.WriteLine(string.Format("\t\tDatabase.AddIndex(\"{0}\", new Index() {{ Name = \"{1}\", Unique = {2}, Clustered = {3}, KeyColumns = new[] {{\"{4}\"}}, IncludeColumns = new[] {{\"{5}\"}}) }};", table, index.Name, index.Unique.ToString(), index.Clustered.ToString(), string.Join("\",\"", index.KeyColumns), string.Join("\",\"", index.IncludeColumns)));
+                    writer.WriteLine(string.Format("\t\tDatabase.AddIndex(\"{0}\", new Index() {{ Name = \"{1}\", Unique = {2}, Clustered = {3}, KeyColumns = new[] {{\"{4}\"}}, IncludeColumns = new[] {{\"{5}\"}} }});", table, index.Name, index.Unique.ToString().ToLower(), index.Clustered.ToString().ToLower(), string.Join("\",\"", index.KeyColumns), string.Join("\",\"", index.IncludeColumns)));
                 }
 
                 writer.WriteLine("");
@@ -68,14 +72,14 @@ namespace Migrator.Tools
             writer.WriteLine("");
             writer.WriteLine("");
 
-            foreach (string table in _provider.GetTables())
+            /*foreach (string table in _provider.GetTables())
             {
                 foreach (var constraint in _provider.GetForeignKeyConstraints(table))
                 {
-                    writer.WriteLine("\t\tDatabase.AddForeignKey(\"{0}\", \"{1}\", \"{2}\", \"{3}\", \"{4}\");", constraint.Name, constraint.Table, constraint.Column, constraint.PkTable, constraint.PkColumn);
+                    writer.WriteLine("\t\tDatabase.AddForeignKey(\"{0}\", \"{1}\", new[] {{\"{2}\"}}, \"{3}\", new[] {{\"{4}\"}});", constraint.Name, constraint.Table, string.Join("\",\"", constraint.Columns), constraint.PkTable, string.Join("\",\"", constraint.PkColumns));
                     writer.WriteLine("");
                 }                                                                
-            }
+            }*/
 
             writer.WriteLine("");
             writer.WriteLine("");
