@@ -75,11 +75,6 @@ namespace Migrator.Providers.PostgreSQL
 			                 "WITHOUT", "WORK", "WRITE", "YEAR", "ZONE");
 		}
 
-		public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString)
-		{
-			return new PostgreSQLTransformationProvider(dialect, connectionString);
-		}
-
         public override bool TableNameNeedsQuote
         {
             get { return false; }
