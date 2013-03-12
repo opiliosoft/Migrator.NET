@@ -34,7 +34,8 @@ namespace Migrator.Providers.SqlServer
 			RegisterColumnType(DbType.StringFixedLength, "NCHAR(255)");
 			RegisterColumnType(DbType.StringFixedLength, 4000, "NCHAR($l)");
 			RegisterColumnType(DbType.String, "NVARCHAR(255)");
-			RegisterColumnType(DbType.String, 4000, "NVARCHAR($l)");
+            RegisterColumnType(DbType.String, int.MaxValue - 1, "NVARCHAR($l)");
+            RegisterColumnType(DbType.String, int.MaxValue, "NVARCHAR(max)");
 			RegisterColumnType(DbType.String, 1073741823, "NTEXT");
 			RegisterColumnType(DbType.Time, "DATETIME");
 
