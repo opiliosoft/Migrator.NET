@@ -16,6 +16,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using Migrator.Framework;
 using Migrator.Providers;
+using Migrator.Providers.Impl.DB2;
+using Migrator.Providers.Impl.Firebird;
+using Migrator.Providers.Impl.Informix;
 using Migrator.Providers.Mysql;
 using Migrator.Providers.Oracle;
 using Migrator.Providers.PostgreSQL;
@@ -70,6 +73,16 @@ namespace Migrator
                     return (Dialect)Activator.CreateInstance(typeof(SqlServer2005Dialect));
                 case ProviderTypes.SqlServerCe:
                     return (Dialect)Activator.CreateInstance(typeof(SqlServerCeDialect));
+                case ProviderTypes.MsOracle:
+                    return (Dialect)Activator.CreateInstance(typeof(MsOracleDialect));
+                case ProviderTypes.IBM_DB2:
+                    return (Dialect)Activator.CreateInstance(typeof(DB2Dialect));
+                case ProviderTypes.IBM_Informix:
+                    return (Dialect)Activator.CreateInstance(typeof(InformixDialect));
+                case ProviderTypes.Firebird:
+                    return (Dialect)Activator.CreateInstance(typeof(FirebirdDialect));
+                case ProviderTypes.Ingres:
+                    return (Dialect)Activator.CreateInstance(typeof(IngresDialect));
             }
 
             return null;

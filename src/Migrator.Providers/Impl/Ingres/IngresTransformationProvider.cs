@@ -7,12 +7,12 @@ namespace Migrator.Providers.Impl.DB2
     /// <summary>
     /// DB2 transformation provider
     /// </summary>
-    public class DB2TransformationProvider : TransformationProvider
+    public class IngresTransformationProvider : TransformationProvider
     {
-        public DB2TransformationProvider(Dialect dialect, string connectionString, string scope, string providerName)
+        public IngresTransformationProvider(Dialect dialect, string connectionString, string scope, string providerName)
             : base(dialect, connectionString, null, scope)
         {
-            if (string.IsNullOrEmpty(providerName)) providerName = "IBM.Data.DB2";
+            if (string.IsNullOrEmpty(providerName)) providerName = "Ingres.Client";
             var fac = DbProviderFactories.GetFactory(providerName);
             _connection = fac.CreateConnection(); // new DB2Connection(this._connectionString);
             this._connection.Open();

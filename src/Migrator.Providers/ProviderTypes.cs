@@ -16,6 +16,11 @@ namespace Migrator.Providers
         MonoSQLite,
         PostgreSQL82,
         PostgreSQL,
-        Oracle,        
+        Oracle, 
+        MsOracle,
+        IBM_DB2,
+        IBM_Informix,
+        Firebird,
+        Ingres,
     }
 }

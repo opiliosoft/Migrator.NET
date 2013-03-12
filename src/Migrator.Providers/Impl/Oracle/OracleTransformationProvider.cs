@@ -15,14 +15,19 @@ namespace Migrator.Providers.Oracle
         public OracleTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope, string providerName)
 			: base(dialect, connectionString, defaultSchema, scope)
 		{
+            this.CreateConnection(providerName);
+		}
+
+        protected virtual void CreateConnection(string providerName)
+        {
             if (string.IsNullOrEmpty(providerName)) providerName = "Oracle.DataAccess.Client";
             var fac = DbProviderFactories.GetFactory(providerName);
             _connection = fac.CreateConnection(); // new OracleConnection();
-			_connection.ConnectionString = _connectionString;
-			_connection.Open();
-		}
+            _connection.ConnectionString = _connectionString;
+            _connection.Open();
+        }
 
-		public override void AddForeignKey(string name, string primaryTable, string[] primaryColumns, string refTable,
+        public override void AddForeignKey(string name, string primaryTable, string[] primaryColumns, string refTable,
 		                                   string[] refColumns, ForeignKeyConstraintType constraint)
 		{
 			GuardAgainstMaximumIdentifierLengthForOracle(name);

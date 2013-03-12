@@ -82,6 +82,8 @@
     <Compile Include="ColumnPropertiesMapper.cs" />
     <Compile Include="Dialect.cs" />
     <Compile Include="ForeignKeyConstraintMapper.cs" />
+    <Compile Include="Impl\Ingres\IngresDialect.cs" />
+    <Compile Include="Impl\Ingres\IngresTransformationProvider.cs" />
     <Compile Include="Impl\DB2\DB2Dialect.cs" />
     <Compile Include="Impl\DB2\DB2TransformationProvider.cs" />
     <Compile Include="Impl\Firebird\FirebirdDialect.cs" />
@@ -90,6 +92,8 @@
     <Compile Include="Impl\Informix\InformixTransformationProvider.cs" />
     <Compile Include="Impl\Mysql\MysqlDialect.cs" />
     <Compile Include="Impl\Mysql\MySqlTransformationProvider.cs" />
+    <Compile Include="Impl\Oracle\MsOracleDialect.cs" />
+    <Compile Include="Impl\Oracle\MsOracleTransformationProvider.cs" />
     <Compile Include="Impl\Oracle\OracleColumnPropertiesMapper.cs" />
     <Compile Include="Impl\PostgreSQL\PostgreSQL82Dialect.cs" />
     <Compile Include="Impl\SQLite\SQLiteMonoDialect.cs" />
