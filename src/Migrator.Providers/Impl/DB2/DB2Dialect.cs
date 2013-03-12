@@ -60,9 +60,9 @@ namespace Migrator.Providers.Impl.DB2
 	   }
 
 		
-        public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope)
+        public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope, string providerName)
 		{
-            return new DB2TransformationProvider(dialect, connectionString, scope);
+            return new DB2TransformationProvider(dialect, connectionString, scope, providerName);
 		}		
 	}
 }

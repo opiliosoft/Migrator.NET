@@ -67,9 +67,9 @@ namespace Migrator.Providers.Mysql
 			get { return "`{0}`"; }
 		}
 
-        public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope)
+        public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope, string providerName)
 		{
-			return new MySqlTransformationProvider(dialect, connectionString, scope);
+			return new MySqlTransformationProvider(dialect, connectionString, scope, providerName);
 		}
 
 		public override string Default(object defaultValue)

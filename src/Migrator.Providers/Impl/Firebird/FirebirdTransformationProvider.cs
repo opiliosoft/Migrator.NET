@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-
-using FirebirdSql.Data.FirebirdClient;
+using System.Data.Common;
 
 using Migrator.Framework;
 
@@ -13,10 +12,12 @@ namespace Migrator.Providers.Impl.Firebird
     /// </summary>
     public class FirebirdTransformationProvider : TransformationProvider
     {
-        public FirebirdTransformationProvider(Dialect dialect, string connectionString, string scope = "default")
+        public FirebirdTransformationProvider(Dialect dialect, string connectionString, string scope, string providerName)
             : base(dialect, connectionString, null, scope)
         {
-            this._connection = new FbConnection(this._connectionString);
+            if (string.IsNullOrEmpty(providerName)) providerName = "FirebirdSql.Data.FirebirdClient";
+            var fac = DbProviderFactories.GetFactory(providerName);
+            _connection = fac.CreateConnection(); // new FbConnection(this._connectionString);
             this._connection.Open();
         }
 

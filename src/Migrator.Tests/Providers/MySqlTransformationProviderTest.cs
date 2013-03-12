@@ -32,7 +32,7 @@ namespace Migrator.Tests.Providers
 			string constr = ConfigurationManager.AppSettings["MySqlConnectionString"];
 			if (constr == null)
 				throw new ArgumentNullException("MySqlConnectionString", "No config file");
-			_provider = new MySqlTransformationProvider(new MysqlDialect(), constr);
+            _provider = new MySqlTransformationProvider(new MysqlDialect(), constr, "default", null);
 			// _provider.Logger = new Logger(true, new ConsoleWriter());
 
 			AddDefaultTable();

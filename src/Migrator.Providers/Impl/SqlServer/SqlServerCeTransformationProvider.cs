@@ -13,6 +13,7 @@
 
 using System;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlServerCe;
 using Migrator.Framework;
 
@@ -23,17 +24,19 @@ namespace Migrator.Providers.SqlServer
 	/// </summary>
 	public class SqlServerCeTransformationProvider : SqlServerTransformationProvider
 	{
-        public SqlServerCeTransformationProvider(Dialect dialect, string connectionString, string scope = "default")
-			: base(dialect, connectionString, null, scope)
+        public SqlServerCeTransformationProvider(Dialect dialect, string connectionString, string scope, string providerName)
+			: base(dialect, connectionString, null, scope, providerName)
 		{
 		}
 
-		protected override void CreateConnection()
-		{
-			_connection = new SqlCeConnection();
-			_connection.ConnectionString = _connectionString;
-			_connection.Open();
-		}
+		protected override void CreateConnection(string providerName)
+        {
+            if (string.IsNullOrEmpty(providerName)) providerName = "System.Data.SqlServerCe.3.5";
+            var fac = DbProviderFactories.GetFactory(providerName);
+            _connection = fac.CreateConnection(); //  new SqlConnection();
+            _connection.ConnectionString = _connectionString;
+            _connection.Open();
+        }
 
 		public override bool ConstraintExists(string table, string name)
 		{

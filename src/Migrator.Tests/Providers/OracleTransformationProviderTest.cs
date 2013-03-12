@@ -19,7 +19,7 @@ namespace Migrator.Tests.Providers
 			string constr = ConfigurationManager.AppSettings["OracleConnectionString"];
 			if (constr == null)
 				throw new ArgumentNullException("OracleConnectionString", "No config file");
-			_provider = new OracleTransformationProvider(new OracleDialect(), constr, null);
+			_provider = new OracleTransformationProvider(new OracleDialect(), constr, null, "default", null);
 			_provider.BeginTransaction();
 
 			AddDefaultTable();

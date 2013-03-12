@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using Migrator.Framework;
-using Oracle.DataAccess.Client;
 
 namespace Migrator.Providers.Oracle
 {
@@ -12,10 +12,12 @@ namespace Migrator.Providers.Oracle
 	{
 		public const string TemporaryColumnName = "TEMPCOL";
 
-        public OracleTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope = "default")
+        public OracleTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope, string providerName)
 			: base(dialect, connectionString, defaultSchema, scope)
 		{
-			_connection = new OracleConnection();
+            if (string.IsNullOrEmpty(providerName)) providerName = "Oracle.DataAccess.Client";
+            var fac = DbProviderFactories.GetFactory(providerName);
+            _connection = fac.CreateConnection(); // new OracleConnection();
 			_connection.ConnectionString = _connectionString;
 			_connection.Open();
 		}

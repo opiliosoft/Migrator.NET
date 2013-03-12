@@ -32,11 +32,20 @@ namespace Migrator
 		static ProviderFactory()
 		{ }       
 
-        public static ITransformationProvider Create(ProviderTypes providerType, string connectionString, string defaultSchema, string scope = "default")
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="providerType"></param>
+        /// <param name="connectionString"></param>
+        /// <param name="defaultSchema"></param>
+        /// <param name="scope"></param>
+        /// <param name="providerName">for Example: System.Data.SqlClient</param>
+        /// <returns></returns>
+        public static ITransformationProvider Create(ProviderTypes providerType, string connectionString, string defaultSchema, string scope = "default", string providerName = "")
         {
             Dialect dialectInstance = DialectForProvider(providerType);
 
-            return dialectInstance.NewProviderForDialect(connectionString, defaultSchema, scope);            
+            return dialectInstance.NewProviderForDialect(connectionString, defaultSchema, scope, providerName);            
         }
       
         public static Dialect DialectForProvider(ProviderTypes providerType)

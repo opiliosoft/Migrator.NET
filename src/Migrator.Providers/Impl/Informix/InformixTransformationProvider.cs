@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-
-using IBM.Data.Informix;
+using System.Data.Common;
 
 namespace Migrator.Providers.Impl.Informix
 {
@@ -10,10 +9,12 @@ namespace Migrator.Providers.Impl.Informix
     /// </summary>
     public class InformixTransformationProvider : TransformationProvider
     {
-        public InformixTransformationProvider(Dialect dialect, string connectionString, string scope = "default")
+        public InformixTransformationProvider(Dialect dialect, string connectionString, string scope, string providerName)
             : base(dialect, connectionString, null, scope)
         {
-            this._connection = new IfxConnection(this._connectionString);
+            if (string.IsNullOrEmpty(providerName)) providerName = "IBM.Data.Informix.Client";
+            var fac = DbProviderFactories.GetFactory(providerName);
+            _connection = fac.CreateConnection(); // new IfxConnection(this._connectionString);
             this._connection.Open();
         }
 

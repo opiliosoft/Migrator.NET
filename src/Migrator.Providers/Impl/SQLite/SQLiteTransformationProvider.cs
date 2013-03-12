@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.SQLite;
 using System.Linq;
 
@@ -15,13 +16,20 @@ namespace Migrator.Providers.SQLite
 	/// </summary>
     public class SQLiteTransformationProvider : TransformationProvider
 	{
-        public SQLiteTransformationProvider(Dialect dialect, string connectionString, string scope = "default")
+        public SQLiteTransformationProvider(Dialect dialect, string connectionString, string scope, string providerName)
 			: base(dialect, connectionString, null, scope)
-		{
-            _connection = new SQLiteConnection(_connectionString);
-			_connection.ConnectionString = _connectionString;
-			_connection.Open();
+        {
+           this.CreateConnection(providerName);
 		}
+
+        protected virtual void CreateConnection(string providerName)
+        {
+            if (string.IsNullOrEmpty(providerName)) providerName = "System.Data.SQLite";
+            var fac = DbProviderFactories.GetFactory(providerName);
+            _connection = fac.CreateConnection(); // new SQLiteConnection(_connectionString);
+            _connection.ConnectionString = _connectionString;
+            _connection.Open();
+        }
 
 		public override void AddForeignKey(string name, string primaryTable, string[] primaryColumns, string refTable,
 		                                   string[] refColumns, ForeignKeyConstraintType constraint)

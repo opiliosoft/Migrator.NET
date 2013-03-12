@@ -31,7 +31,7 @@ namespace Migrator.Tests.Providers
 			if (constr == null)
 				throw new ArgumentNullException("SQLiteConnectionString", "No config file");
 
-			_provider = new SQLiteTransformationProvider(new SQLiteDialect(), constr);
+            _provider = new SQLiteTransformationProvider(new SQLiteDialect(), constr, "default", null);
 			_provider.BeginTransaction();
 
 			AddDefaultTable();

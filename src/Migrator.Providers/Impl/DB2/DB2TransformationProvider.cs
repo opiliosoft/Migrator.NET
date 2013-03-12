@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-
-using IBM.Data.DB2;
+using System.Data.Common;
 
 namespace Migrator.Providers.Impl.DB2
 {
@@ -10,10 +9,12 @@ namespace Migrator.Providers.Impl.DB2
     /// </summary>
     public class DB2TransformationProvider : TransformationProvider
     {
-        public DB2TransformationProvider(Dialect dialect, string connectionString, string scope = "default")
+        public DB2TransformationProvider(Dialect dialect, string connectionString, string scope, string providerName)
             : base(dialect, connectionString, null, scope)
         {
-            this._connection = new DB2Connection(this._connectionString);
+            if (string.IsNullOrEmpty(providerName)) providerName = "FirebirdSql.Data.FirebirdClient";
+            var fac = DbProviderFactories.GetFactory(providerName);
+            _connection = fac.CreateConnection(); // new DB2Connection(this._connectionString);
             this._connection.Open();
         }
 

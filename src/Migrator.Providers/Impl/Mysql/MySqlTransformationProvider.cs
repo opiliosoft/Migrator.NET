@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
+
 using Migrator.Framework;
-using MySql.Data.MySqlClient;
 
 namespace Migrator.Providers.Mysql
 {
@@ -11,10 +12,12 @@ namespace Migrator.Providers.Mysql
     /// </summary>    
     public class MySqlTransformationProvider : TransformationProvider
     {
-        public MySqlTransformationProvider(Dialect dialect, string connectionString, string scope="default")
+        public MySqlTransformationProvider(Dialect dialect, string connectionString, string scope, string providerName) 
             : base(dialect, connectionString, null, scope) // we ignore schemas for MySql (schema == database for MySql)
         {
-            _connection = new MySqlConnection(_connectionString) {ConnectionString = _connectionString};
+            if (string.IsNullOrEmpty(providerName)) providerName = "MySql.Data.MySqlClient";
+            var fac = DbProviderFactories.GetFactory(providerName);
+            _connection = fac.CreateConnection(); //new MySqlConnection(_connectionString) {ConnectionString = _connectionString};
             _connection.Open();
         }
 

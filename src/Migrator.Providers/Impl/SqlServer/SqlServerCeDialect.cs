@@ -15,9 +15,9 @@ namespace Migrator.Providers.SqlServer
             RegisterColumnType(DbType.Double, "FLOAT");
 		}
 
-        public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope)
+        public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope, string providerName)
 		{
-			return new SqlServerCeTransformationProvider(dialect, connectionString, scope);
+			return new SqlServerCeTransformationProvider(dialect, connectionString, scope, providerName);
 		}
 	}
 }

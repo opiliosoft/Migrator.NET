@@ -14,6 +14,8 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
+
 using Migrator.Framework;
 using Npgsql;
 
@@ -24,10 +26,12 @@ namespace Migrator.Providers.PostgreSQL
 	/// </summary>
     public class PostgreSQLTransformationProvider : TransformationProvider
 	{
-        public PostgreSQLTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope = "default")
+        public PostgreSQLTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope, string providerName)
 			: base(dialect, connectionString, defaultSchema, scope)
 		{
-			_connection = new NpgsqlConnection();
+            if (string.IsNullOrEmpty(providerName)) providerName = "Npgsql";
+            var fac = DbProviderFactories.GetFactory(providerName);
+            _connection = fac.CreateConnection(); //new NpgsqlConnection();
 			_connection.ConnectionString = _connectionString;
 			_connection.Open();
 		}

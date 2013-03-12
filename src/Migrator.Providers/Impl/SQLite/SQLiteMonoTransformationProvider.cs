@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using Migrator.Framework;
+using System.Data.Common;
 
-using Mono.Data.Sqlite;
+using Migrator.Framework;
 
 namespace Migrator.Providers.SQLite
 {
@@ -12,12 +12,10 @@ namespace Migrator.Providers.SQLite
 	/// </summary>
     public class SQLiteMonoTransformationProvider : SQLiteTransformationProvider
 	{
-        public SQLiteMonoTransformationProvider(Dialect dialect, string connectionString, string scope = "default")
-            : base(dialect, connectionString, scope)
+        public SQLiteMonoTransformationProvider(Dialect dialect, string connectionString, string scope, string providerName)
+            : base(dialect, connectionString, scope, providerName)
 		{
-			_connection = new SqliteConnection(_connectionString);
-			_connection.ConnectionString = _connectionString;
-			_connection.Open();
+          
 		}		
 	}
 }

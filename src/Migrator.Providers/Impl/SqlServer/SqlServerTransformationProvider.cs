@@ -14,6 +14,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using Migrator.Framework;
 
@@ -24,18 +25,20 @@ namespace Migrator.Providers.SqlServer
     /// </summary>
     public class SqlServerTransformationProvider : TransformationProvider
     {
-        public SqlServerTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope = "default")
+        public SqlServerTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope, string providerName)
 			: base(dialect, connectionString, defaultSchema, scope)
         {
-            CreateConnection();
+            CreateConnection(providerName);
         }
 
-    	protected virtual void CreateConnection()
-    	{
-    		_connection = new SqlConnection();
-    		_connection.ConnectionString = _connectionString;
-    		_connection.Open();
-    	}
+        protected virtual void CreateConnection(string providerName)
+        {
+            if (string.IsNullOrEmpty(providerName)) providerName = "System.Data.SqlClient";
+            var fac = DbProviderFactories.GetFactory(providerName);
+            _connection = fac.CreateConnection(); //  new SqlConnection();
+            _connection.ConnectionString = _connectionString;
+            _connection.Open();
+        }
 
     	public override bool ConstraintExists(string table, string name)
         {

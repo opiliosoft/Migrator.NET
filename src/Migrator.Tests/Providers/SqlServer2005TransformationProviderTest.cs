@@ -33,7 +33,7 @@ namespace Migrator.Tests.Providers
             if (constr == null)
 				throw new ArgumentNullException("SqlServer2005ConnectionString", "No config file");
 
-            _provider = new SqlServerTransformationProvider(new SqlServer2005Dialect(), constr, null);
+            _provider = new SqlServerTransformationProvider(new SqlServer2005Dialect(), constr, null, "default", null);
 			_provider.BeginTransaction();
 
 			AddDefaultTable();

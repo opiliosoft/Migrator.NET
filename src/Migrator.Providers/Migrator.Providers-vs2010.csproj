@@ -54,27 +54,6 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FirebirdSql.Data.FirebirdClient">
-      <HintPath>..\..\lib\FirebirdSql.Data.FirebirdClient.dll</HintPath>
-    </Reference>
-    <Reference Include="IBM.Data.DB2">
-      <HintPath>..\..\lib\IBM.Data.DB2.dll</HintPath>
-    </Reference>
-    <Reference Include="IBM.Data.Informix">
-      <HintPath>..\..\lib\IBM.Data.Informix.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Data.Sqlite, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\Mono.Data.Sqlite.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Security, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\Npgsql\net-2.0\Mono.Security.dll</HintPath>
-    </Reference>
-    <Reference Include="MySql.Data, Version=1.0.7.30072, Culture=neutral, PublicKeyToken=c5687fc88969c44d">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\MySql.Data.dll</HintPath>
-    </Reference>
     <Reference Include="NAnt.Core, Version=0.85.2344.0, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\NAnt.Core.dll</HintPath>
@@ -82,10 +61,6 @@
     <Reference Include="Npgsql, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\Npgsql\net-2.0\Npgsql.dll</HintPath>
-    </Reference>
-    <Reference Include="Oracle.DataAccess, Version=2.111.5.10, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\Oracle.DataAccess.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />

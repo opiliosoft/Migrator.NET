@@ -1,7 +1,6 @@
 using System.Data;
 
 using Migrator.Framework;
-using Migrator.Providers.Impl.DB2;
 
 namespace Migrator.Providers.Impl.Informix
 {
@@ -61,9 +60,9 @@ namespace Migrator.Providers.Impl.Informix
 	   }
 
 		
-        public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope)
+        public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope, string providerName)
 		{
-            return new DB2TransformationProvider(dialect, connectionString, scope);
+            return new InformixTransformationProvider(dialect, connectionString, scope, providerName);
 		}		
 	}
 }
