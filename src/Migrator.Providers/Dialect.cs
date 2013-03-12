@@ -221,7 +221,7 @@ namespace Migrator.Providers
 		{
 			ColumnPropertiesMapper mapper = GetColumnMapper(column);
 			mapper.MapColumnProperties(column);
-			if (column.DefaultValue != null)
+			if (column.DefaultValue != null && column.DefaultValue != DBNull.Value)
 				mapper.Default = column.DefaultValue;
 			return mapper;
 		}

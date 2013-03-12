@@ -47,23 +47,12 @@ namespace Migrator.Providers.SQLite
 			if (! (TableExists(table) && ColumnExists(table, column)))
 				return;
 
-			string[] origColDefs = GetColumnDefs(table);
-			var colDefs = new List<string>();
 
-			foreach (string origdef in origColDefs)
-			{
-				if (! ColumnMatch(column, origdef))
-					colDefs.Add(origdef);
-			}
-
-			string[] newColDefs = colDefs.ToArray();
-			string colDefsSql = String.Join(",", newColDefs);
-
-			string[] colNames = ParseSqlForColumnNames(newColDefs);
-			string colNamesSql = String.Join(",", colNames);
-
-			AddTable(table + "_temp", null, colDefsSql);
-			ExecuteQuery(String.Format("INSERT INTO {0}_temp SELECT {1} FROM {0}", table, colNamesSql));
+		    var newColumns = GetColumns(table).Where(x => x.Name != column).ToArray();
+            
+            AddTable(table + "_temp", null, newColumns);
+		    var colNamesSql = string.Join(", ", newColumns.Select(x => x.Name));
+            ExecuteQuery(String.Format("INSERT INTO {0}_temp SELECT {1} FROM {0}", table, colNamesSql));
 			RemoveTable(table);
 			ExecuteQuery(String.Format("ALTER TABLE {0}_temp RENAME TO {0}", table));
 		}
@@ -75,12 +64,9 @@ namespace Migrator.Providers.SQLite
 
 			if (ColumnExists(tableName, oldColumnName))
 			{
-				string[] columnDefs = GetColumnDefs(tableName);
-				string columnDef = Array.Find(columnDefs, delegate(string col) { return ColumnMatch(oldColumnName, col); });
-
-				string newColumnDef = columnDef.Replace(oldColumnName, newColumnName);
-
-				AddColumn(tableName, newColumnDef);
+			    var columnDef = GetColumns(tableName).First(x => x.Name == oldColumnName);
+                columnDef.Name = newColumnName;
+				AddColumn(tableName, columnDef);
 				ExecuteQuery(String.Format("UPDATE {0} SET {1}={2}", tableName, newColumnName, oldColumnName));
 				RemoveColumn(tableName, oldColumnName);
 			}
@@ -137,103 +123,44 @@ namespace Migrator.Providers.SQLite
 
 		public override Column[] GetColumns(string table)
 		{
-			var columns = new List<Column>();
-			foreach (string columnDef in GetColumnDefs(table))
+		    var columns = new List<Column>();
+            using (IDataReader reader = ExecuteQuery(String.Format("PRAGMA table_info('{0}')", table)))
 			{
-				string name = ExtractNameFromColumnDef(columnDef);
-				// FIXME: Need to get the real type information
-				var column = new Column(name, DbType.String);
-				bool isNullable = IsNullable(columnDef);
-				column.ColumnProperty |= isNullable ? ColumnProperty.Null : ColumnProperty.NotNull;
-				columns.Add(column);
-			}
-			return columns.ToArray();
-		}
-
-		public string GetSqlDefString(string table)
-		{
-			string sqldef = null;
-			using (IDataReader reader = ExecuteQuery(String.Format("SELECT sql FROM sqlite_master WHERE type='table' AND name='{0}'", table)))
-			{
-				if (reader.Read())
+				while (reader.Read())
 				{
-					sqldef = (string) reader[0];
+				    var column = new Column((string)reader[1]);
+
+				    column.Type = _dialect.GetDbTypeFromString((string)reader[2]);
+                    
+                    if (Convert.ToBoolean(reader[3]))
+                    {
+                        column.ColumnProperty |= ColumnProperty.NotNull;
+                    }
+                    else
+                    {
+                        column.ColumnProperty |= ColumnProperty.Null;
+                    }
+
+				    column.DefaultValue = reader[4] == DBNull.Value ? null : reader[4];
+
+                    if (Convert.ToBoolean(reader[5]))
+                    {
+                        column.ColumnProperty |= ColumnProperty.PrimaryKey;
+                    }
+
+                    columns.Add(column);
+                   
 				}
 			}
-			return sqldef;
-		}
 
-		public string[] GetColumnNames(string table)
-		{
-			return ParseSqlForColumnNames(GetSqlDefString(table));
-		}
+           
 
-		public string[] GetColumnDefs(string table)
-		{
-			return ParseSqlColumnDefs(GetSqlDefString(table));
-		}
-
-		/// <summary>
-		/// Turn something like 'columnName INTEGER NOT NULL' into just 'columnName'
-		/// </summary>
-		public string[] ParseSqlForColumnNames(string sqldef)
-		{
-			string[] parts = ParseSqlColumnDefs(sqldef);
-			return ParseSqlForColumnNames(parts);
-		}
-
-		public string[] ParseSqlForColumnNames(string[] parts)
-		{
-			if (null == parts)
-				return null;
-
-			for (int i = 0; i < parts.Length; i ++)
-			{
-				parts[i] = ExtractNameFromColumnDef(parts[i]);
-			}
-			return parts;
-		}
-
-		/// <summary>
-		/// Name is the first value before the space.
-		/// </summary>
-		/// <param name="columnDef"></param>
-		/// <returns></returns>
-		public string ExtractNameFromColumnDef(string columnDef)
-		{
-			int idx = columnDef.IndexOf(" ");
-			if (idx > 0)
-			{
-				return columnDef.Substring(0, idx);
-			}
-			return null;
+			return columns.ToArray();
 		}
 
 		public bool IsNullable(string columnDef)
 		{
 			return ! columnDef.Contains("NOT NULL");
-		}
-
-		public string[] ParseSqlColumnDefs(string sqldef)
-		{
-			if (String.IsNullOrEmpty(sqldef))
-			{
-				return null;
-			}
-
-			sqldef = sqldef.Replace(Environment.NewLine, " ");
-			int start = sqldef.IndexOf("(");
-			int end = sqldef.IndexOf(")");
-
-			sqldef = sqldef.Substring(0, end);
-			sqldef = sqldef.Substring(start + 1);
-
-			string[] cols = sqldef.Split(new[] {','});
-			for (int i = 0; i < cols.Length; i ++)
-			{
-				cols[i] = cols[i].Trim();
-			}
-			return cols;
 		}
 
 		public bool ColumnMatch(string column, string columnDef)
