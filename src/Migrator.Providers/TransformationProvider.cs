@@ -14,11 +14,14 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Migrator.Framework;
 using Migrator.Framework.Loggers;
 using Migrator.Framework.SchemaBuilder;
+using Migrator.Framework.Support;
+
 using ForeignKeyConstraintType = Migrator.Framework.ForeignKeyConstraintType;
 using ForeignKeyConstraint = Migrator.Framework.ForeignKeyConstraint;
 
@@ -48,6 +51,8 @@ namespace Migrator.Providers
             _logger = new Logger(false);
             _scope = scope;
         }
+
+        public IMigration CurrentMigration { get; set; }
 
         private string _schemaInfotable = "SchemaInfo";
         public string SchemaInfoTable
@@ -648,6 +653,39 @@ namespace Migrator.Providers
             return values;
         }
 
+        public virtual void ExecuteScript(string fileName)
+        {
+            if (CurrentMigration != null)
+            {
+                var assembly = CurrentMigration.GetType().Assembly;
+
+                string sqlText;
+                string file = (new System.Uri(assembly.CodeBase)).AbsolutePath;
+                using (var reader = File.OpenText(file)) 
+                    sqlText = reader.ReadToEnd();
+
+                ExecuteNonQuery(sqlText);
+            }
+        }
+
+        public virtual void ExecuteEmbededScript(string resourceName)
+        {
+            if (CurrentMigration != null)
+            {
+                var assembly = CurrentMigration.GetType().Assembly;
+
+                string sqlText;
+                string embeddedResourceName = TransformationProviderUtility.GetQualifiedResourcePath(assembly, resourceName);
+
+                using (var stream = assembly.GetManifestResourceStream(embeddedResourceName))
+                using (var reader = new StreamReader(stream))
+                {
+                    sqlText = reader.ReadToEnd();
+                }
+                ExecuteNonQuery(sqlText);
+            }
+        }
+        
         /// <summary>
         /// Execute an SQL query returning results.
         /// </summary>

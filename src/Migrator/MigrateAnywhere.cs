@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Migrator.Framework;
+using Migrator.Providers;
 
 namespace Migrator
 {
@@ -80,8 +81,12 @@ namespace Migrator
 			_logger.MigrateUp(Current, migration.Name);
 			if (! DryRun)
 			{
+                var tProvider = _provider as TransformationProvider;
+			    if (tProvider != null) 
+                    tProvider.CurrentMigration = migration;
+
 				migration.Up();
-				_provider.MigrationApplied(attr.Version, attr.Scope);
+                _provider.MigrationApplied(attr.Version, attr.Scope);
 				_provider.Commit();
 				migration.AfterUp();
 			}
@@ -93,8 +98,12 @@ namespace Migrator
 			_logger.MigrateDown(Current, migration.Name);
 			if (! DryRun)
 			{
+                var tProvider = _provider as TransformationProvider;
+                if (tProvider != null)
+                    tProvider.CurrentMigration = migration;
+
 				migration.Down();
-				_provider.MigrationUnApplied(attr.Version, attr.Scope);
+                _provider.MigrationUnApplied(attr.Version, attr.Scope);
 				_provider.Commit();
 				migration.AfterDown();
 			}
