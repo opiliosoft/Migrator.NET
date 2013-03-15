@@ -14,7 +14,7 @@
 using System;
 using System.Data;
 using System.Data.Common;
-using System.Data.SqlServerCe;
+//using System.Data.SqlServerCe;
 using Migrator.Framework;
 
 namespace Migrator.Providers.SqlServer

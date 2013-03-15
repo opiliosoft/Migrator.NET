@@ -17,7 +17,6 @@ using System.Data;
 using System.Data.Common;
 
 using Migrator.Framework;
-using Npgsql;
 
 namespace Migrator.Providers.PostgreSQL
 {
