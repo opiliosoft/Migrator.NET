@@ -1,9 +1,12 @@
-I'll try to merge the different changes of all Forks.
+Info
+----
+This Project includes most of the changes from all forks on GitHub! 
 
-Included Forks:
----------------
-* ondrejsv
-* eliog
+But has also a few changes:
+  - SQLite support is better (Schema Reading, multiple Primary Keys, and much more)
+  - Remove direct References to the Dataproviders
+  - Dump Indexes from SQLServer
+  - Different Migration Scopes in one Database
 
 
 Introduction
