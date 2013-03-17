@@ -256,12 +256,12 @@ namespace Migrator.Providers
 			return null;
 		}
 
-		public int Update(string table, string[] columns, string[] columnValues)
+		public int Update(string table, string[] columns, object[] values)
 		{
 			return 0;
 		}
 
-		public int Update(string table, string[] columns, string[] columnValues, string where)
+		public int Update(string table, string[] columns, object[] values, string where)
 		{
 			return 0;
 		}

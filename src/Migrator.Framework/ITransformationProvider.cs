@@ -470,9 +470,9 @@ namespace Migrator.Framework
 		/// </summary>
 		/// <param name="table">The name of the table to update</param>
 		/// <param name="columns">The names of the columns.</param>
-		/// <param name="columnValues">The values for the columns in the same order as the names.</param>
+		/// <param name="values">The values for the columns in the same order as the names.</param>
 		/// <returns></returns>
-		int Update(string table, string[] columns, string[] columnValues);
+		int Update(string table, string[] columns, object[] values);
 
 		/// <summary>
 		/// Update the values in a table
@@ -482,7 +482,7 @@ namespace Migrator.Framework
 		/// <param name="values">The values for the columns in the same order as the names.</param>
 		/// <param name="where">A where clause to limit the update</param>
 		/// <returns></returns>
-		int Update(string table, string[] columns, string[] values, string where);
+		int Update(string table, string[] columns, object[] values, string where);
 
 		/// <summary>
 		/// Get a command instance

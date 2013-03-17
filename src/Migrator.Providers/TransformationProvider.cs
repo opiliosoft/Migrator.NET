@@ -745,22 +745,58 @@ namespace Migrator.Providers
             return ExecuteScalar(String.Format("SELECT {0} FROM {1} WHERE {2}", what, from, where));
         }
 
-        public virtual int Update(string table, string[] columns, string[] values)
+        public virtual int Update(string table, string[] columns, object[] values)
         {
             return Update(table, columns, values, null);
         }
 
-        public virtual int Update(string table, string[] columns, string[] values, string where)
+        public virtual int Update(string table, string[] columns, object[] values, string where)
         {
-            string namesAndValues = JoinColumnsAndValues(columns, values);
+            if (string.IsNullOrEmpty(table)) throw new ArgumentNullException("table");
+            if (columns == null) throw new ArgumentNullException("columns");
+            if (values == null) throw new ArgumentNullException("values");
+            if (columns.Length != values.Length) throw new Exception(string.Format("The number of columns: {0} does not match the number of supplied values: {1}", columns.Length, values.Length));
 
-            string query = "UPDATE {0} SET {1}";
-            if (!String.IsNullOrEmpty(where))
+            table = QuoteTableNameIfRequired(table);
+            
+            var builder = new StringBuilder();
+            for (int i = 0; i < values.Length; i++)
             {
-                query += " WHERE " + where;
+                if (builder.Length > 0) builder.Append(", ");
+                builder.Append(QuoteColumnNameIfRequired(columns[i]));
+                builder.Append(" = ");
+                builder.Append(GenerateParameterName(i));
             }
-            table = _dialect.TableNameNeedsQuote ? _dialect.Quote(table) : table;
-            return ExecuteNonQuery(String.Format(query, table, namesAndValues));
+
+            using (IDbCommand command = _connection.CreateCommand())
+            {
+                command.Transaction = _transaction;
+
+                var query = String.Format("UPDATE {0} SET {1}", table, builder.ToString());
+                if (!String.IsNullOrEmpty(where))
+                {
+                    query += " WHERE " + where;
+                }
+                command.CommandText = query;
+                command.CommandType = CommandType.Text;
+
+                int paramCount = 0;
+
+                foreach (object value in values)
+                {
+                    IDbDataParameter parameter = command.CreateParameter();
+
+                    ConfigureParameterWithValue(parameter, paramCount, value);
+
+                    parameter.ParameterName = GenerateParameterName(paramCount);
+
+                    command.Parameters.Add(parameter);
+
+                    paramCount++;
+                }
+
+                return command.ExecuteNonQuery();
+            }
         }
 
         public virtual int Insert(string table, string[] columns, object[] values)
