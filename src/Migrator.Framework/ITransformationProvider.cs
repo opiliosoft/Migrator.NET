@@ -254,6 +254,8 @@ namespace Migrator.Framework
 		/// <param name="column">An instance of a <see cref="Column">Column</see> with the specified properties and the name of an existing column</param>
 		void ChangeColumn(string table, Column column);
 
+        void RemoveColumnDefaultValue(string table, string column);
+
 		/// <summary>
 		/// Check to see if a column exists
 		/// </summary>
@@ -305,6 +307,8 @@ namespace Migrator.Framework
 		/// <param name="sql">The SQL to execute.</param>
 		/// <returns>A single value that is returned.</returns>
 		object ExecuteScalar(string sql);
+
+	    List<string> ExecuteStringQuery(string sql, params object[] args);
 
 	    Index[] GetIndexes(string table);
 

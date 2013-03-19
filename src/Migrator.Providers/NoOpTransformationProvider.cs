@@ -50,6 +50,11 @@ namespace Migrator.Providers
 			return 0;
 		}
 
+	    public List<string> ExecuteStringQuery(string sql, params object[] args)
+	    {
+	        return new List<string>();
+	    }
+
 	    public Index[] GetIndexes(string table)
 	    {
 	        return null;
@@ -105,7 +110,12 @@ namespace Migrator.Providers
 			// No Op
 		}
 
-		public bool ColumnExists(string table, string column)
+	    public void RemoveColumnDefaultValue(string table, string column)
+	    {
+	        // No Op
+	    }
+
+	    public bool ColumnExists(string table, string column)
 		{
 			return false;
 		}

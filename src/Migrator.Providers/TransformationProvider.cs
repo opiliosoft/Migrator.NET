@@ -346,6 +346,12 @@ namespace Migrator.Providers
             ChangeColumn(table, mapper.ColumnSql);
         }
 
+        public virtual void RemoveColumnDefaultValue(string table, string column)
+        {
+            var sql = string.Format("ALTER TABLE {0} ALTER {1} DROP DEFAULT", table, column);
+            ExecuteNonQuery(sql);            
+        }
+
         public virtual bool TableExists(string table)
         {
             try

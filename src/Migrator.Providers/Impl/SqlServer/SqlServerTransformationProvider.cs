@@ -42,7 +42,8 @@ namespace Migrator.Providers.SqlServer
 
     	public override bool ConstraintExists(string table, string name)
         {
-			using (IDataReader reader = ExecuteQuery(string.Format("SELECT TOP 1 * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE CONSTRAINT_NAME ='{0}'", name)))
+            //using (IDataReader reader = ExecuteQuery(string.Format("SELECT TOP 1 * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE CONSTRAINT_NAME ='{0}'", name)))
+            using (IDataReader reader = ExecuteQuery(string.Format("SELECT TOP 1 * FROM SYS.DEFAULT_CONSTRAINTS WHERE PARENT_OBJECT_ID = OBJECT_ID('{0}') AND Name = '{1}'", table, name)))
             {
                 return reader.Read();
             }
@@ -103,7 +104,16 @@ namespace Migrator.Providers.SqlServer
 			}
 		}
 
-		public override bool TableExists(string table)
+        public override void RemoveColumnDefaultValue(string table, string column)
+        {
+            var sql = string.Format("SELECT Name FROM SYS.DEFAULT_CONSTRAINTS WHERE PARENT_OBJECT_ID = OBJECT_ID('{0}') AND PARENT_COLUMN_ID = (SELECT column_id FROM sys.columns WHERE NAME = '{1}' AND object_id = OBJECT_ID('{0}'))", table, column);
+            var constraintName = ExecuteScalar(sql);
+            if (constraintName != null) 
+                RemoveConstraint(table, constraintName.ToString());
+        }
+
+
+        public override bool TableExists(string table)
         {
 			string schema;
 

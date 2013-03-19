@@ -16,6 +16,10 @@ Licensed under MPL 1.1 : http://www.mozilla.org/MPL/
 
 == Untested Databases but in there
 * Oracle
+* Firebird
+* Informix
+* DB2
+* Ingres
 
 == Supported Modes
 * MSBuild Task
