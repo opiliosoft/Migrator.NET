@@ -40,16 +40,23 @@ namespace Migrator.Providers.SqlServer
             _connection.Open();
         }
 
-    	public override bool ConstraintExists(string table, string name)
+        public override bool ConstraintExists(string table, string name)
         {
-            //using (IDataReader reader = ExecuteQuery(string.Format("SELECT TOP 1 * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE CONSTRAINT_NAME ='{0}'", name)))
-            using (IDataReader reader = ExecuteQuery(string.Format("SELECT TOP 1 * FROM SYS.DEFAULT_CONSTRAINTS WHERE PARENT_OBJECT_ID = OBJECT_ID('{0}') AND Name = '{1}'", table, name)))
+            bool retVal = false;
+            using (IDataReader reader = ExecuteQuery(string.Format("SELECT TOP 1 * FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE CONSTRAINT_NAME ='{0}'", name)))
             {
-                return reader.Read();
+                retVal = reader.Read();
             }
+
+            if (!retVal)
+                using (IDataReader reader = ExecuteQuery(string.Format("SELECT TOP 1 * FROM SYS.DEFAULT_CONSTRAINTS WHERE PARENT_OBJECT_ID = OBJECT_ID('{0}') AND Name = '{1}'", table, name)))
+                {
+                    return reader.Read();
+                }
+            return true;
         }
 
-		public override void AddColumn(string table, string sqlColumn)
+        public override void AddColumn(string table, string sqlColumn)
         {
             table = _dialect.TableNameNeedsQuote ? _dialect.Quote(table) : table;
             ExecuteNonQuery(string.Format("ALTER TABLE {0} ADD {1}", table, sqlColumn));
