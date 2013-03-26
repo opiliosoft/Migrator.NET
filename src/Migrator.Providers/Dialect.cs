@@ -20,7 +20,7 @@ namespace Migrator.Providers
 			RegisterProperty(ColumnProperty.Null, "NULL");
 			RegisterProperty(ColumnProperty.NotNull, "NOT NULL");
 			RegisterProperty(ColumnProperty.Unique, "UNIQUE");
-			RegisterProperty(ColumnProperty.PrimaryKey, "PRIMARY KEY");
+			RegisterProperty(ColumnProperty.PrimaryKey, "PRIMARY KEY");            
 		}
 
 		public virtual bool ColumnNameNeedsQuote

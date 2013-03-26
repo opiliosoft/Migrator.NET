@@ -31,6 +31,7 @@ namespace Migrator.Providers.SQLite
 			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
 
 			RegisterProperty(ColumnProperty.Identity, "AUTOINCREMENT");
+            RegisterProperty(ColumnProperty.CaseSensitive, "COLLATE NOCASE"); 
 		}
 
 		public override bool NeedsNotNullForIdentity

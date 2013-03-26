@@ -51,6 +51,7 @@ namespace Migrator.Providers.Mysql
 
 			RegisterProperty(ColumnProperty.Unsigned, "UNSIGNED");
 			RegisterProperty(ColumnProperty.Identity, "AUTO_INCREMENT");
+            RegisterProperty(ColumnProperty.CaseSensitive, "BINARY");
 
 			RegisterUnsignedCompatible(DbType.Int16);
 			RegisterUnsignedCompatible(DbType.Int32);

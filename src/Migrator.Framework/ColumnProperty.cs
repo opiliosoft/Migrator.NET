@@ -33,6 +33,8 @@ namespace Migrator.Framework
 		/// Unsigned Column
 		/// </summary>
 		Unsigned = 32,
+
+        CaseSensitive = 64,
 		/// <summary>
 		/// Foreign Key
 		/// </summary>
@@ -40,7 +42,7 @@ namespace Migrator.Framework
 		/// <summary>
 		/// Primary Key
 		/// </summary>
-		PrimaryKey = 64 | Unsigned | NotNull,
+		PrimaryKey = 128 | Unsigned | NotNull,
 		/// <summary>
 		/// Primary key. Make the column a PrimaryKey and unsigned
 		/// </summary>

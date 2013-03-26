@@ -86,6 +86,8 @@ namespace Migrator.Providers
 
 			AddType(vals);
 
+		    AddCaseSensitive(column, vals);
+
 			AddIdentity(column, vals);
 
 			AddUnsigned(column, vals);
@@ -107,7 +109,12 @@ namespace Migrator.Providers
 			columnSql = String.Join(" ", vals.ToArray());
 		}
 
-		protected virtual void AddDefaultValue(Column column, List<string> vals)
+        protected virtual void AddCaseSensitive(Column column, List<string> vals)
+        {
+            AddValueIfSelected(column, ColumnProperty.CaseSensitive, vals);
+        }
+
+        protected virtual void AddDefaultValue(Column column, List<string> vals)
 		{
 			if (column.DefaultValue != null)
 				vals.Add(dialect.Default(column.DefaultValue));

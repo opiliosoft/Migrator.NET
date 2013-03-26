@@ -38,6 +38,9 @@ namespace Migrator.Providers.SqlServer
             _connection = fac.CreateConnection(); //  new SqlConnection();
             _connection.ConnectionString = _connectionString;
             _connection.Open();
+
+            var collation = this.ExecuteScalar("SELECT DATABASEPROPERTYEX('MLOG_MCC', 'Collation')").ToString();
+            this.Dialect.RegisterProperty(ColumnProperty.CaseSensitive, "COLLATE " + collation.Replace("_CI_", "_CS_"));
         }
 
         public override bool ConstraintExists(string table, string name)
