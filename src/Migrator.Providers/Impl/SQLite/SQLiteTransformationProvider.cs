@@ -65,12 +65,37 @@ namespace Migrator.Providers.SQLite
 			if (ColumnExists(tableName, oldColumnName))
 			{
 			    var columnDef = GetColumns(tableName).First(x => x.Name == oldColumnName);
-                columnDef.Name = newColumnName;
-				AddColumn(tableName, columnDef);
-				ExecuteQuery(String.Format("UPDATE {0} SET {1}={2}", tableName, newColumnName, oldColumnName));
-				RemoveColumn(tableName, oldColumnName);
+
+			    if (columnDef.IsPrimaryKey)
+			    {
+			        columnDef.Name = newColumnName;
+			        this.changeColumnPrimary(tableName, oldColumnName, columnDef);
+			    }
+			    else
+			    {
+			        columnDef.Name = newColumnName;
+			        AddColumn(tableName, columnDef);
+			        ExecuteQuery(String.Format("UPDATE {0} SET {1}={2}", tableName, newColumnName, oldColumnName));
+			        RemoveColumn(tableName, oldColumnName);
+			    }
 			}
 		}
+
+        private void changeColumnPrimary(string table, string old, Column column)
+        {
+            var newColumns = GetColumns(table).Where(x => x.Name.ToLower() != old.ToLower()).ToList();
+            var oldColumnNames = newColumns.Select(x => x.Name).ToList();
+            newColumns.Add(column);
+            oldColumnNames.Add(old);
+
+            AddTable(table + "_temp", null, newColumns.ToArray());
+            var colNamesNewSql = string.Join(", ", newColumns.Select(x => x.Name));
+            var colNamesSql = string.Join(", ", oldColumnNames);
+            ExecuteQuery(String.Format("INSERT INTO {1}_temp ({0}) SELECT {2} FROM {1}", colNamesNewSql, table, colNamesSql));
+            RemoveTable(table);
+            ExecuteQuery(String.Format("ALTER TABLE {0}_temp RENAME TO {0}", table));
+        }
+
 
 		public override void ChangeColumn(string table, Column column)
 		{
@@ -87,7 +112,12 @@ namespace Migrator.Providers.SQLite
 			RemoveColumn(table, tempColumn);
 		}
 
-		public override bool TableExists(string table)
+	    public override int TruncateTable(string table)
+	    {
+            return ExecuteNonQuery(String.Format("DELETE FROM {0} ", table));
+	    }
+
+	    public override bool TableExists(string table)
 		{
 			using (IDataReader reader =
 				ExecuteQuery(String.Format("SELECT name FROM sqlite_master WHERE type='table' and name='{0}'", table)))
