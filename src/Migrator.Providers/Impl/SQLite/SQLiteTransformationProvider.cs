@@ -66,22 +66,29 @@ namespace Migrator.Providers.SQLite
 			{
 			    var columnDef = GetColumns(tableName).First(x => x.Name == oldColumnName);
 
-			    if (columnDef.IsPrimaryKey)
+			    //if (columnDef.IsPrimaryKey)
 			    {
 			        columnDef.Name = newColumnName;
-			        this.changeColumnPrimary(tableName, oldColumnName, columnDef);
+                    this.changeColumnInternal(tableName, oldColumnName, columnDef);
 			    }
-			    else
+			    /*else
 			    {
 			        columnDef.Name = newColumnName;
 			        AddColumn(tableName, columnDef);
 			        ExecuteQuery(String.Format("UPDATE {0} SET {1}={2}", tableName, newColumnName, oldColumnName));
 			        RemoveColumn(tableName, oldColumnName);
-			    }
+			    }*/
 			}
 		}
 
-        private void changeColumnPrimary(string table, string old, Column column)
+        public override void RemoveColumnDefaultValue(string table, string column)
+        {
+            var columnDef = GetColumns(table).First(x => x.Name == column);
+            columnDef.DefaultValue = null;
+            changeColumnInternal(table, column, columnDef);
+        }
+
+        private void changeColumnInternal(string table, string old, Column column)
         {
             var newColumns = GetColumns(table).Where(x => x.Name.ToLower() != old.ToLower()).ToList();
             var oldColumnNames = newColumns.Select(x => x.Name).ToList();

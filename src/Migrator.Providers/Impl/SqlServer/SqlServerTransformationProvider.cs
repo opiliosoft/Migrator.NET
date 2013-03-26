@@ -264,6 +264,7 @@ FROM    sys.[indexes] Ind
         public override void RemoveColumn(string table, string column)
         {
             DeleteColumnConstraints(table, column);
+            RemoveColumnDefaultValue(table, column);
             base.RemoveColumn(table, column);
         }
         
