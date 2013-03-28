@@ -69,7 +69,7 @@ namespace Migrator.Providers.SQLite
 			    //if (columnDef.IsPrimaryKey)
 			    {
 			        columnDef.Name = newColumnName;
-                    this.changeColumnInternal(tableName, oldColumnName, columnDef);
+			        this.changeColumnInternal(tableName, new[] { oldColumnName }, new[] { columnDef });
 			    }
 			    /*else
 			    {
@@ -85,15 +85,27 @@ namespace Migrator.Providers.SQLite
         {
             var columnDef = GetColumns(table).First(x => x.Name == column);
             columnDef.DefaultValue = null;
-            changeColumnInternal(table, column, columnDef);
+            changeColumnInternal(table, new[] { column }, new[] { columnDef });
         }
 
-        private void changeColumnInternal(string table, string old, Column column)
-        {
-            var newColumns = GetColumns(table).Where(x => x.Name.ToLower() != old.ToLower()).ToList();
+	    public override void AddPrimaryKey(string name, string table, params string[] columns)
+	    {
+	        List<Column> newCol = new List<Column>();
+	        foreach (var column in columns)
+	        {
+                var columnDef = GetColumns(table).First(x => x.Name == column);
+	            columnDef.ColumnProperty |= ColumnProperty.PrimaryKey;
+                newCol.Add(columnDef);
+	        }
+	        this.changeColumnInternal(table, columns, newCol.ToArray());
+	    }
+
+	    private void changeColumnInternal(string table, string[] old, Column[] columns)
+	    {
+	        var newColumns = GetColumns(table).Where(x => !old.Any(y => x.Name.ToLower() == y.ToLower())).ToList();
             var oldColumnNames = newColumns.Select(x => x.Name).ToList();
-            newColumns.Add(column);
-            oldColumnNames.Add(old);
+            newColumns.AddRange(columns);
+            oldColumnNames.AddRange(old);
 
             AddTable(table + "_temp", null, newColumns.ToArray());
             var colNamesNewSql = string.Join(", ", newColumns.Select(x => x.Name));
