@@ -90,7 +90,35 @@ namespace Migrator.Providers.SqlServer
             }
         }
 
-		public override bool ColumnExists(string table, string column)
+        public override void ChangeColumn(string table, Column column)
+        {
+            if (column.DefaultValue == null || column.DefaultValue == DBNull.Value)
+            {
+                base.ChangeColumn(table, column);
+            }
+            else
+            {
+                var def = column.DefaultValue;
+                var notNull = column.ColumnProperty.IsSet(ColumnProperty.NotNull);
+                column.DefaultValue = null;
+                column.ColumnProperty = column.ColumnProperty.Set(ColumnProperty.Null);
+                column.ColumnProperty = column.ColumnProperty.Clear(ColumnProperty.NotNull);
+                
+                base.ChangeColumn(table,column);
+
+                ColumnPropertiesMapper mapper = _dialect.GetAndMapColumnPropertiesWithoutDefault(column);
+                ExecuteNonQuery(string.Format("ALTER TABLE {0} ADD CONSTRAINT {1} {2} FOR {3}", this.QuoteTableNameIfRequired(table), "DF_" + table + "_" + column.Name, _dialect.Default(def), this.QuoteColumnNameIfRequired(column.Name)));
+
+                if (notNull)
+                {
+                    column.ColumnProperty = column.ColumnProperty.Set(ColumnProperty.NotNull);
+                    column.ColumnProperty = column.ColumnProperty.Clear(ColumnProperty.Null);
+                    base.ChangeColumn(table, column);
+                }
+            }
+        }
+
+        public override bool ColumnExists(string table, string column)
 		{
 			string schema;
 			if (!TableExists(table))
@@ -264,6 +292,7 @@ FROM    sys.[indexes] Ind
         public override void RemoveColumn(string table, string column)
         {
             DeleteColumnConstraints(table, column);
+            DeleteColumnIndexes(table, column);
             RemoveColumnDefaultValue(table, column);
             base.RemoveColumn(table, column);
         }
@@ -304,6 +333,41 @@ FROM    sys.[indexes] Ind
             {
                 RemoveForeignKey(table, constraint);
             }
+        }
+
+        void DeleteColumnIndexes(string table, string column)
+        {
+            string sqlIndex = this.FindIndexes(table, column);
+            var indexes = new List<string>();
+            using (IDataReader reader = ExecuteQuery(sqlIndex))
+            {
+                while (reader.Read())
+                {
+                    indexes.Add(reader.GetString(0));
+                }
+            }
+            // Can't share the connection so two phase modif
+            foreach (string index in indexes)
+            {
+                this.RemoveIndex(table, index);
+            }
+        }
+
+        protected virtual string FindIndexes(string table, string column)
+        {
+            return string.Format(@"
+select 
+    i.name as IndexName    
+from sys.indexes i 
+join sys.objects o on i.object_id = o.object_id
+join sys.index_columns ic on ic.object_id = i.object_id 
+    and ic.index_id = i.index_id
+join sys.columns co on co.object_id = i.object_id 
+    and co.column_id = ic.column_id
+where i.[type] = 2 
+and o.[Name] = '{0}'
+and co.[Name] = '{1}'",
+                    table, column);            
         }
 
         // FIXME: We should look into implementing this with INFORMATION_SCHEMA if possible

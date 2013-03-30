@@ -109,6 +109,39 @@ namespace Migrator.Providers
 			columnSql = String.Join(" ", vals.ToArray());
 		}
 
+        public virtual void MapColumnPropertiesWithoutDefault(Column column)
+        {
+            Name = column.Name;
+
+            indexed = PropertySelected(column.ColumnProperty, ColumnProperty.Indexed);
+
+            var vals = new List<string>();
+
+            AddName(vals);
+
+            AddType(vals);
+
+            AddCaseSensitive(column, vals);
+
+            AddIdentity(column, vals);
+
+            AddUnsigned(column, vals);
+
+            AddNotNull(column, vals);
+
+            AddNull(column, vals);
+
+            AddPrimaryKey(column, vals);
+
+            AddIdentityAgain(column, vals);
+
+            AddUnique(column, vals);
+
+            AddForeignKey(column, vals);           
+
+            columnSql = String.Join(" ", vals.ToArray());
+        }
+
         protected virtual void AddCaseSensitive(Column column, List<string> vals)
         {
             AddValueIfSelected(column, ColumnProperty.CaseSensitive, vals);

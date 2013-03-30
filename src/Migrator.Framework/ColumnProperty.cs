@@ -48,4 +48,27 @@ namespace Migrator.Framework
 		/// </summary>
 		PrimaryKeyWithIdentity = PrimaryKey | Identity
 	}
+
+    public static class ColumnPropertyExtensions
+    {
+        public static bool IsSet(this ColumnProperty fruits, ColumnProperty flags)
+        {
+            return (fruits & flags) == flags;
+        }
+
+        public static bool IsNotSet(this ColumnProperty fruits, ColumnProperty flags)
+        {
+            return (fruits & (~flags)) == 0;
+        }
+
+        public static ColumnProperty Set(this ColumnProperty fruits, ColumnProperty flags)
+        {
+            return fruits | flags;
+        }
+
+        public static ColumnProperty Clear(this ColumnProperty fruits, ColumnProperty flags)
+        {
+            return fruits & (~flags);
+        }
+    }
 }

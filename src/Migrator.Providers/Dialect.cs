@@ -226,7 +226,16 @@ namespace Migrator.Providers
 			return mapper;
 		}
 
-		/// <summary>
+        public ColumnPropertiesMapper GetAndMapColumnPropertiesWithoutDefault(Column column)
+        {
+            ColumnPropertiesMapper mapper = GetColumnMapper(column);
+            mapper.MapColumnPropertiesWithoutDefault(column);
+            if (column.DefaultValue != null && column.DefaultValue != DBNull.Value)
+                mapper.Default = column.DefaultValue;
+            return mapper;
+        }
+
+        /// <summary>
 		/// Subclasses register which DbTypes are unsigned-compatible (ie, available in signed and unsigned variants)
 		/// </summary>
 		/// <param name="type"></param>
