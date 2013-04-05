@@ -39,8 +39,11 @@ namespace Migrator.Providers.SqlServer
             _connection.ConnectionString = _connectionString;
             _connection.Open();
 
-            var collation = this.ExecuteScalar("SELECT DATABASEPROPERTYEX('MLOG_MCC', 'Collation')").ToString();
-            this.Dialect.RegisterProperty(ColumnProperty.CaseSensitive, "COLLATE " + collation.Replace("_CI_", "_CS_"));
+            var collation = this.ExecuteScalar("SELECT DATABASEPROPERTYEX('MLOG_MCC', 'Collation')");
+            var collationString = "Latin1_General_CI_AS";
+            if (collation!=null)
+                collationString = collation.ToString();
+            this.Dialect.RegisterProperty(ColumnProperty.CaseSensitive, "COLLATE " + collationString.Replace("_CI_", "_CS_"));            
         }
 
         public override bool ConstraintExists(string table, string name)
