@@ -942,10 +942,12 @@ namespace Migrator.Providers
                     CreateSchemaInfoTable();
 
                     string versionColumn = "Version";
+                    string scopeColumn = "Scope";
 
                     versionColumn = QuoteColumnNameIfRequired(versionColumn);
+                    scopeColumn = QuoteColumnNameIfRequired(scopeColumn);
 
-                    using (IDataReader reader = Select(versionColumn, _schemaInfotable))
+                    using (IDataReader reader = Select(versionColumn, _schemaInfotable, string.Format("{0} = '{1}'", scopeColumn, _scope)))
                     {
                         while (reader.Read())
                         {
