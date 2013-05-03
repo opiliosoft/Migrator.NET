@@ -37,6 +37,11 @@ namespace Migrator.Providers.PostgreSQL
 
 		public override void RemoveTable(string name)
 		{
+            if (!TableExists(name))
+            {
+                throw new MigrationException(String.Format("Table with name '{0}' does not exist to rename", name));
+            }
+
 			ExecuteNonQuery(String.Format("DROP TABLE IF EXISTS {0} CASCADE", name));
 		}
 
@@ -55,7 +60,7 @@ namespace Migrator.Providers.PostgreSQL
 				return false;
 
 			using (IDataReader reader =
-				ExecuteQuery(String.Format("SELECT column_name FROM information_schema.columns WHERE table_schema = 'public' AND table_name = lower('{0}') AND column_name = lower('{1}')", table, column)))
+				ExecuteQuery(String.Format("SELECT column_name FROM information_schema.columns WHERE table_schema = 'public' AND table_name = lower('{0}') AND (column_name = lower('{1}') OR column_name = '{1}')", table, column)))
 			{
 				return reader.Read();
 			}
@@ -83,6 +88,10 @@ namespace Migrator.Providers.PostgreSQL
 				return;
 			}
 
+		    var existingColumn = GetColumnByName(table, column.Name);
+		    
+            column.Name = existingColumn.Name; // name might have different case.
+
 			string tempColumn = "temp_" + column.Name;
 			RenameColumn(table, column.Name, tempColumn);
 
@@ -93,11 +102,11 @@ namespace Migrator.Providers.PostgreSQL
 			column.ColumnProperty = (column.ColumnProperty & ~ColumnProperty.NotNull);
 
 			AddColumn(table, column);
-			ExecuteQuery(String.Format("UPDATE {0} SET {1}={2}", table, column.Name, tempColumn));
+			ExecuteQuery(String.Format("UPDATE {0} SET {1}={2}", table, Dialect.Quote(column.Name), tempColumn));
 			RemoveColumn(table, tempColumn);
 
 			// if is not null, set that now
-			if (isNotNull) ExecuteQuery(string.Format("ALTER TABLE {0} ALTER COLUMN {1} SET NOT NULL", table, column.Name));
+            if (isNotNull) ExecuteQuery(string.Format("ALTER TABLE {0} ALTER COLUMN {1} SET NOT NULL", table, Dialect.Quote(column.Name)));
 		}
 
 		public override string[] GetTables()
@@ -138,7 +147,7 @@ namespace Migrator.Providers.PostgreSQL
 		public override Column GetColumnByName(string table, string columnName)
 		{
 			// Duplicate because of the lower case issue
-			return Array.Find(GetColumns(table), column => column.Name == columnName.ToLower());
+			return Array.Find(GetColumns(table), column => column.Name == columnName.ToLower() || column.Name == columnName);
 		}
 
         public override bool IndexExists(string table, string name)
