@@ -566,6 +566,14 @@ namespace Migrator.Providers
 
         public virtual void AddForeignKey(string name, string primaryTable, string primaryColumn, string refTable, string refColumn)
         {
+            try
+            {
+                AddForeignKey(name, primaryTable, new[] { primaryColumn }, refTable, new[] { refColumn });
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format("Error occured while adding foreign key: \"{0}\" between table: \"{1}\" and table: \"{2}\" - see inner exception for details", name, primaryTable, refTable), ex);
+            }
         }
 
        
