@@ -227,6 +227,8 @@ namespace Migrator.Framework
 		/// <param name="checkSql">The check constraint definition.</param>
 		void AddCheckConstraint(string name, string table, string checkSql);
 
+	    void AddView(string name, string tableName, params IViewField[] fields);
+
 		/// <summary>
 		/// Add a table
 		/// </summary>
@@ -401,6 +403,8 @@ namespace Migrator.Framework
 		/// <param name="table">The table that contains the foreign key.</param>
 		/// <param name="name">The name of the constraint to remove</param>
 		void RemoveConstraint(string table, string name);
+
+	    void RemoveAllConstraints(string table);
 
 		/// <summary>
 		/// Remove an existing table

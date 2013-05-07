@@ -80,7 +80,17 @@ namespace Migrator.Providers
 			// No Op
 		}
 
-		public void AddTable(string name, params IDbField[] columns)
+	    public void RemoveAllConstraints(string table)
+	    {
+	        
+	    }
+
+	    public void AddView(string name, string tableName, params IViewField[] fields)
+	    {
+	        
+	    }
+
+	    public void AddTable(string name, params IDbField[] columns)
 		{
 			// No Op
 		}
