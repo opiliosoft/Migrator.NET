@@ -335,6 +335,10 @@ namespace Migrator.Providers
 
         public virtual void ChangeColumn(string table, Column column)
         {
+            var isUniqueSet = column.ColumnProperty.IsSet(ColumnProperty.Unique);
+
+            column.ColumnProperty = column.ColumnProperty.Clear(ColumnProperty.Unique);
+
             if (!ColumnExists(table, column.Name))
             {
                 Logger.Warn("Column {0}.{1} does not exist", table, column.Name);
@@ -344,6 +348,11 @@ namespace Migrator.Providers
             ColumnPropertiesMapper mapper = _dialect.GetAndMapColumnProperties(column);
 
             ChangeColumn(table, mapper.ColumnSql);
+
+            if (isUniqueSet)
+            {
+                AddUniqueConstraint(string.Format("UX_{0}_{1}", table, column.Name), table, new string[]{column.Name});
+            }
         }
 
         public virtual void RemoveColumnDefaultValue(string table, string column)
