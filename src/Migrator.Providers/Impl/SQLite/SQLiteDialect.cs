@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using Migrator.Framework;
 
@@ -33,6 +34,16 @@ namespace Migrator.Providers.SQLite
 			RegisterProperty(ColumnProperty.Identity, "AUTOINCREMENT");
             RegisterProperty(ColumnProperty.CaseSensitive, "COLLATE NOCASE"); 
 		}
+
+        public override string Default(object defaultValue)
+        {
+            if (defaultValue is bool)
+            {
+                return String.Format("DEFAULT {0}", (bool)defaultValue ? "1" : "0");
+            }
+
+            return base.Default(defaultValue);
+        }
 
 		public override bool NeedsNotNullForIdentity
 		{
