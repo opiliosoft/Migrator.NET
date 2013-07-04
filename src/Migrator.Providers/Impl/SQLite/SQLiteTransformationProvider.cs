@@ -124,11 +124,39 @@ namespace Migrator.Providers.SQLite
 				return;
 			}
 
-			string tempColumn = "temp_" + column.Name;
-			RenameColumn(table, column.Name, tempColumn);
-			AddColumn(table, column);
-			ExecuteQuery(String.Format("UPDATE {0} SET {1}={2}", table, column.Name, tempColumn));
-			RemoveColumn(table, tempColumn);
+            if (
+                    (column.ColumnProperty & ColumnProperty.PrimaryKey) != ColumnProperty.PrimaryKey && 
+                    (column.ColumnProperty & ColumnProperty.Unique) != ColumnProperty.Unique &&
+                    ((column.ColumnProperty & ColumnProperty.NotNull) != ColumnProperty.NotNull || column.DefaultValue != null) &&
+                    (column.DefaultValue == null || (column.DefaultValue.ToString() != "'CURRENT_TIME'" && column.DefaultValue.ToString() != "'CURRENT_DATE'") && column.DefaultValue.ToString() != "'CURRENT_TIMESTAMP'")
+                )
+		    {
+				string tempColumn = "temp_" + column.Name;
+				RenameColumn(table, column.Name, tempColumn);
+				AddColumn(table, column);
+				ExecuteQuery(String.Format("UPDATE {0} SET {1}={2}", table, column.Name, tempColumn));
+				RemoveColumn(table, tempColumn);		        
+		    }
+		    else
+		    {
+		        var newColumns = GetColumns(table).ToArray();
+
+		        for (int i = 0; i < newColumns.Count(); i++)
+		        {
+		            if (newColumns[i].Name == column.Name)
+		            {
+		                newColumns[i] = column;
+		                break;
+		            }
+		        }
+
+                AddTable(table + "_temp", null, newColumns);
+
+		        var colNamesSql = string.Join(", ", newColumns.Select(x => x.Name));
+                ExecuteQuery(String.Format("INSERT INTO {0}_temp SELECT {1} FROM {0}", table, colNamesSql));
+			    RemoveTable(table);
+			    ExecuteQuery(String.Format("ALTER TABLE {0}_temp RENAME TO {0}", table));
+		    }
 		}
 
 	    public override int TruncateTable(string table)
