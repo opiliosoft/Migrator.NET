@@ -376,8 +376,7 @@ namespace Migrator.Providers
         {
             try
             {
-                ExecuteNonQuery(String.Format("SELECT {0} FROM {1}", column, table));
-                return true;
+                return GetColumns(table).Any(col => col.Name == column);
             }
             catch (Exception)
             {
