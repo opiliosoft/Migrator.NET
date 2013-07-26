@@ -31,7 +31,7 @@ namespace Migrator.Providers
 		protected string name;
 
 		/// <summary>The SQL type</summary>
-		protected string type;
+		public string type { get; private set; }
 
 		public ColumnPropertiesMapper(Dialect dialect, string type)
 		{
