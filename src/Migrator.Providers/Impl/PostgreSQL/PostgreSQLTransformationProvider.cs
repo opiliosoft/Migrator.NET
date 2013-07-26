@@ -77,39 +77,72 @@ namespace Migrator.Providers.PostgreSQL
 
 	    public override List<string> GetDatabases()
 	    {
-	        throw new NotImplementedException();
+            return ExecuteStringQuery("SELECT datname FROM pg_database WHERE datistemplate = false");            
 	    }
 
-	    public override void ChangeColumn(string table, Column column)
-		{
-			if (!ColumnExists(table, column.Name))
-			{
-				Logger.Warn("Column {0}.{1} does not exist", table, column.Name);
-				return;
-			}
+        //public override void ChangeColumn(string table, Column column)
+        //{
+        //    if (!ColumnExists(table, column.Name))
+        //    {
+        //        Logger.Warn("Column {0}.{1} does not exist", table, column.Name);
+        //        return;
+        //    }
 
-		    var existingColumn = GetColumnByName(table, column.Name);
+        //    var existingColumn = GetColumnByName(table, column.Name);
 		    
-            column.Name = existingColumn.Name; // name might have different case.
+        //    column.Name = existingColumn.Name; // name might have different case.
 
-			string tempColumn = "temp_" + column.Name;
-			RenameColumn(table, column.Name, tempColumn);
+        //    string tempColumn = "temp_" + column.Name;
+        //    RenameColumn(table, column.Name, tempColumn);
 
-			// check if this is not-null
-			bool isNotNull = (column.ColumnProperty & ColumnProperty.NotNull) == ColumnProperty.NotNull;
+        //    // check if this is not-null
+        //    bool isNotNull = (column.ColumnProperty & ColumnProperty.NotNull) == ColumnProperty.NotNull;
 
-			// remove the not-null option
-			column.ColumnProperty = (column.ColumnProperty & ~ColumnProperty.NotNull);
+        //    // remove the not-null option
+        //    column.ColumnProperty = (column.ColumnProperty & ~ColumnProperty.NotNull);
 
-			AddColumn(table, column);
-			ExecuteQuery(String.Format("UPDATE {0} SET {1}={2}", table, Dialect.Quote(column.Name), tempColumn));
-			RemoveColumn(table, tempColumn);
+        //    AddColumn(table, column);
+        //    ExecuteQuery(String.Format("UPDATE {0} SET {1}={2}", table, Dialect.Quote(column.Name), Dialect.Quote(tempColumn)));
+        //    RemoveColumn(table, tempColumn);
 
-			// if is not null, set that now
-            if (isNotNull) ExecuteQuery(string.Format("ALTER TABLE {0} ALTER COLUMN {1} SET NOT NULL", table, Dialect.Quote(column.Name)));
-		}
+        //    // if is not null, set that now
+        //    if (isNotNull) ExecuteQuery(string.Format("ALTER TABLE {0} ALTER COLUMN {1} SET NOT NULL", table, Dialect.Quote(column.Name)));
+        //}
 
-		public override string[] GetTables()
+        public override void ChangeColumn(string table, Column column)
+        {
+            var isUniqueSet = column.ColumnProperty.IsSet(ColumnProperty.Unique);
+
+            column.ColumnProperty = column.ColumnProperty.Clear(ColumnProperty.Unique);
+
+            if (!ColumnExists(table, column.Name))
+            {
+                Logger.Warn("Column {0}.{1} does not exist", table, column.Name);
+                return;
+            }
+
+            ColumnPropertiesMapper mapper = _dialect.GetAndMapColumnProperties(column);
+
+            string change1 = string.Format("{0} TYPE {1}", mapper.Name, mapper.type);
+            ChangeColumn(table, change1);
+            if (mapper.Default != null)
+            {
+                string change2 = string.Format("{0} SET DEFAULT {1}", mapper.Name, _dialect.Default(mapper.Default));
+                ChangeColumn(table, change2);
+            }
+            else
+            {
+                string change2 = string.Format("{0} DROP DEFAULT", mapper.Name);
+                ChangeColumn(table, change2);
+            }
+
+            if (isUniqueSet)
+            {
+                AddUniqueConstraint(string.Format("UX_{0}_{1}", table, column.Name), table, new string[] { column.Name });
+            }
+        }
+
+        public override string[] GetTables()
 		{
 			var tables = new List<string>();
 			using (IDataReader reader = ExecuteQuery("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'"))

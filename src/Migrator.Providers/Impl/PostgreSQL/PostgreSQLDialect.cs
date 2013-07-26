@@ -1,3 +1,4 @@
+using System;
 using System.Data;
 using Migrator.Framework;
 
@@ -79,7 +80,7 @@ namespace Migrator.Providers.PostgreSQL
         {
             get { return false; }
         }
-        
+       
         public override bool ConstraintNameNeedsQuote
         {
             get { return false; }
@@ -93,6 +94,6 @@ namespace Migrator.Providers.PostgreSQL
         public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope, string providerName)
 		{
 			return new PostgreSQLTransformationProvider(dialect, connectionString, defaultSchema, scope, providerName);
-		}
+		}        
     }
 }

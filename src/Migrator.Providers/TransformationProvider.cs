@@ -538,9 +538,10 @@ namespace Migrator.Providers
                 Logger.Warn("Primary key {0} already exists", name);
                 return;
             }
+
             ExecuteNonQuery(
                 String.Format("ALTER TABLE {0} ADD CONSTRAINT {1} PRIMARY KEY ({2}) ", table, name,
-                              String.Join(",", columns)));
+                              String.Join(",", QuoteColumnNamesIfRequired(columns))));
         }
 
         public virtual void AddUniqueConstraint(string name, string table, params string[] columns)

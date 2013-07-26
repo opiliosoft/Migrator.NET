@@ -88,7 +88,7 @@ namespace Migrator.Providers.SQLite
             changeColumnInternal(table, new[] { column }, new[] { columnDef });
         }
 
-	    public override void AddPrimaryKey(string name, string table, params string[] columns)
+        public override void AddPrimaryKey(string name, string table, params string[] columns)
 	    {
 	        List<Column> newCol = new List<Column>();
 	        foreach (var column in columns)
@@ -100,14 +100,24 @@ namespace Migrator.Providers.SQLite
 	        this.changeColumnInternal(table, columns, newCol.ToArray());
 	    }
 
-	    private void changeColumnInternal(string table, string[] old, Column[] columns)
+        public override void AddUniqueConstraint(string name, string table, params string[] columns)
+        {
+            var constr = new Unique() {KeyColumns = columns, Name = name};
+
+            this.changeColumnInternal(table, new string[] {}, new[] {constr});
+        }
+
+        private void changeColumnInternal(string table, string[] old, IDbField[] columns)
 	    {
 	        var newColumns = GetColumns(table).Where(x => !old.Any(y => x.Name.ToLower() == y.ToLower())).ToList();
             var oldColumnNames = newColumns.Select(x => x.Name).ToList();
-            newColumns.AddRange(columns);
+            newColumns.AddRange(columns.Where(x => x is Column).Cast<Column>());
             oldColumnNames.AddRange(old);
 
-            AddTable(table + "_temp", null, newColumns.ToArray());
+            var newFieldsPlusUnique = newColumns.Cast<IDbField>().ToList();
+            newFieldsPlusUnique.AddRange(columns.Where(x => x is Unique));
+
+            AddTable(table + "_temp", null, newFieldsPlusUnique.ToArray());
             var colNamesNewSql = string.Join(", ", newColumns.Select(x => x.Name));
             var colNamesSql = string.Join(", ", oldColumnNames);
             ExecuteQuery(String.Format("INSERT INTO {1}_temp ({0}) SELECT {2} FROM {1}", colNamesNewSql, table, colNamesSql));
@@ -254,7 +264,8 @@ namespace Migrator.Providers.SQLite
 			}
 		}
 
-        public override void AddTable(string name, string engine, params IDbField[] fields)
+
+	    public override void AddTable(string name, string engine, params IDbField[] fields)
         {
             if (TableExists(name))
             {
@@ -293,11 +304,30 @@ namespace Migrator.Providers.SQLite
                 sqlCreate += String.Format(", PRIMARY KEY ({0}) ", String.Join(",", pks.ToArray()));
             }
 
+            var uniques = fields.Where(x => x is Unique).Cast<Unique>().ToArray();
+            foreach (var u in uniques)
+            {
+                var nm = "";
+                if (!string.IsNullOrEmpty(u.Name))
+                    nm = string.Format(" CONSTRAINT {0}", u.Name);
+                sqlCreate += String.Format(",{0} UNIQUE ({1})", nm, String.Join(",", u.KeyColumns));
+            }
+
             var foreignKeys = fields.Where(x => x is ForeignKeyConstraint).Cast<ForeignKeyConstraint>().ToArray();
             foreach (var fk in foreignKeys)
             {
-                sqlCreate += String.Format(", FOREIGN KEY ({0}) REFERENCES {1}({2})", String.Join(",", fk.Columns), fk.PkTable, String.Join(",", fk.PkColumns));
+                var nm = "";
+                if (!string.IsNullOrEmpty(fk.Name))
+                    nm = string.Format(" CONSTRAINT {0}", fk.Name);
+                sqlCreate += String.Format(",{0} FOREIGN KEY ({1}) REFERENCES {2}({3})", nm, String.Join(",", fk.Columns), fk.PkTable, String.Join(",", fk.PkColumns));
             }
+
+            
+
+            //table = QuoteTableNameIfRequired(table);
+            //ExecuteNonQuery(String.Format("ALTER TABLE {0} ADD CONSTRAINT {1} UNIQUE({2}) ", table, name, string.Join(", ", columns)));
+
+
 
             sqlCreate += ")";
 
