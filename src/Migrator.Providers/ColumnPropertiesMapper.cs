@@ -184,7 +184,7 @@ namespace Migrator.Providers
 
 		protected virtual void AddNotNull(Column column, List<string> vals)
 		{
-			if (!PropertySelected(column.ColumnProperty, ColumnProperty.PrimaryKey) || dialect.NeedsNotNullForIdentity)
+			if (!PropertySelected(column.ColumnProperty, ColumnProperty.Null) && (!PropertySelected(column.ColumnProperty, ColumnProperty.PrimaryKey) || dialect.NeedsNotNullForIdentity))
 			{
 				AddValueIfSelected(column, ColumnProperty.NotNull, vals);
 			}

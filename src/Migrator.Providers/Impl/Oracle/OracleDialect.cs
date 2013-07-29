@@ -97,6 +97,10 @@ namespace Migrator.Providers.Oracle
 			get { return false; }
 		}
 
+        public override bool ConstraintNameNeedsQuote
+        {
+            get { return false; }
+        }
 		public override bool TableNameNeedsQuote
 		{
 			get { return false; }
@@ -122,6 +126,12 @@ namespace Migrator.Providers.Oracle
 			{
 				defaultValue = ((bool)defaultValue) ? 1 : 0;
 			}
+            else if (defaultValue is String)
+            {
+                if (!defaultValue.ToString().StartsWith("'"))
+                    defaultValue = "'" + defaultValue + "'";
+            }
+
 			return String.Format("DEFAULT {0}", defaultValue);
 		}
 	}

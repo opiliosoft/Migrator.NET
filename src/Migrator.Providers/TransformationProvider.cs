@@ -273,6 +273,11 @@ namespace Migrator.Providers
                 return;
             }
 
+            if (name.Length > 30)
+            {
+                Logger.Warn("Tablename {0} is bigger then 30 char's This is a Problem if you want to use Oracle!", name);                
+            }
+
             var columns = fields.Where(x => x is Column).Cast<Column>().ToArray();
 
             List<string> pks = GetPrimaryKeys(columns);
@@ -297,7 +302,7 @@ namespace Migrator.Providers
 
             if (compoundPrimaryKey)
             {
-                AddPrimaryKey(String.Format("PK_{0}", name), name, pks.ToArray());
+                AddPrimaryKey(getPrimaryKeyname(name), name, pks.ToArray());
             }
 
             var indexes = fields.Where(x => x is Index).Cast<Index>().ToArray();
@@ -313,6 +318,10 @@ namespace Migrator.Providers
             }                                   
         }
 
+        protected virtual string getPrimaryKeyname(string tableName)
+        {
+            return "PK_" + tableName;
+        }
         public virtual void RemoveTable(string name)
         {
 		    if (!TableExists(name))
@@ -463,6 +472,11 @@ namespace Migrator.Providers
             {
                 Logger.Warn("Column {0}.{1} already exists", table, column);
                 return;
+            }
+
+            if (column.Length > 30)
+            {
+                Logger.Warn("Columnname {0} is bigger then 30 char's This is a Problem if you want to use Oracle!", column);                
             }
 
             ColumnPropertiesMapper mapper =
