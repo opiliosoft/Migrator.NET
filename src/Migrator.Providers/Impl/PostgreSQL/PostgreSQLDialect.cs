@@ -73,7 +73,7 @@ namespace Migrator.Providers.PostgreSQL
 			                 "TRIGGER", "TRIGGER_CATALOG", "TRIGGER_SCHEMA", "TRIM", "TRUE", "TRUNCATE", "TRUSTED", "TYPE", "UNCOMMITTED", "UNDER", "UNENCRYPTED", "UNION", "UNIQUE",
 			                 "UNKNOWN", "UNLISTEN", "UNNAMED", "UNNEST", "UNTIL", "UPDATE", "UPPER", "USAGE", "USER", "USER_DEFINED_TYPE_CATALOG", "USER_DEFINED_TYPE_NAME", "USER_DEFINED_TYPE_SCHEMA",
 			                 "USING", "VACUUM", "VALID", "VALIDATOR", "VALUE", "VALUES", "VARCHAR", "VARIABLE", "VARYING", "VERBOSE", "VERSION", "VIEW", "VOLATILE", "WHEN", "WHENEVER", "WHERE", "WITH",
-			                 "WITHOUT", "WORK", "WRITE", "YEAR", "ZONE");
+                             "WITHOUT", "WORK", "WRITE", "XMAX", "XMIN", "YEAR", "ZONE");
 		}
 
         public override bool TableNameNeedsQuote

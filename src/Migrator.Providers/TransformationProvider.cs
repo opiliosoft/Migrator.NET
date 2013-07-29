@@ -425,7 +425,7 @@ namespace Migrator.Providers
             }
         }
 
-        public void SwitchDatabase(string databaseName)
+        public virtual void SwitchDatabase(string databaseName)
         {
             _connection.ChangeDatabase(databaseName);
         }
