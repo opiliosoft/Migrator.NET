@@ -111,6 +111,8 @@ namespace Migrator.Providers.PostgreSQL
 
         public override void ChangeColumn(string table, Column column)
         {
+            var oldColumn = GetColumnByName(table, column.Name);
+
             var isUniqueSet = column.ColumnProperty.IsSet(ColumnProperty.Unique);
 
             column.ColumnProperty = column.ColumnProperty.Clear(ColumnProperty.Unique);
@@ -123,16 +125,28 @@ namespace Migrator.Providers.PostgreSQL
 
             ColumnPropertiesMapper mapper = _dialect.GetAndMapColumnProperties(column);
 
-            string change1 = string.Format("{0} TYPE {1}", mapper.Name, mapper.type);
+            string change1 = string.Format("{0} TYPE {1}", QuoteColumnNameIfRequired(mapper.Name), mapper.type);
+
+            #region Field Type Converters...
+            if ((oldColumn.Type == DbType.Int16 || oldColumn.Type == DbType.Int32 || oldColumn.Type == DbType.Int64 || oldColumn.Type == DbType.Decimal) && column.Type == DbType.Boolean)
+            {
+                change1 += string.Format(" USING CASE {0} WHEN 1 THEN true ELSE false END", QuoteColumnNameIfRequired(mapper.Name));
+            }
+            else if (column.Type == DbType.Boolean)
+            {
+                change1 += string.Format(" USING CASE {0} WHEN '1' THEN true ELSE false END", QuoteColumnNameIfRequired(mapper.Name));
+            }
+            #endregion
             ChangeColumn(table, change1);
+
             if (mapper.Default != null)
             {
-                string change2 = string.Format("{0} SET DEFAULT {1}", mapper.Name, _dialect.Default(mapper.Default));
+                string change2 = string.Format("{0} SET {1}", QuoteColumnNameIfRequired(mapper.Name), _dialect.Default(mapper.Default));
                 ChangeColumn(table, change2);
             }
             else
             {
-                string change2 = string.Format("{0} DROP DEFAULT", mapper.Name);
+                string change2 = string.Format("{0} DROP DEFAULT", QuoteColumnNameIfRequired(mapper.Name));
                 ChangeColumn(table, change2);
             }
 
@@ -140,6 +154,21 @@ namespace Migrator.Providers.PostgreSQL
             {
                 AddUniqueConstraint(string.Format("UX_{0}_{1}", table, column.Name), table, new string[] { column.Name });
             }
+        }
+
+        public override void CreateDatabases(string databaseName)
+        {
+            ExecuteNonQuery(string.Format("CREATE DATABASE {0}", _dialect.Quote(databaseName)));
+        }
+
+        public override void SwitchDatabase(string databaseName)
+        {
+            _connection.ChangeDatabase(_dialect.Quote(databaseName));
+        }
+
+        public override void DropDatabases(string databaseName)
+        {
+            ExecuteNonQuery(string.Format("DROP DATABASE {0}", _dialect.Quote(databaseName)));
         }
 
         public override string[] GetTables()

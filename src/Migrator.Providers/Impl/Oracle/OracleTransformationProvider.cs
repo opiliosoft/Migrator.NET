@@ -27,6 +27,12 @@ namespace Migrator.Providers.Oracle
             _connection.Open();
         }
 
+        public override void DropDatabases(string databaseName)
+        {
+            if (string.IsNullOrEmpty(databaseName))
+                ExecuteNonQuery(string.Format("DROP DATABASE", _dialect.Quote(databaseName)));
+        }
+
         public override void AddForeignKey(string name, string primaryTable, string[] primaryColumns, string refTable,
 		                                   string[] refColumns, ForeignKeyConstraintType constraint)
 		{
@@ -53,6 +59,11 @@ namespace Migrator.Providers.Oracle
 				throw new ArgumentException(string.Format("The name \"{0}\" is {1} characters in length, bug maximum length for Oracle identifier is 30 characters.", name, name.Length), "name");
 			}
 		}
+
+        protected override string getPrimaryKeyname(string tableName)
+        {
+            return tableName.Length > 27 ? "PK_" + tableName.Substring(0, 27) : "PK_" + tableName;
+        }
 
 		public override void ChangeColumn(string table, Column column)
 		{
@@ -224,25 +235,25 @@ namespace Migrator.Providers.Oracle
 			return tables.ToArray();
 		}
 
-        public override List<long> AppliedMigrations
-        {
-            get
-            {
-                if (_appliedMigrations == null)
-                {
-                    _appliedMigrations = new List<long>();
-                    CreateSchemaInfoTable();
-                    using (IDataReader reader = Select("version", SchemaInfoTableName))
-                    {
-                        while (reader.Read())
-                        {
-                            _appliedMigrations.Add(Convert.ToInt64(reader.GetValue(0)));
-                        }
-                    }
-                }
-                return _appliedMigrations;
-            }
-        }
+        //public override List<long> AppliedMigrations
+        //{
+        //    get
+        //    {
+        //        if (_appliedMigrations == null)
+        //        {
+        //            _appliedMigrations = new List<long>();
+        //            CreateSchemaInfoTable();
+        //            using (IDataReader reader = Select(QuoteColumnNameIfRequired("Version"), SchemaInfoTableName))
+        //            {
+        //                while (reader.Read())
+        //                {
+        //                    _appliedMigrations.Add(Convert.ToInt64(reader.GetValue(0)));
+        //                }
+        //            }
+        //        }
+        //        return _appliedMigrations;
+        //    }
+        //}
 
 		public override Column[] GetColumns(string table)
 		{
@@ -329,6 +340,12 @@ namespace Migrator.Providers.Oracle
 			}
 		}
 
+        public override void RemoveColumnDefaultValue(string table, string column)
+        {
+            var sql = string.Format("ALTER TABLE {0} MODIFY {1} DEFAULT NULL", table, column);
+            ExecuteNonQuery(sql);
+        }
+
 		public override void AddTable(string name, params IDbField[] fields)
 		{
 			GuardAgainstMaximumIdentifierLengthForOracle(name);
@@ -337,18 +354,22 @@ namespace Migrator.Providers.Oracle
 
 			GuardAgainstMaximumColumnNameLengthForOracle(name, columns);
 
-			base.AddTable(name, columns);
+			base.AddTable(name, fields);
 
             if (columns.Any(c => c.ColumnProperty == ColumnProperty.PrimaryKeyWithIdentity))
             {
                 var identityColumn = columns.First(c => c.ColumnProperty == ColumnProperty.PrimaryKeyWithIdentity);
 
+                var seqTName = name.Length > 21 ? name.Substring(0, 21) : name;
+                if (seqTName.EndsWith("_"))
+                    seqTName = seqTName.Substring(0, seqTName.Length - 1);
+
                 // Create a sequence for the table
-                ExecuteQuery(String.Format("CREATE SEQUENCE {0}_SEQUENCE", name));
+                ExecuteQuery(String.Format("CREATE SEQUENCE {0}_SEQUENCE", seqTName));
 
                 // Create identity trigger (This all has to be in one line (no whitespace), I learned the hard way :) )
                 ExecuteQuery(String.Format(
-                    @"CREATE OR REPLACE TRIGGER {0}_TRIGGER BEFORE INSERT ON {0} FOR EACH ROW BEGIN SELECT {0}_SEQUENCE.NEXTVAL INTO :NEW.{1} FROM DUAL; END;", name, identityColumn.Name));
+                    @"CREATE OR REPLACE TRIGGER {0}_TRIGGER BEFORE INSERT ON {1} FOR EACH ROW BEGIN SELECT {0}_SEQUENCE.NEXTVAL INTO :NEW.{2} FROM DUAL; END;", seqTName, name, identityColumn.Name));
             }
 		}
         public override void RemoveTable(string name)
@@ -417,14 +438,14 @@ namespace Migrator.Providers.Oracle
             _appliedMigrations.Remove(version);
         }*/
 
-        protected override void CreateSchemaInfoTable()
-        {
-            EnsureHasConnection();
-            if (!TableExists("SchemaInfo"))
-            {
-                AddTable(SchemaInfoTableName, new Column("Version", DbType.Int64, ColumnProperty.PrimaryKey));
-            }
-        }
+        //protected override void CreateSchemaInfoTable()
+        //{
+        //    EnsureHasConnection();
+        //    if (!TableExists("SchemaInfo"))
+        //    {
+        //        AddTable(SchemaInfoTableName, new Column("Version", DbType.Int64, ColumnProperty.PrimaryKey));
+        //    }
+        //}
 
         private string SchemaInfoTableName
         {
