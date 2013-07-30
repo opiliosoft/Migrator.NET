@@ -1101,8 +1101,11 @@ namespace Migrator.Providers
         {
             if (_connection != null && _connection.State == ConnectionState.Open)
             {
-                _connection.Close();
+                _connection.Close();               
             }
+
+            if (_connection != null)
+                _connection.Dispose();
         }
 
         public virtual string QuoteColumnNameIfRequired(string name)

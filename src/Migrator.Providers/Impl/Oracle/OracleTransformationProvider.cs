@@ -235,25 +235,25 @@ namespace Migrator.Providers.Oracle
 			return tables.ToArray();
 		}
 
-        public override List<long> AppliedMigrations
-        {
-            get
-            {
-                if (_appliedMigrations == null)
-                {
-                    _appliedMigrations = new List<long>();
-                    CreateSchemaInfoTable();
-                    using (IDataReader reader = Select(QuoteColumnNameIfRequired("Version"), SchemaInfoTableName))
-                    {
-                        while (reader.Read())
-                        {
-                            _appliedMigrations.Add(Convert.ToInt64(reader.GetValue(0)));
-                        }
-                    }
-                }
-                return _appliedMigrations;
-            }
-        }
+        //public override List<long> AppliedMigrations
+        //{
+        //    get
+        //    {
+        //        if (_appliedMigrations == null)
+        //        {
+        //            _appliedMigrations = new List<long>();
+        //            CreateSchemaInfoTable();
+        //            using (IDataReader reader = Select(QuoteColumnNameIfRequired("Version"), SchemaInfoTableName))
+        //            {
+        //                while (reader.Read())
+        //                {
+        //                    _appliedMigrations.Add(Convert.ToInt64(reader.GetValue(0)));
+        //                }
+        //            }
+        //        }
+        //        return _appliedMigrations;
+        //    }
+        //}
 
 		public override Column[] GetColumns(string table)
 		{
