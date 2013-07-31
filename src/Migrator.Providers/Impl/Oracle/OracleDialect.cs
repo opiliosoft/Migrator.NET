@@ -36,7 +36,8 @@ namespace Migrator.Providers.Oracle
 			RegisterColumnType(DbType.StringFixedLength, 2000, "NCHAR($l)");
 			RegisterColumnType(DbType.String, "NVARCHAR2(255)");
 			RegisterColumnType(DbType.String, 2000, "NVARCHAR2($l)");
-			RegisterColumnType(DbType.String, 1073741823, "NCLOB");
+			//RegisterColumnType(DbType.String, 1073741823, "NCLOB");
+            RegisterColumnType(DbType.String, int.MaxValue, "NCLOB");
 			RegisterColumnType(DbType.Time, "DATE");
 			RegisterColumnType(DbType.Guid, "RAW(16)");
 			
