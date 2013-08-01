@@ -87,26 +87,19 @@ namespace Migrator.Providers.SqlServer
 			return string.Format(QuoteTemplate, value);
 		}
 
-		public override string Default(object defaultValue)
-		{
-			if (defaultValue.GetType().Equals(typeof (bool)))
-			{
-				defaultValue = ((bool) defaultValue) ? 1 : 0;
-			}
+        public override string Default(object defaultValue)
+        {
+            if (defaultValue.GetType().Equals(typeof (bool)))
+            {
+                return String.Format("DEFAULT {0}", (bool)defaultValue ? "1" : "0");
+            }
             else if (defaultValue.GetType().Equals(typeof(Guid)))
             {
-                defaultValue = "'" + ((Guid) defaultValue).ToString("D") + "'";
-            }
-            else if (defaultValue.GetType().Equals(typeof(string)))
-            {
-                if (!string.IsNullOrEmpty((string)defaultValue))
-                    defaultValue = "'" + defaultValue + "'";
-                else
-                    defaultValue = "''";
+                return "DEFAULT '" + ((Guid) defaultValue).ToString("D") + "'";
             }
             else if (defaultValue.GetType().Equals(typeof(DateTime)))
             {
-                defaultValue = "CONVERT(DateTime,'"
+                return "DEFAULT CONVERT(DateTime,'"
                     + ((DateTime)defaultValue).Year.ToString("D4") + '-'
                     + ((DateTime)defaultValue).Month.ToString("D2") + '-'
                     + ((DateTime)defaultValue).Day.ToString("D2") + ' '
@@ -116,7 +109,8 @@ namespace Migrator.Providers.SqlServer
                     + ((DateTime)defaultValue).Millisecond.ToString("D3")
                     + "',121)";
             }
-            return String.Format("DEFAULT ({0})", defaultValue);
-		}
-	}
+
+            return base.Default(defaultValue);
+        }
+    }
 }
