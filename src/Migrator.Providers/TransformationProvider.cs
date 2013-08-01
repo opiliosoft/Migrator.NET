@@ -1106,6 +1106,8 @@ namespace Migrator.Providers
 
             if (_connection != null)
                 _connection.Dispose();
+
+            _connection = null;
         }
 
         public virtual string QuoteColumnNameIfRequired(string name)
