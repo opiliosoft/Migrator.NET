@@ -18,6 +18,7 @@ namespace Migrator.Providers.Mysql
             if (string.IsNullOrEmpty(providerName)) providerName = "MySql.Data.MySqlClient";
             var fac = DbProviderFactories.GetFactory(providerName);
             _connection = fac.CreateConnection(); //new MySqlConnection(_connectionString) {ConnectionString = _connectionString};
+            _connection.ConnectionString = _connectionString;
             _connection.Open();
         }
 
