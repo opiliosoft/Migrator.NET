@@ -18,6 +18,7 @@ namespace Migrator.Providers.Impl.Firebird
             if (string.IsNullOrEmpty(providerName)) providerName = "FirebirdSql.Data.FirebirdClient";
             var fac = DbProviderFactories.GetFactory(providerName);
             _connection = fac.CreateConnection(); // new FbConnection(this._connectionString);
+            _connection.ConnectionString = _connectionString;
             this._connection.Open();
         }
 

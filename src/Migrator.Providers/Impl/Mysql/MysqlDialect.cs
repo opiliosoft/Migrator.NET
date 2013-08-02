@@ -42,11 +42,13 @@ namespace Migrator.Providers.Mysql
 			RegisterColumnType(DbType.StringFixedLength, 65535, "TEXT");
 			RegisterColumnType(DbType.StringFixedLength, 16777215, "MEDIUMTEXT");
 			RegisterColumnType(DbType.String, "VARCHAR(255)");
-			RegisterColumnType(DbType.String, 255, "VARCHAR($l)");
-			RegisterColumnType(DbType.String, 256, "VARCHAR(255)");
-			RegisterColumnType(DbType.String, 65535, "TEXT");
+            RegisterColumnType(DbType.String, 65535, "VARCHAR($l)");
+			//RegisterColumnType(DbType.String, 256, "VARCHAR(255)");
+            //RegisterColumnType(DbType.String, 256, "VARCHAR(255)");
+			//RegisterColumnType(DbType.String, 65535, "TEXT");
 			RegisterColumnType(DbType.String, 16777215, "MEDIUMTEXT");
-			RegisterColumnType(DbType.String, 1073741823, "LONGTEXT");
+			//RegisterColumnType(DbType.String, 1073741823, "LONGTEXT");
+            RegisterColumnType(DbType.String, int.MaxValue, "LONGTEXT");
 			RegisterColumnType(DbType.Time, "TIME");
 
 			RegisterProperty(ColumnProperty.Unsigned, "UNSIGNED");
