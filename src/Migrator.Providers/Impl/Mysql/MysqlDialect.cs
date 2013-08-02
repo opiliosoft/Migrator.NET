@@ -79,7 +79,8 @@ namespace Migrator.Providers.Mysql
 			{
 				defaultValue = ((bool) defaultValue) ? 1 : 0;
 			}
-			return String.Format("DEFAULT {0}", defaultValue);
+
+		    return base.Default(defaultValue);
 		}
 	}
 }
