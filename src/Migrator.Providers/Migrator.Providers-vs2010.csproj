@@ -70,6 +70,7 @@
     <Compile Include="ColumnPropertiesMapper.cs" />
     <Compile Include="Dialect.cs" />
     <Compile Include="ForeignKeyConstraintMapper.cs" />
+    <Compile Include="Impl\Firebird\FirebirdColumnPropertiesMapper.cs" />
     <Compile Include="Impl\Ingres\IngresDialect.cs" />
     <Compile Include="Impl\Ingres\IngresTransformationProvider.cs" />
     <Compile Include="Impl\DB2\DB2Dialect.cs" />

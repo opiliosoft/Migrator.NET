@@ -371,7 +371,7 @@ namespace Migrator.Providers
 
         public virtual void RemoveColumn(string table, string column)
         {
-            if (!ColumnExists(table, column))
+            if (!ColumnExists(table, column, true))
             {
                 throw new MigrationException(string.Format("The table '{0}' does not have a column named '{1}'", table, column));                
             }
@@ -383,11 +383,18 @@ namespace Migrator.Providers
 
         public virtual bool ColumnExists(string table, string column)
         {
+            return ColumnExists(table, column, true);
+        }
+
+        public virtual bool ColumnExists(string table, string column, bool ignoreCase)
+        {
             try
             {
+                if (ignoreCase)
+                    return GetColumns(table).Any(col => col.Name.ToLower() == column.ToLower());
                 return GetColumns(table).Any(col => col.Name == column);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return false;
             }
@@ -1220,7 +1227,7 @@ namespace Migrator.Providers
             return String.Join(", ", columnStrings.ToArray());
         }
 
-        IDbCommand BuildCommand(string sql)
+        protected IDbCommand BuildCommand(string sql)
         {
             EnsureHasConnection();
             IDbCommand cmd = _connection.CreateCommand();

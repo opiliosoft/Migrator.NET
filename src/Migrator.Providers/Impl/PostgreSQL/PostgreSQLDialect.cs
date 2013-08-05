@@ -71,9 +71,9 @@ namespace Migrator.Providers.PostgreSQL
 			                 "SYSTEM", "SYSTEM_USER", "TABLE", "TABLE_NAME", "TEMP", "TEMPLATE", "TEMPORARY", "TERMINATE", "THAN", "THEN", "TIME", "TIMESTAMP", "TIMEZONE_HOUR", "TIMEZONE_MINUTE", "TO",
 			                 "TOAST", "TRAILING", "TRANSACTION", "TRANSACTIONS_COMMITTED", "TRANSACTIONS_ROLLED_BACK", "TRANSACTION_ACTIVE", "TRANSFORM", "TRANSFORMS", "TRANSLATE", "TRANSLATION", "TREAT",
 			                 "TRIGGER", "TRIGGER_CATALOG", "TRIGGER_SCHEMA", "TRIM", "TRUE", "TRUNCATE", "TRUSTED", "UNCOMMITTED", "UNDER", "UNENCRYPTED", "UNION", "UNIQUE",
-			                 "UNKNOWN", "UNLISTEN", "UNNAMED", "UNNEST", "UNTIL", "UPDATE", "UPPER", "USAGE", "USER", 
-			                 "USING", "VERBOSE", "WHEN", "WHERE"
-                             );
+			                 "UNKNOWN", "UNLISTEN", "UNNAMED", "UNNEST", "UNTIL", "UPDATE", "UPPER", "USAGE", "USER", "USER_DEFINED_TYPE_CATALOG", "USER_DEFINED_TYPE_NAME", "USER_DEFINED_TYPE_SCHEMA",
+			                 "USING", "VACUUM", "VALID", "VALIDATOR", "VALUES", "VARCHAR", "VARIABLE", "VARYING", "VERBOSE", "VERSION", "VIEW", "VOLATILE", "WHEN", "WHENEVER", "WHERE", "WITH",
+                             "WITHOUT", "WORK", "WRITE", "XMAX", "XMIN", "YEAR", "ZONE");		
 		}
 
         public override bool TableNameNeedsQuote
