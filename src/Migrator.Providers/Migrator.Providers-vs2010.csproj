@@ -79,6 +79,8 @@
     <Compile Include="Impl\Firebird\FirebirdTransformationProvider.cs" />
     <Compile Include="Impl\Informix\InformixDialect.cs" />
     <Compile Include="Impl\Informix\InformixTransformationProvider.cs" />
+    <Compile Include="Impl\Mysql\MariaDBDialect.cs" />
+    <Compile Include="Impl\Mysql\MariaDBTransformationProvider.cs" />
     <Compile Include="Impl\Mysql\MysqlDialect.cs" />
     <Compile Include="Impl\Mysql\MySqlTransformationProvider.cs" />
     <Compile Include="Impl\Oracle\MsOracleDialect.cs" />
@@ -90,6 +92,8 @@
     <Compile Include="Impl\SqlServer\SqlServer2005Dialect.cs" />
     <Compile Include="Impl\SqlServer\SqlServerCeDialect.cs" />
     <Compile Include="Impl\SqlServer\SqlServerCeTransformationProvider.cs" />
+    <Compile Include="Impl\Sybase\SybaseDialect.cs" />
+    <Compile Include="Impl\Sybase\SybaseTransformationProvider.cs" />
     <Compile Include="NoOpTransformationProvider.cs" />
     <Compile Include="Impl\Oracle\OracleDialect.cs" />
     <Compile Include="Impl\Oracle\OracleTransformationProvider.cs" />

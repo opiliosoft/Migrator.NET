@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-
+using System.Linq;
 using Migrator.Framework;
 
 namespace Migrator.Providers.Impl.Firebird
@@ -76,6 +76,36 @@ namespace Migrator.Providers.Impl.Firebird
             }
 
             return columns.ToArray();
+        }
+
+        public override void AddTable(string name, params IDbField[] fields)
+        {
+            var columns = fields.Where(x => x is Column).Cast<Column>().ToArray();
+
+            base.AddTable(name, fields);
+
+            if (columns.Any(c => c.ColumnProperty == ColumnProperty.PrimaryKeyWithIdentity))
+            {
+                var identityColumn = columns.First(c => c.ColumnProperty == ColumnProperty.PrimaryKeyWithIdentity);
+
+                var seqTName = name.Length > 21 ? name.Substring(0, 21) : name;
+                if (seqTName.EndsWith("_"))
+                    seqTName = seqTName.Substring(0, seqTName.Length - 1);
+
+                // Create a sequence for the table
+                ExecuteQuery(String.Format("CREATE GENERATOR {0}_SEQUENCE", seqTName));
+                ExecuteQuery(String.Format("SET GENERATOR {0}_SEQUENCE TO 0", seqTName));
+
+                var sql = ""; // "set term !! ;";
+                sql += "CREATE TRIGGER {1}_TRIGGER FOR {0}\n";
+                sql += "ACTIVE BEFORE INSERT POSITION 0\n";
+                sql += "AS\n";
+                sql += "BEGIN\n";
+                sql += "if (NEW.{2} is NULL) then NEW.{2} = GEN_ID({1}_SEQUENCE, 1);\n";
+                sql += "END\n";
+
+                ExecuteQuery(String.Format(sql, name, seqTName, identityColumn.Name));                
+            }
         }
 
         public override List<string> GetDatabases()

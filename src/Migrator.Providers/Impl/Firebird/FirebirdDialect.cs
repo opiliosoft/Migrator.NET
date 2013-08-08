@@ -32,11 +32,8 @@ namespace Migrator.Providers.Impl.Firebird
             RegisterColumnType(DbType.String, int.MaxValue, "BLOB SUB_TYPE TEXT");
             RegisterColumnType(DbType.Time, "INTEGER");
             
-
-
 			this.RegisterProperty(ColumnProperty.Unsigned, "UNSIGNED");
-			this.RegisterProperty(ColumnProperty.Identity, "AUTO_INCREMENT");
-
+			
 			this.RegisterUnsignedCompatible(DbType.Int16);
 			this.RegisterUnsignedCompatible(DbType.Int32);
 			this.RegisterUnsignedCompatible(DbType.Int64);

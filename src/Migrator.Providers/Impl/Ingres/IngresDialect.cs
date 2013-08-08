@@ -1,8 +1,7 @@
 using System.Data;
-
 using Migrator.Framework;
 
-namespace Migrator.Providers.Impl.DB2
+namespace Migrator.Providers.Impl.Ingres
 {
     public class IngresDialect : Dialect
 	{

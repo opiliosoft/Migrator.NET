@@ -12,6 +12,7 @@ namespace Migrator.Providers
         SqlServerCe,
         SqlServer,
         Mysql,
+        MariaDB,
         SQLite,
         MonoSQLite,
         PostgreSQL82,
@@ -22,5 +23,6 @@ namespace Migrator.Providers
         IBM_Informix,
         Firebird,
         Ingres,
+        Sybase,
     }
 }

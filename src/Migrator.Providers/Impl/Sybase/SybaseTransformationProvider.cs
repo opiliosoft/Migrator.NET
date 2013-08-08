@@ -2,16 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 
-namespace Migrator.Providers.Impl.Ingres
+namespace Migrator.Providers.Impl.Sybase
 {   
-    public class IngresTransformationProvider : TransformationProvider
+    public class SybaseTransformationProvider : TransformationProvider
     {
-        public IngresTransformationProvider(Dialect dialect, string connectionString, string scope, string providerName)
+        public SybaseTransformationProvider(Dialect dialect, string connectionString, string scope, string providerName)
             : base(dialect, connectionString, null, scope)
         {
-            if (string.IsNullOrEmpty(providerName)) providerName = "Ingres.Client";
+            if (string.IsNullOrEmpty(providerName)) providerName = "Sybase.Data.AseClient";
             var fac = DbProviderFactories.GetFactory(providerName);
-            _connection = fac.CreateConnection(); // new DB2Connection(this._connectionString);
+            _connection = fac.CreateConnection(); 
             this._connection.Open();
         }
 
