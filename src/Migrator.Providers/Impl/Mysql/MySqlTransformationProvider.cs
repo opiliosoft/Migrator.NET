@@ -170,11 +170,11 @@ namespace Migrator.Providers.Mysql
                     if (!reader.IsDBNull(reader.GetOrdinal("Key")))
                     {
                         string key = reader["Key"].ToString();
-                        if ("PRI" == key)
+                        /*if ("PRI" == key)
                         {
                             definition += " " + "PRIMARY KEY";
                         }
-                        else if ("UNI" == key)
+                        else */ if ("UNI" == key)
                         {
                             definition += " " + "UNIQUE";
                         }
