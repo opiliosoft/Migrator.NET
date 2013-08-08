@@ -30,7 +30,7 @@ namespace Migrator.Providers.Oracle
         public override void DropDatabases(string databaseName)
         {
             if (string.IsNullOrEmpty(databaseName))
-                ExecuteNonQuery(string.Format("DROP DATABASE", _dialect.Quote(databaseName)));
+                ExecuteNonQuery(string.Format("DROP DATABASE"));
         }
 
         public override void AddForeignKey(string name, string primaryTable, string[] primaryColumns, string refTable,

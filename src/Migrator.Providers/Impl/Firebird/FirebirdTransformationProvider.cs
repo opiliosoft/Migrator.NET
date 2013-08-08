@@ -28,6 +28,12 @@ namespace Migrator.Providers.Impl.Firebird
             ExecuteNonQuery(String.Format("ALTER TABLE {0} ADD {1}", table, sqlColumn));
         }
 
+        public override void DropDatabases(string databaseName)
+        {
+            if (string.IsNullOrEmpty(databaseName))
+                ExecuteNonQuery(string.Format("DROP DATABASE"));
+        }
+
         /// <summary>
         /// Execute an SQL query returning results.
         /// </summary>
