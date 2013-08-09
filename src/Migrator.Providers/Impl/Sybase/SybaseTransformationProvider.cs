@@ -11,7 +11,8 @@ namespace Migrator.Providers.Impl.Sybase
         {
             if (string.IsNullOrEmpty(providerName)) providerName = "Sybase.Data.AseClient";
             var fac = DbProviderFactories.GetFactory(providerName);
-            _connection = fac.CreateConnection(); 
+            _connection = fac.CreateConnection();
+            _connection.ConnectionString = _connectionString;
             this._connection.Open();
         }
 

@@ -11,7 +11,8 @@ namespace Migrator.Providers.Impl.Ingres
         {
             if (string.IsNullOrEmpty(providerName)) providerName = "Ingres.Client";
             var fac = DbProviderFactories.GetFactory(providerName);
-            _connection = fac.CreateConnection(); // new DB2Connection(this._connectionString);
+            _connection = fac.CreateConnection();
+            _connection.ConnectionString = _connectionString;
             this._connection.Open();
         }
 

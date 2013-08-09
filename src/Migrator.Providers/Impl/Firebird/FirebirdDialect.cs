@@ -14,12 +14,12 @@ namespace Migrator.Providers.Impl.Firebird
             RegisterColumnType(DbType.AnsiString, 8000, "CHAR($l)");
             RegisterColumnType(DbType.Binary, "BLOB");
             RegisterColumnType(DbType.Binary, 8000, "CHAR");
-            RegisterColumnType(DbType.Boolean, "BIT");
+            RegisterColumnType(DbType.Boolean, "SMALLINT");
             RegisterColumnType(DbType.Byte, "TINYINT");
             RegisterColumnType(DbType.Currency, "MONEY");
             RegisterColumnType(DbType.Date, "TIMESTAMP");
             RegisterColumnType(DbType.DateTime, "TIMESTAMP");
-            RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)");
+            RegisterColumnType(DbType.Decimal, "DECIMAL");
             RegisterColumnType(DbType.Double, "DOUBLE PRECISION"); //synonym for FLOAT(53)
             RegisterColumnType(DbType.Guid, "CHAR(38)");
             RegisterColumnType(DbType.Int16, "SMALLINT");
@@ -41,7 +41,7 @@ namespace Migrator.Providers.Impl.Firebird
 			this.RegisterUnsignedCompatible(DbType.Double);
 			this.RegisterUnsignedCompatible(DbType.Single);
 
-			this.AddReservedWords("KEY", "TIMESTAMP");
+			this.AddReservedWords("KEY", "TIMESTAMP", "VALUE");
 	   }
 
 		

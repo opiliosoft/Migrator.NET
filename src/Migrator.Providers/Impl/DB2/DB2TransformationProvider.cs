@@ -14,7 +14,8 @@ namespace Migrator.Providers.Impl.DB2
         {
             if (string.IsNullOrEmpty(providerName)) providerName = "IBM.Data.DB2";
             var fac = DbProviderFactories.GetFactory(providerName);
-            _connection = fac.CreateConnection(); // new DB2Connection(this._connectionString);
+            _connection = fac.CreateConnection();
+            _connection.ConnectionString = _connectionString;
             this._connection.Open();
         }
 

@@ -14,7 +14,8 @@ namespace Migrator.Providers.Impl.Informix
         {
             if (string.IsNullOrEmpty(providerName)) providerName = "IBM.Data.Informix.Client";
             var fac = DbProviderFactories.GetFactory(providerName);
-            _connection = fac.CreateConnection(); // new IfxConnection(this._connectionString);
+            _connection = fac.CreateConnection(); 
+            _connection.ConnectionString = _connectionString;
             this._connection.Open();
         }
 
