@@ -287,6 +287,15 @@ namespace Migrator.Framework
 		/// <returns></returns>
 		bool PrimaryKeyExists(string table, string name);
 
+        /// <summary>
+        /// Execute an arbitrary SQL query
+        /// </summary>
+        /// <param name="sql">The SQL to execute.</param>
+        /// <param name="timeout">timeout</param>
+        /// <param name="args">Array of parameters of type object</param>
+        /// <returns></returns>
+        int ExecuteNonQuery(string sql, int timeout, object[] args);
+
 		/// <summary>
 		/// Execute an arbitrary SQL query
 		/// </summary>
