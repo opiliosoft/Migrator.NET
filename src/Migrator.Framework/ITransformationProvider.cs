@@ -594,5 +594,11 @@ namespace Migrator.Framework
 		/// <param name="table">The table that contains the index.</param>
 		/// <param name="name">The name of the index to remove</param>
 		void RemoveIndex(string table, string name);
+
+        /// <summary>
+        /// Generate parameter name based on an index number
+        /// </summary>        
+        /// <param name="index">The index number of the parameter</param>
+	    string GenerateParameterName(int index);
 	}
 }

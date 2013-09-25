@@ -311,7 +311,7 @@ namespace Migrator.Providers.Oracle
 			return Convert.ToBoolean(value);
 		}
 
-		protected override string GenerateParameterName(int index)
+		public override string GenerateParameterName(int index)
 		{
 			return ":p" + index;
 		}

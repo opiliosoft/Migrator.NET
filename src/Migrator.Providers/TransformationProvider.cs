@@ -1329,7 +1329,7 @@ namespace Migrator.Providers
             return String.Join(", ", namesAndValues);
         }
 
-        protected virtual string GenerateParameterName(int index)
+        public virtual string GenerateParameterName(int index)
         {
             return "@p" + index;
         }

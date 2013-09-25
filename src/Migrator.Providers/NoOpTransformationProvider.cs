@@ -451,5 +451,10 @@ namespace Migrator.Providers
 		{
 			return false;
 		}
+
+	    public string GenerateParameterName(int index)
+	    {
+	        return "@p" + index;
+	    }
 	}
 }
