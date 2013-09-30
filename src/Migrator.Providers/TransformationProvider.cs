@@ -706,15 +706,44 @@ namespace Migrator.Providers
         {
             return ExecuteNonQuery(sql, 30);
         }
-		public virtual int ExecuteNonQuery(string sql, int timeout)
-		{
-            Logger.Trace(sql);
-            Logger.ApplyingDBChange(sql);
+
+        public virtual int ExecuteNonQuery(string sql, int timeout)
+        {
+            return this.ExecuteNonQuery(sql, timeout, null);
+        }
+
+        public virtual int ExecuteNonQuery(string sql, int timeout, params object[] args)
+		{         
+            if (args==null)
+            {
+                Logger.Trace(sql);
+                Logger.ApplyingDBChange(sql);                
+            }
+            else
+            {
+                Logger.Trace(string.Format(sql, args));
+                Logger.ApplyingDBChange(string.Format(sql, args));
+            }
+
             using (IDbCommand cmd = BuildCommand(sql))
             {
                 try
                 {
 				    cmd.CommandTimeout = timeout;
+
+                    if (args != null)
+                    {
+                        int index = 0;
+                        foreach (object obj in args)
+                        {
+                            IDbDataParameter parameter = cmd.CreateParameter();
+                            this.ConfigureParameterWithValue(parameter, index, obj);
+                            parameter.ParameterName = this.GenerateParameterName(index);
+                            cmd.Parameters.Add((object)parameter);                            
+                            ++index;
+                        }
+                    }
+
                     return cmd.ExecuteNonQuery();
                 }
                 catch (Exception ex)
@@ -1300,7 +1329,7 @@ namespace Migrator.Providers
             return String.Join(", ", namesAndValues);
         }
 
-        protected virtual string GenerateParameterName(int index)
+        public virtual string GenerateParameterName(int index)
         {
             return "@p" + index;
         }

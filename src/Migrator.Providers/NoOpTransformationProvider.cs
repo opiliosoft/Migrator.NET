@@ -246,7 +246,12 @@ namespace Migrator.Providers
         {
             return 0;
         }
-		public IDataReader ExecuteQuery(string sql)
+        public int ExecuteNonQuery(string sql, int timeout, object[] parameters)
+        {
+            return 0;
+        }
+
+        public IDataReader ExecuteQuery(string sql)
 		{
 			return null;
 		}
@@ -446,5 +451,10 @@ namespace Migrator.Providers
 		{
 			return false;
 		}
+
+	    public string GenerateParameterName(int index)
+	    {
+	        return "@p" + index;
+	    }
 	}
 }
