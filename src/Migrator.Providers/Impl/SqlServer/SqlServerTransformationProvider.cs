@@ -211,20 +211,25 @@ namespace Migrator.Providers.SqlServer
                     XML PATH('') ), 2, 8000) AS IncludeCols
 FROM    sys.[indexes] Ind
         INNER JOIN sys.[tables] AS Tab ON Tab.[object_id] = Ind.[object_id]
-        INNER JOIN sys.[schemas] AS Sch ON Sch.[schema_id] = Tab.[schema_id]
-        WHERE Ind.[name] NOT IN (SELECT CONSTRAINT_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS) AND Tab.[name] = '{0}'";
+        WHERE LOWER(Tab.[name]) = LOWER('{0}')";
 
             using (var reader=ExecuteQuery(string.Format(sql, table)))
             {
                 while (reader.Read())
                 {
-                    var idx = new Index();
-                    idx.Name = reader.GetString(1);
-                    idx.Clustered = reader.GetString(2) == "CLUSTERED";
-                    idx.Unique = reader.GetBoolean(3);
-                    if (!reader.IsDBNull(4)) idx.KeyColumns = (reader.GetString(4).Split(','));
-                    if (!reader.IsDBNull(5)) idx.IncludeColumns = (reader.GetString(5).Split(','));
-                    retVal.Add(idx);
+                    if (!reader.IsDBNull(1))
+                    {
+                        var idx = new Index
+                        {
+                            Name = reader.GetString(1),
+                            Clustered = reader.GetString(2) == "CLUSTERED",
+                            PrimaryKey = reader.GetString(2) == "CLUSTERED",
+                            Unique = reader.GetBoolean(3)
+                        };
+                        if (!reader.IsDBNull(4)) idx.KeyColumns = (reader.GetString(4).Split(','));
+                        if (!reader.IsDBNull(5)) idx.IncludeColumns = (reader.GetString(5).Split(','));
+                        retVal.Add(idx);
+                    }
                 }
             }
 
@@ -417,10 +422,17 @@ AND CU.COLUMN_NAME = '{1}'",
 		{
 			if (TableExists(table) && IndexExists(table, name))
 			{
-				table = _dialect.TableNameNeedsQuote ? _dialect.Quote(table) : table;
-				name = _dialect.ConstraintNameNeedsQuote ? _dialect.Quote(name) : name;
-				ExecuteNonQuery(String.Format("DROP INDEX {0} ON {1}", name, table));
+				ExecuteNonQuery(String.Format("DROP INDEX {0} ON {1}", QuoteConstraintNameIfRequired(name), QuoteTableNameIfRequired(table)));
 			}
     	}
+
+        protected override string GetPrimaryKeyConstraintName(string table)
+        {
+			using (IDataReader reader =
+				ExecuteQuery(string.Format("SELECT name FROM sys.indexes WHERE object_id = OBJECT_ID('{0}') AND is_primary_key = 1", table)))
+			{
+			    return reader.Read() ? reader.GetString(0) : null;
+			}
+        }
     }
 }
