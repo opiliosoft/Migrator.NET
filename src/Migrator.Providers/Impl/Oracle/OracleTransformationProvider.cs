@@ -456,5 +456,58 @@ namespace Migrator.Providers.Oracle
                 return string.Format("{0}.{1}", _defaultSchema, "SchemaInfo");
             }
         }
+
+        protected override string GetPrimaryKeyConstraintName(string table)
+        {
+            var sql = "select constraint_name " +
+                        "from user_indexes join user_constraints on user_indexes.index_name = user_constraints.constraint_name " +
+                        "where lower(user_indexes.table_name) = lower('{0}') and constraint_type = 'P'";
+
+            sql = string.Format(sql, table);
+
+            using (IDataReader reader = ExecuteQuery(sql))
+            {
+                return reader.Read() ? reader.GetString(0) : null;
+            }
+        }
+        
+	    public override Index[] GetIndexes(string table)
+        {
+            var sql = "select user_indexes.index_name, constraint_type, uniqueness " +
+                        "from user_indexes left outer join user_constraints on user_indexes.index_name = user_constraints.constraint_name " +
+                        "where lower(user_indexes.table_name) = lower('{0}') and index_type = 'NORMAL'";
+
+            sql = string.Format(sql, table);
+
+	        var indexes = new List<Index>();
+
+            using (IDataReader reader = ExecuteQuery(sql))
+            {
+                while (reader.Read())
+                {
+                    var index = new Index
+                    {
+                        Name = reader.GetString(0),
+                        Unique = reader.GetString(2) == "UNIQUE" ? true : false
+                    };
+
+                    if (!reader.IsDBNull(1))
+                    {
+                        index.PrimaryKey = reader.GetString(1) == "P" ? true : false;                       
+                    }
+                    else
+                        index.PrimaryKey = false;
+
+                    index.Clustered = false; //???
+                    
+                    //if (!reader.IsDBNull(3)) index.KeyColumns = (reader.GetString(3).Split(','));
+                    //if (!reader.IsDBNull(4)) index.IncludeColumns = (reader.GetString(4).Split(','));                    
+
+                    indexes.Add(index);       
+                }                
+            }
+
+	        return indexes.ToArray();
+        }
 	}
 }
