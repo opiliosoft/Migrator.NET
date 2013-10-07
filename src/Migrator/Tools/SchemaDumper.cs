@@ -14,6 +14,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Migrator.Framework;
 using Migrator.Providers;
 
@@ -61,7 +62,7 @@ namespace Migrator.Tools
 				writer.WriteLine(string.Join(string.Format(",{0}", Environment.NewLine), columnLines.ToArray()));
 				writer.WriteLine("\t\t);");
                 
-                foreach (Index index in _provider.GetIndexes(table))
+                foreach (Index index in _provider.GetIndexes(table).Where( x => !x.PrimaryKey))
                 {
                     if (index.IncludeColumns == null)
                     {
