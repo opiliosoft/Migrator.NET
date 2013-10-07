@@ -606,5 +606,11 @@ namespace Migrator.Framework
         /// </summary>        
         /// <param name="index">The index number of the parameter</param>
 	    string GenerateParameterName(int index);
+
+        /// <summary>
+        /// Remove all indexes of a table
+        /// </summary>
+        /// <param name="table">The table name</param>
+	    void RemoveAllIndexes(string table);
 	}
 }
