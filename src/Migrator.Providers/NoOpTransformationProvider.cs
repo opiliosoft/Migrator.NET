@@ -461,5 +461,10 @@ namespace Migrator.Providers
 	    {
 	        return "@p" + index;
 	    }
+
+	    public void RemoveAllIndexes(string table)
+	    {
+	        // No Op
+	    }
 	}
 }
