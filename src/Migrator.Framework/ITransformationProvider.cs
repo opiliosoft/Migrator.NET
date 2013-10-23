@@ -415,6 +415,12 @@ namespace Migrator.Framework
 
 	    void RemoveAllConstraints(string table);
 
+        /// <summary>
+        /// Remove an existing primary key
+        /// </summary>
+        /// <param name="table">The table that contains the primary key.</param>        
+        void RemovePrimaryKey(string table);
+
 		/// <summary>
 		/// Remove an existing table
 		/// </summary>
@@ -600,5 +606,11 @@ namespace Migrator.Framework
         /// </summary>        
         /// <param name="index">The index number of the parameter</param>
 	    string GenerateParameterName(int index);
+
+        /// <summary>
+        /// Remove all indexes of a table
+        /// </summary>
+        /// <param name="table">The table name</param>
+	    void RemoveAllIndexes(string table);
 	}
 }

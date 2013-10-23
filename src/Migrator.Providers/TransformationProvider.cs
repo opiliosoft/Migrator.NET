@@ -96,7 +96,7 @@ namespace Migrator.Providers
 
         public virtual Index[] GetIndexes(string table)
         {
-            return new Index[] { };
+            throw new NotImplementedException();
         }
 
         public virtual Column[] GetColumns(string table)
@@ -151,7 +151,7 @@ namespace Migrator.Providers
             using (
                 IDataReader reader =
                     ExecuteQuery(
-                        String.Format("SELECT CONSTRAINT_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE TABLE_NAME = '{0}'", table)))
+                        String.Format("SELECT CONSTRAINT_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE LOWER(TABLE_NAME) = LOWER('{0}')", table)))
             {
                 while (reader.Read())
                 {
@@ -190,11 +190,9 @@ namespace Migrator.Providers
         {
             if (TableExists(table) && ConstraintExists(table, name))
             {
-                table = _dialect.TableNameNeedsQuote ? _dialect.Quote(table) : table;
-                name = _dialect.ConstraintNameNeedsQuote ? _dialect.Quote(name) : name;
-                ExecuteNonQuery(String.Format("ALTER TABLE {0} DROP CONSTRAINT {1}", table, name));
+                ExecuteNonQuery(String.Format("ALTER TABLE {0} DROP CONSTRAINT {1}", QuoteTableNameIfRequired(table), QuoteConstraintNameIfRequired(name)));
             }
-        }
+        }   
 
         public virtual void RemoveAllConstraints(string table)
         {
@@ -1428,5 +1426,38 @@ namespace Migrator.Providers
 	    }
 
 	    public abstract bool IndexExists(string table, string name);
+
+        protected virtual string GetPrimaryKeyConstraintName(string table)
+        {
+            throw new NotImplementedException();
+        }
+
+        public virtual void RemovePrimaryKey(string table)
+        {
+            if (!TableExists(table)) return;
+
+            var primaryKeyConstraintName = GetPrimaryKeyConstraintName(table);
+
+            if (primaryKeyConstraintName == null || !ConstraintExists(table, primaryKeyConstraintName)) return;
+
+            RemoveConstraint(table, primaryKeyConstraintName);
+        }
+
+        public virtual void RemoveAllIndexes(string table)
+        {
+            if (!TableExists(table)) return;
+
+            var indexes = GetIndexes(table);
+
+            foreach (var index in indexes)
+            {
+                if (index.Name == null || !IndexExists(table, index.Name)) continue;
+
+                if (index.PrimaryKey || index.Clustered || index.Unique)
+                    RemoveConstraint(table, index.Name);
+                else
+                    RemoveIndex(table, index.Name);
+            }
+        }
     }
 }

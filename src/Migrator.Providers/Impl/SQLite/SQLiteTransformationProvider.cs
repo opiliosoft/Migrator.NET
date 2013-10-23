@@ -177,7 +177,7 @@ namespace Migrator.Providers.SQLite
 	    public override bool TableExists(string table)
 		{
 			using (IDataReader reader =
-				ExecuteQuery(String.Format("SELECT name FROM sqlite_master WHERE type='table' and name='{0}'", table)))
+				ExecuteQuery(String.Format("SELECT name FROM sqlite_master WHERE type='table' and lower(name)=lower('{0}')", table)))
 			{
 				return reader.Read();
 			}
@@ -264,7 +264,6 @@ namespace Migrator.Providers.SQLite
 			}
 		}
 
-
 	    public override void AddTable(string name, string engine, params IDbField[] fields)
         {
             if (TableExists(name))
@@ -338,6 +337,44 @@ namespace Migrator.Providers.SQLite
             {
                 AddIndex(name, index);
             }
+        }
+
+        protected override string GetPrimaryKeyConstraintName(string table)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void RemovePrimaryKey(string table)
+        {
+            if (!TableExists(table)) return;                
+
+            var columnDefs = GetColumns(table);
+
+            foreach (var columnDef in columnDefs.Where(columnDef => columnDef.IsPrimaryKey))
+            {
+                columnDef.ColumnProperty = columnDef.ColumnProperty.Clear(ColumnProperty.PrimaryKey);
+                columnDef.ColumnProperty = columnDef.ColumnProperty.Clear(ColumnProperty.PrimaryKeyWithIdentity);
+            }
+
+            changeColumnInternal(table, columnDefs.Select(x => x.Name).ToArray(), columnDefs);            
+        }
+
+        public override void RemoveAllIndexes(string table)
+        {
+            if (!TableExists(table)) return;                
+
+            var columnDefs = GetColumns(table);
+
+            foreach (var columnDef in columnDefs.Where(columnDef => columnDef.IsPrimaryKey))
+            {
+                columnDef.ColumnProperty = columnDef.ColumnProperty.Clear(ColumnProperty.PrimaryKey);
+                columnDef.ColumnProperty = columnDef.ColumnProperty.Clear(ColumnProperty.PrimaryKeyWithIdentity);
+                columnDef.ColumnProperty = columnDef.ColumnProperty.Clear(ColumnProperty.Unique);
+                columnDef.ColumnProperty = columnDef.ColumnProperty.Clear(ColumnProperty.Indexed);
+            }
+
+            changeColumnInternal(table, columnDefs.Select(x => x.Name).ToArray(), columnDefs);            
+
         }
 	}
 }

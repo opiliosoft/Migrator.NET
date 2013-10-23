@@ -82,12 +82,17 @@ namespace Migrator.Providers
 
 	    public void RemoveAllConstraints(string table)
 	    {
-	        
+            // No Op
+	    }
+
+	    public void RemovePrimaryKey(string table)
+	    {
+            // No Op
 	    }
 
 	    public void AddView(string name, string tableName, params IViewField[] fields)
 	    {
-	        
+            // No Op
 	    }
 
 	    public void AddTable(string name, params IDbField[] columns)
@@ -455,6 +460,11 @@ namespace Migrator.Providers
 	    public string GenerateParameterName(int index)
 	    {
 	        return "@p" + index;
+	    }
+
+	    public void RemoveAllIndexes(string table)
+	    {
+	        // No Op
 	    }
 	}
 }
