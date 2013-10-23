@@ -1343,6 +1343,11 @@ namespace Migrator.Providers
                 parameter.DbType = DbType.Guid;
                 parameter.Value = (Guid)value;
             }
+            else if (value is Int16)
+            {
+                parameter.DbType = DbType.Int16;
+                parameter.Value = value;
+            }
             else if (value is Int32)
             {
                 parameter.DbType = DbType.Int32;
@@ -1351,6 +1356,21 @@ namespace Migrator.Providers
             else if (value is Int64)
             {
                 parameter.DbType = DbType.Int64;
+                parameter.Value = value;
+            }
+            else if (value is UInt16)
+            {
+                parameter.DbType = DbType.UInt16;
+                parameter.Value = value;
+            }
+            else if (value is UInt32)
+            {
+                parameter.DbType = DbType.UInt32;
+                parameter.Value = value;
+            }
+            else if (value is UInt64)
+            {
+                parameter.DbType = DbType.UInt64;
                 parameter.Value = value;
             }
             else if (value is String)

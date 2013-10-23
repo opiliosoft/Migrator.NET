@@ -334,6 +334,21 @@ namespace Migrator.Providers.Oracle
 				parameter.DbType = DbType.Int32;
 				parameter.Value = ((bool) value) ? 1 : 0;
 			}
+            else if (value is UInt16)
+            {
+                parameter.DbType = DbType.Decimal;
+                parameter.Value = value;
+            }
+            else if (value is UInt32)
+            {
+                parameter.DbType = DbType.Decimal;
+                parameter.Value = value;
+            }
+            else if (value is UInt64)
+            {
+                parameter.DbType = DbType.Decimal;
+                parameter.Value = value;
+            }
 			else
 			{
 				base.ConfigureParameterWithValue(parameter, index, value);
