@@ -33,6 +33,9 @@ namespace Migrator.Providers.SqlServer
 			RegisterColumnType(DbType.Int16, "SMALLINT");
 			RegisterColumnType(DbType.Int32, "INT");
 			RegisterColumnType(DbType.Int64, "BIGINT");
+            RegisterColumnType(DbType.UInt16, "INT");
+            RegisterColumnType(DbType.UInt32, "BIGINT");
+            RegisterColumnType(DbType.UInt64, "DECIMAL(20,0)");
 			RegisterColumnType(DbType.Single, "REAL"); //synonym for FLOAT(24) 
 			RegisterColumnType(DbType.StringFixedLength, "NCHAR(255)");
 		    RegisterColumnType(DbType.StringFixedLength, int.MaxValue - 1, "NCHAR($l)");

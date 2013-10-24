@@ -26,6 +26,9 @@ namespace Migrator.Providers.PostgreSQL
             RegisterColumnType(DbType.Int16, "int2");
             RegisterColumnType(DbType.Int32, "int4");
             RegisterColumnType(DbType.Int64, "int8");
+            RegisterColumnType(DbType.UInt16, "int4");
+            RegisterColumnType(DbType.UInt32, "int8");
+            RegisterColumnType(DbType.UInt64, "decimal(20,0)");			
             RegisterColumnType(DbType.Single, "float4");
             RegisterColumnType(DbType.StringFixedLength, "char(255)");
             RegisterColumnType(DbType.StringFixedLength, 4000, "char($l)");
