@@ -434,5 +434,28 @@ AND CU.COLUMN_NAME = '{1}'",
 			    return reader.Read() ? reader.GetString(0) : null;
 			}
         }
+
+        protected override void ConfigureParameterWithValue(IDbDataParameter parameter, int index, object value)
+        {
+            if (value is UInt16)
+            {
+                parameter.DbType = DbType.Int32;
+                parameter.Value = value;
+            }
+            else if (value is UInt32)
+            {
+                parameter.DbType = DbType.Int64;
+                parameter.Value = value;
+            }
+            else if (value is UInt64)
+            {
+                parameter.DbType = DbType.Decimal;
+                parameter.Value = value;
+            }
+            else
+            {
+                base.ConfigureParameterWithValue(parameter, index, value);
+            }
+        }
     }
 }
