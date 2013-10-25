@@ -374,7 +374,24 @@ namespace Migrator.Providers.SQLite
             }
 
             changeColumnInternal(table, columnDefs.Select(x => x.Name).ToArray(), columnDefs);            
-
         }
-	}
+
+        protected override void ConfigureParameterWithValue(IDbDataParameter parameter, int index, object value)
+        {
+            if (value is UInt16)
+            {
+                parameter.DbType = DbType.Int32;
+                parameter.Value = value;
+            }
+            else if (value is UInt32)
+            {
+                parameter.DbType = DbType.Int64;
+                parameter.Value = value;
+            }
+            else
+            {
+                base.ConfigureParameterWithValue(parameter, index, value);
+            }
+        }
+    }
 }
