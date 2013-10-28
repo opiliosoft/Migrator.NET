@@ -381,12 +381,12 @@ namespace Migrator.Providers.SQLite
             if (value is UInt16)
             {
                 parameter.DbType = DbType.Int32;
-                parameter.Value = value;
+                parameter.Value = Convert.ToInt32(value);
             }
             else if (value is UInt32)
             {
                 parameter.DbType = DbType.Int64;
-                parameter.Value = value;
+                parameter.Value = Convert.ToInt64(value);
             }
             else
             {
