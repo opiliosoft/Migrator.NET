@@ -303,6 +303,11 @@ FROM    sys.[indexes] Ind
             return ExecuteStringQuery("SELECT name FROM sys.databases");
         }
 
+        public override void DropDatabases(string databaseName)
+        {
+            ExecuteNonQuery(string.Format("USE [master]" + System.Environment.NewLine + "DROP DATABASE {0}", databaseName));
+        }
+
         public override void RemoveColumn(string table, string column)
         {
             DeleteColumnConstraints(table, column);
