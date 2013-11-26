@@ -41,6 +41,10 @@ namespace Migrator.Providers.SQLite
             {
                 return String.Format("DEFAULT {0}", (bool)defaultValue ? "1" : "0");
             }
+            else if (defaultValue is Guid)
+            {
+                return String.Format("DEFAULT '{0}'", defaultValue.ToString());
+            }
 
             return base.Default(defaultValue);
         }
