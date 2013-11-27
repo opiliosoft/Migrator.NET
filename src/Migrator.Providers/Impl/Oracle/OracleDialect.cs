@@ -94,8 +94,12 @@ namespace Migrator.Providers.Oracle
 			{
                 return String.Format("DEFAULT {0}", (bool)defaultValue ? "1" : "0");
             }
+            else if (defaultValue is Guid)
+            {
+                return String.Format("DEFAULT HEXTORAW('{0}')", defaultValue.ToString().Replace("-",""));
+            }
 
-			return base.Default(defaultValue);
+            return base.Default(defaultValue);
 		}
 	}
 }

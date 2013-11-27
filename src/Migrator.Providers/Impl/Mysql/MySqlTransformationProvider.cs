@@ -86,6 +86,35 @@ namespace Migrator.Providers.Mysql
             return false;
         }
 
+        public override Index[] GetIndexes(string table)
+        {
+            var retVal = new List<Index>();
+
+            var sql = @"SHOW INDEX FROM {0}";
+            
+            using (var reader = ExecuteQuery(string.Format(sql, table)))
+            {
+                while (reader.Read())
+                {
+                    if (!reader.IsDBNull(1))
+                    {
+                        var idx = new Index
+                        {
+                            Name = reader.GetString(2),
+                            PrimaryKey = reader.GetString(2) == "PRIMARY",
+                            Unique = !reader.GetBoolean(1),
+                        };
+                        //var cols = reader.GetString(7);
+                        //cols = cols.Substring(1, cols.Length - 2);
+                        //idx.KeyColumns = cols.Split(',');                        
+                        retVal.Add(idx);
+                    }
+                }
+            }
+
+            return retVal.ToArray();
+        }
+
         public override bool PrimaryKeyExists(string table, string name)
         {
             return ConstraintExists(table, "PRIMARY");

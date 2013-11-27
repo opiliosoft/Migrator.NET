@@ -35,7 +35,63 @@ namespace Migrator.Providers.PostgreSQL
 			_connection.Open();
 		}
 
-		public override void RemoveTable(string name)
+	    public override Index[] GetIndexes(string table)
+	    {
+            var retVal = new List<Index>();
+
+            var sql = @"
+SELECT * FROM (
+SELECT i.relname as indname,
+       idx.indisprimary,
+       idx.indisunique,
+       i.relowner as indowner,
+       cast(idx.indrelid::regclass as varchar) as tablenm,
+       am.amname as indam,
+       idx.indkey,
+       ARRAY(
+       SELECT pg_get_indexdef(idx.indexrelid, k + 1, true)
+       FROM generate_subscripts(idx.indkey, 1) as k
+       ORDER BY k
+       ) as indkey_names,
+       idx.indexprs IS NOT NULL as indexprs,
+       idx.indpred IS NOT NULL as indpred
+FROM   pg_index as idx
+JOIN   pg_class as i
+ON     i.oid = idx.indexrelid
+JOIN   pg_am as am
+ON     i.relam = am.oid
+JOIN   pg_namespace as ns
+ON     ns.oid = i.relnamespace
+AND    ns.nspname = ANY(current_schemas(false))) AS t
+WHERE  lower(tablenm) = lower('{0}')
+;";
+
+
+
+            using (var reader = ExecuteQuery(string.Format(sql, table)))
+            {
+                while (reader.Read())
+                {
+                    if (!reader.IsDBNull(1))
+                    {
+                        var idx = new Index
+                        {
+                            Name = reader.GetString(0),
+                            PrimaryKey = reader.GetBoolean(1),
+                            Unique = reader.GetBoolean(2),
+                        };
+                        //var cols = reader.GetString(7);
+                        //cols = cols.Substring(1, cols.Length - 2);
+                        //idx.KeyColumns = cols.Split(',');                        
+                        retVal.Add(idx);
+                    }
+                }
+            }
+
+            return retVal.ToArray();
+	    }
+
+	    public override void RemoveTable(string name)
 		{
             if (!TableExists(name))
             {

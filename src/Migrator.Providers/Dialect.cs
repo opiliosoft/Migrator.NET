@@ -208,6 +208,10 @@ namespace Migrator.Providers
             {
                 defaultValue = "''";
             }
+            else if (defaultValue is Guid)
+            {
+                return String.Format("DEFAULT '{0}'", defaultValue.ToString());
+            }
             else if (defaultValue is String)
             {
                 if (!defaultValue.ToString().StartsWith("'")) 
