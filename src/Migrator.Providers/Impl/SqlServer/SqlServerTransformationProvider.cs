@@ -33,17 +33,20 @@ namespace Migrator.Providers.SqlServer
 
         protected virtual void CreateConnection(string providerName)
         {
-            if (string.IsNullOrEmpty(providerName)) providerName = "System.Data.SqlClient";
+            if (string.IsNullOrEmpty(providerName))
+                providerName = "System.Data.SqlClient";
             var fac = DbProviderFactories.GetFactory(providerName);
             _connection = fac.CreateConnection(); //  new SqlConnection();
             _connection.ConnectionString = _connectionString;
             _connection.Open();
 
-            var collation = this.ExecuteScalar("SELECT DATABASEPROPERTYEX('MLOG_MCC', 'Collation')");
-            var collationString = "Latin1_General_CI_AS";
-            if (collation!=null)
+            string collationString = null;
+            var collation = this.ExecuteScalar("SELECT DATABASEPROPERTYEX('" + _connection.Database + "', 'Collation')");
+            if (collation != null)
                 collationString = collation.ToString();
-            this.Dialect.RegisterProperty(ColumnProperty.CaseSensitive, "COLLATE " + collationString.Replace("_CI_", "_CS_"));            
+            if (string.IsNullOrWhiteSpace(collationString))
+                collationString = "Latin1_General_CI_AS";
+            this.Dialect.RegisterProperty(ColumnProperty.CaseSensitive, "COLLATE " + collationString.Replace("_CI_", "_CS_"));
         }
 
         public override bool ConstraintExists(string table, string name)
