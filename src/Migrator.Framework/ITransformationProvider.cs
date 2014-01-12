@@ -507,6 +507,8 @@ namespace Migrator.Framework
 		/// <returns></returns>
 		int Update(string table, string[] columns, object[] values, string where);
 
+	    int Update(string table, string[] columns, object[] values, string[] whereColumns, object[] whereValues);
+
 		/// <summary>
 		/// Get a command instance
 		/// </summary>

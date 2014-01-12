@@ -388,6 +388,11 @@ namespace Migrator.Providers.SQLite
                 parameter.DbType = DbType.Int64;
                 parameter.Value = Convert.ToInt64(value);
             }
+            else if (value is Guid || value is Guid?)
+            {
+                parameter.DbType = DbType.Binary;
+                parameter.Value = ((Guid)value).ToByteArray();
+            }
             else
             {
                 base.ConfigureParameterWithValue(parameter, index, value);

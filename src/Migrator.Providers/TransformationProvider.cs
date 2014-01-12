@@ -922,6 +922,75 @@ namespace Migrator.Providers
             }
         }
 
+        public virtual int Update(string table, string[] columns, object[] values, string[] whereColumns, object[] whereValues)
+        {
+            if (string.IsNullOrEmpty(table)) throw new ArgumentNullException("table");
+            if (columns == null) throw new ArgumentNullException("columns");
+            if (values == null) throw new ArgumentNullException("values");
+            if (columns.Length != values.Length) throw new Exception(string.Format("The number of columns: {0} does not match the number of supplied values: {1}", columns.Length, values.Length));
+
+            table = QuoteTableNameIfRequired(table);
+
+            var builder = new StringBuilder();
+            for (int i = 0; i < values.Length; i++)
+            {
+                if (builder.Length > 0) builder.Append(", ");
+                builder.Append(QuoteColumnNameIfRequired(columns[i]));
+                builder.Append(" = ");
+                builder.Append(GenerateParameterName(i));
+            }
+
+            var builder2 = new StringBuilder();
+            for (int i = 0; i < whereColumns.Length; i++)
+            {
+                if (builder2.Length > 0) builder2.Append(" AND ");
+                builder2.Append(QuoteColumnNameIfRequired(whereColumns[i]));
+                builder2.Append(" = ");
+                builder2.Append(GenerateParameterName(i + values.Count()));
+            }
+
+            using (IDbCommand command = _connection.CreateCommand())
+            {
+                command.Transaction = _transaction;
+
+                var query = String.Format("UPDATE {0} SET {1} WHERE {2}", table, builder.ToString(), builder2.ToString());
+               
+                command.CommandText = query;
+                command.CommandType = CommandType.Text;
+
+                int paramCount = 0;
+
+                foreach (object value in values)
+                {
+                    IDbDataParameter parameter = command.CreateParameter();
+
+                    ConfigureParameterWithValue(parameter, paramCount, value);
+
+                    parameter.ParameterName = GenerateParameterName(paramCount);
+
+                    command.Parameters.Add(parameter);
+
+                    paramCount++;
+                }
+
+                foreach (object value in whereValues)
+                {
+
+                    IDbDataParameter parameter = command.CreateParameter();
+
+                    ConfigureParameterWithValue(parameter, paramCount, value);
+
+                    parameter.ParameterName = GenerateParameterName(paramCount);
+
+                    command.Parameters.Add(parameter);
+
+                    paramCount++;                    
+                }
+
+                return command.ExecuteNonQuery();
+            }
+        }
+
         public virtual int Insert(string table, string[] columns, object[] values)
         {
             if (string.IsNullOrEmpty(table)) throw new ArgumentNullException("table");
