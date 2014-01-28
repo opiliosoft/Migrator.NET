@@ -30,6 +30,68 @@ namespace Migrator.Providers.Mysql
             }
         }
 
+        public override void RemoveAllIndexes(string table)
+        {
+            string qry = string.Format(@"SELECT k.TABLE_NAME, i.CONSTRAINT_NAME, i.CONSTRAINT_TYPE
+                                                    FROM information_schema.KEY_COLUMN_USAGE k 
+                                                    INNER JOIN information_schema.TABLE_CONSTRAINTS i 
+                                                    ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME AND i.TABLE_NAME = k.TABLE_NAME 
+                                                    WHERE k.REFERENCED_TABLE_SCHEMA='{0}' AND
+                                                    (k.REFERENCED_TABLE_NAME='{1}') OR (k.TABLE_NAME='{1}')", GetDatabase(), table);
+
+            var l = new List<Tuple<string, string, string>>();
+            using (IDataReader reader = ExecuteQuery(qry))
+            {
+                while (reader.Read())
+                {
+                    l.Add(new Tuple<string, string, string>(reader.GetString(0), reader.GetString(1), reader.GetString(2)));
+                }
+            }
+
+            foreach (var tuple in l)
+            {
+                if (tuple.Item3 == "FOREIGN KEY")
+                    RemoveForeignKey(tuple.Item1, tuple.Item2);
+                else if (tuple.Item3 == "PRIMARY KEY")
+                    ExecuteNonQuery(String.Format("ALTER TABLE {0} DROP PRIMARY KEY", table));
+                else if (tuple.Item3 == "UNIQUE")
+                    RemoveIndex(tuple.Item1, tuple.Item2);
+            }
+        }
+
+        public override void RemoveAllForeignKeys(string tableName, string columnName)
+        {
+            string qry = string.Format(@"SELECT k.TABLE_NAME, i.CONSTRAINT_NAME
+                                                    FROM information_schema.KEY_COLUMN_USAGE k 
+                                                    INNER JOIN information_schema.TABLE_CONSTRAINTS i 
+                                                    ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME AND i.TABLE_NAME = k.TABLE_NAME 
+                                                    WHERE k.REFERENCED_TABLE_SCHEMA='{0}' AND  i.CONSTRAINT_TYPE = 'FOREIGN KEY' AND
+                                                    (k.REFERENCED_TABLE_NAME='{1}' AND REFERENCED_COLUMN_NAME='{2}') OR (k.TABLE_NAME='{1}' AND COLUMN_NAME='{2}')", GetDatabase(), tableName, columnName);
+
+            if (string.IsNullOrEmpty(columnName))
+            {
+                qry = string.Format(@"SELECT k.TABLE_NAME, i.CONSTRAINT_NAME
+                                                    FROM information_schema.KEY_COLUMN_USAGE k 
+                                                    INNER JOIN information_schema.TABLE_CONSTRAINTS i 
+                                                    ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME AND i.TABLE_NAME = k.TABLE_NAME 
+                                                    WHERE k.REFERENCED_TABLE_SCHEMA='{0}' AND i.CONSTRAINT_TYPE = 'FOREIGN KEY' AND
+                                                    (k.REFERENCED_TABLE_NAME='{1}') OR (k.TABLE_NAME='{1}')", GetDatabase(), tableName);
+            }
+            var l = new List<Tuple<string, string>> ();
+            using (IDataReader reader = ExecuteQuery(qry))
+            {
+                while (reader.Read())
+                {
+                    l.Add(new Tuple<string, string>(reader.GetString(0), reader.GetString(1)));
+                }
+            }
+
+            foreach (var tuple in l)
+            {
+                RemoveForeignKey(tuple.Item1, tuple.Item2);
+            }
+        }
+
         public override void RemoveConstraint(string table, string name)
         {
             if (ConstraintExists(table, name))
@@ -69,8 +131,8 @@ namespace Migrator.Providers.Mysql
                                                     INNER JOIN information_schema.KEY_COLUMN_USAGE k 
                                                     ON i.CONSTRAINT_NAME = k.CONSTRAINT_NAME 
                                                     WHERE i.CONSTRAINT_TYPE = 'FOREIGN KEY' 
-                                                    AND i.TABLE_SCHEMA = DATABASE()
-                                                    AND i.TABLE_NAME = '{0}';", table);
+                                                    AND i.TABLE_SCHEMA = '{1}'
+                                                    AND i.TABLE_NAME = '{0}';", table, GetDatabase());
 
             using (IDataReader reader = ExecuteQuery(sqlConstraint))
             {
@@ -185,6 +247,9 @@ namespace Migrator.Providers.Mysql
             }
 
             string definition = null;
+
+            bool dropPrimary = false;
+
             using (IDataReader reader = ExecuteQuery(String.Format("SHOW COLUMNS FROM {0} WHERE Field='{1}'", tableName, oldColumnName)))
             {
                 if (reader.Read())
@@ -199,11 +264,12 @@ namespace Migrator.Providers.Mysql
                     if (!reader.IsDBNull(reader.GetOrdinal("Key")))
                     {
                         string key = reader["Key"].ToString();
-                        /*if ("PRI" == key)
+                        if ("PRI" == key)
                         {
-                            definition += " " + "PRIMARY KEY";
+                            //definition += " " + "PRIMARY KEY";
+                            dropPrimary = true;
                         }
-                        else */ if ("UNI" == key)
+                        else  if ("UNI" == key)
                         {
                             definition += " " + "UNIQUE";
                         }
@@ -218,8 +284,18 @@ namespace Migrator.Providers.Mysql
 
             if (!String.IsNullOrEmpty(definition))
             {
+                if (dropPrimary)
+                    ExecuteNonQuery(String.Format("ALTER TABLE {0} DROP PRIMARY KEY", tableName));                    
                 ExecuteNonQuery(String.Format("ALTER TABLE {0} CHANGE {1} {2} {3}", tableName, oldColumnName, newColumnName, definition));
+                if (dropPrimary)
+                    ExecuteNonQuery(String.Format("ALTER TABLE {0} ADD PRIMARY KEY({1});", tableName, newColumnName));                    
+                
             }
+        }
+
+        public string GetDatabase()
+        {
+            return ExecuteScalar("SELECT DATABASE()") as string;
         }
 
         public override void RemoveIndex(string table, string name)

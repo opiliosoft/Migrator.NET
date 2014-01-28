@@ -1254,6 +1254,9 @@ namespace Migrator.Providers
             return GetType().Name.ToLower().StartsWith(provider.ToLower());
         }
 
+        public virtual void RemoveAllForeignKeys(string tableName, string columnName)
+        { }
+
         public virtual void AddTable(string table, string engine, string columns)
         {
             table = _dialect.TableNameNeedsQuote ? _dialect.Quote(table) : table;

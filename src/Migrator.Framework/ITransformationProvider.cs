@@ -521,7 +521,12 @@ namespace Migrator.Framework
 		/// <param name="schemaBuilder"></param>
 		void ExecuteSchemaBuilder(SchemaBuilder.SchemaBuilder schemaBuilder);
 
-		/// <summary>
+	    
+        void RemoveAllForeignKeys(string tableName, string columnName);
+
+	    bool IsThisProvider(string provider);
+
+        /// <summary>
 		/// Quote a multiple column names, if required
 		/// </summary>
 		/// <param name="columnNames"></param>

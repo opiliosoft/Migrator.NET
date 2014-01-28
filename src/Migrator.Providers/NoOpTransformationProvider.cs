@@ -378,7 +378,17 @@ namespace Migrator.Providers
 			// No Op
 		}
 
-		public string[] QuoteColumnNamesIfRequired(params string[] columnNames)
+	    public void RemoveAllForeignKeys(string tableName, string columnName)
+	    {
+	        
+	    }
+
+	    public bool IsThisProvider(string provider)
+	    {
+	        return false;
+	    }
+
+	    public string[] QuoteColumnNamesIfRequired(params string[] columnNames)
 		{
 			throw new NotImplementedException();
 		}
