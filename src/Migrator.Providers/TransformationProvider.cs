@@ -1445,6 +1445,16 @@ namespace Migrator.Providers
                 parameter.DbType = DbType.UInt64;
                 parameter.Value = value;
             }
+            else if (value is Double)
+            {
+                parameter.DbType = DbType.Double;
+                parameter.Value = value;
+            }
+            else if (value is Decimal)
+            {
+                parameter.DbType = DbType.Decimal;
+                parameter.Value = value;
+            }
             else if (value is String)
             {
                 parameter.DbType = DbType.String;
