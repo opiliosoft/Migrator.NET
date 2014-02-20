@@ -98,7 +98,11 @@ namespace Migrator.Providers.Oracle
             {
                 return String.Format("DEFAULT HEXTORAW('{0}')", defaultValue.ToString().Replace("-",""));
             }
-
+            else if (defaultValue is DateTime)
+            {
+                return String.Format("DEFAULT TO_TIMESTAMP('{0}', 'YYYY-MM-DD HH24:MI:SS.FF')", ((DateTime)defaultValue).ToString("yyyy-MM-dd HH:mm:ss.ff"));
+            }
+            
             return base.Default(defaultValue);
 		}
 	}

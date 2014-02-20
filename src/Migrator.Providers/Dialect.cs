@@ -215,7 +215,7 @@ namespace Migrator.Providers
             }
             else if (defaultValue is DateTime)
             {
-                return String.Format("DEFAULT '{0}'", ((DateTime)defaultValue).ToString(CultureInfo.InvariantCulture));
+                return String.Format("DEFAULT '{0}'", ((DateTime)defaultValue).ToString("yyyy-MM-dd HH:mm:ss"));
             }
             else if (defaultValue is String)
             {
