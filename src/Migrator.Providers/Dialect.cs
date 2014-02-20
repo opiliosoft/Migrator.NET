@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using Migrator.Framework;
 
 namespace Migrator.Providers
@@ -211,6 +212,10 @@ namespace Migrator.Providers
             else if (defaultValue is Guid)
             {
                 return String.Format("DEFAULT '{0}'", defaultValue.ToString());
+            }
+            else if (defaultValue is DateTime)
+            {
+                return String.Format("DEFAULT '{0}'", ((DateTime)defaultValue).ToString(CultureInfo.InvariantCulture));
             }
             else if (defaultValue is String)
             {
