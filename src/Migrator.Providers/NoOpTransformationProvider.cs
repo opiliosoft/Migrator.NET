@@ -481,5 +481,10 @@ namespace Migrator.Providers
 	    {
 	        // No Op
 	    }
+
+        public string Concatenate(params string[] strings)
+        {
+            return "";
+        }
 	}
 }

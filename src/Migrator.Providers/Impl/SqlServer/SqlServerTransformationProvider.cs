@@ -465,5 +465,10 @@ AND CU.COLUMN_NAME = '{1}'",
                 base.ConfigureParameterWithValue(parameter, index, value);
             }
         }
+
+        public override string Concatenate(params string[] strings)
+        {
+            return string.Join(" + ", strings);
+        }
     }
 }

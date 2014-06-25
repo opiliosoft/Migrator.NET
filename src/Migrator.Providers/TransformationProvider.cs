@@ -1561,5 +1561,10 @@ namespace Migrator.Providers
                     RemoveIndex(table, index.Name);
             }
         }
+
+        public virtual string Concatenate(params string[] strings)
+        {
+            return string.Join(" || ", strings);
+        }
     }
 }

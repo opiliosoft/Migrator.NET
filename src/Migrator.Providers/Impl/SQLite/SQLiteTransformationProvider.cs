@@ -37,10 +37,188 @@ namespace Migrator.Providers.SQLite
 			// NOOP Because SQLite doesn't support foreign keys
 		}
 
-		public override void RemoveForeignKey(string name, string table)
-		{
-			// NOOP Because SQLite doesn't support foreign keys
-		}
+        private string GetSqlForAddTable(string tableName, string colDefsSql, string compositeDefSql)
+        {
+            return compositeDefSql != null ? colDefsSql.TrimEnd(')') + "," + compositeDefSql : colDefsSql;
+        }
+       
+        public string[] GetColumnDefs(string table, out string compositeDefSql)
+        {
+            return ParseSqlColumnDefs(GetSqlDefString(table), out compositeDefSql);
+        }
+
+        public string GetSqlDefString(string table)
+        {
+            string sqldef = null;
+            using (IDataReader reader = ExecuteQuery(String.Format("SELECT sql FROM sqlite_master WHERE type='table' AND name='{0}'", table)))
+            {
+                if (reader.Read())
+                {
+                    sqldef = (string)reader[0];
+                }
+            }
+            return sqldef;
+        }
+
+        public string[] ParseSqlColumnDefs(string sqldef, out string compositeDefSql)
+        {
+            if (String.IsNullOrEmpty(sqldef))
+            {
+                compositeDefSql = null;
+                return null;
+            }
+
+            sqldef = sqldef.Replace(Environment.NewLine, " ");
+            int start = sqldef.IndexOf("(");
+
+            // Code to handle composite primary keys /mol
+            int compositeDefIndex = sqldef.IndexOf("PRIMARY KEY ("); // Not ideal to search for a string like this but I'm lazy
+            if (compositeDefIndex > -1)
+            {
+                compositeDefSql = sqldef.Substring(compositeDefIndex, sqldef.LastIndexOf(")") - compositeDefIndex);
+                sqldef = sqldef.Substring(0, compositeDefIndex).TrimEnd(',', ' ') + ")";
+            }
+            else
+                compositeDefSql = null;
+
+            int end = sqldef.LastIndexOf(")"); // Changed from 'IndexOf' to 'LastIndexOf' to handle foreign key definitions /mol
+
+            sqldef = sqldef.Substring(0, end);
+            sqldef = sqldef.Substring(start + 1);
+
+            string[] cols = sqldef.Split(new char[] { ',' });
+            for (int i = 0; i < cols.Length; i++)
+            {
+                cols[i] = cols[i].Trim();
+            }
+            return cols;
+        }
+
+        /// <summary>
+        /// Turn something like 'columnName INTEGER NOT NULL' into just 'columnName'
+        /// </summary>
+        public string[] ParseSqlForColumnNames(string sqldef, out string compositeDefSql)
+        {
+            string[] parts = ParseSqlColumnDefs(sqldef, out compositeDefSql);
+            return ParseSqlForColumnNames(parts);
+        }
+
+        public string[] ParseSqlForColumnNames(string[] parts)
+        {
+            if (null == parts)
+                return null;
+
+            for (int i = 0; i < parts.Length; i++)
+            {
+                parts[i] = ExtractNameFromColumnDef(parts[i]);
+            }
+            return parts;
+        }
+
+        /// <summary>
+        /// Name is the first value before the space.
+        /// </summary>
+        /// <param name="columnDef"></param>
+        /// <returns></returns>
+        public string ExtractNameFromColumnDef(string columnDef)
+        {
+            int idx = columnDef.IndexOf(" ");
+            if (idx > 0)
+            {
+                return columnDef.Substring(0, idx);
+            }
+            return null;
+        }
+
+        public DbType ExtractTypeFromColumnDef(string columnDef)
+        {
+            int idx = columnDef.IndexOf(" ") + 1;
+            if (idx > 0)
+            {
+                var idy = columnDef.IndexOf(" ", idx) - idx;
+
+                if (idy > 0)
+                    return _dialect.GetDbType(columnDef.Substring(idx, idy));
+                else
+                    return _dialect.GetDbType(columnDef.Substring(idx));
+            }
+            else
+                throw new Exception("Error extracting type from column definition: '" + columnDef + "'");
+        }
+
+        public override void RemoveForeignKey(string table, string name)
+        {
+            //Check the impl...
+            return;
+
+            // Generate new table definition with foreign key
+            string compositeDefSql;
+            string[] origColDefs = GetColumnDefs(table, out compositeDefSql);
+            List<string> colDefs = new List<string>();
+
+            foreach (string origdef in origColDefs)
+            {
+                // Strip the constraint part of the column definition
+                var constraintIndex = origdef.IndexOf(string.Format(" CONSTRAINT {0}", name), StringComparison.OrdinalIgnoreCase);
+                if (constraintIndex > -1)
+                    colDefs.Add(origdef.Substring(0, constraintIndex));
+                else
+                    colDefs.Add(origdef);
+            }
+
+            string[] newColDefs = colDefs.ToArray();
+            string colDefsSql = String.Join(",", newColDefs);
+
+            string[] colNames = ParseSqlForColumnNames(newColDefs);
+            string colNamesSql = String.Join(",", colNames);
+
+            // Create new table with temporary name
+            AddTable(table + "_temp", null, GetSqlForAddTable(table, colDefsSql, compositeDefSql));
+
+            // Copy data from original table to temporary table
+            ExecuteNonQuery(String.Format("INSERT INTO {0}_temp SELECT {1} FROM {0}", table, colNamesSql));
+
+            // Add indexes from original table
+            MoveIndexesFromOriginalTable(table, table + "_temp");
+
+            //PerformForeignKeyAffectedAction(() =>
+            //{
+            // Remove original table
+            RemoveTable(table);
+
+            // Rename temporary table to original table name
+            ExecuteNonQuery(String.Format("ALTER TABLE {0}_temp RENAME TO {0}", table));
+            //});
+        }
+
+        public string[] GetCreateIndexSqlStrings(string table)
+        {
+            var sqlStrings = new List<string>();
+
+            using (IDataReader reader = ExecuteQuery(String.Format("SELECT sql FROM sqlite_master WHERE type='index' AND sql NOT NULL AND tbl_name='{0}'", table)))
+                while (reader.Read())
+                    sqlStrings.Add((string)reader[0]);
+
+            return sqlStrings.ToArray();
+        }
+
+        public void MoveIndexesFromOriginalTable(string origTable, string newTable)
+        {
+            var indexSqls = GetCreateIndexSqlStrings(origTable);
+            foreach (var indexSql in indexSqls)
+            {
+                var origTableStart = indexSql.IndexOf(" ON ", StringComparison.OrdinalIgnoreCase) + 4;
+                var origTableEnd = indexSql.IndexOf("(", origTableStart);
+
+                // First remove original index, because names have to be unique
+                var createIndexDef = " INDEX ";
+                var indexNameStart = indexSql.IndexOf(createIndexDef, StringComparison.OrdinalIgnoreCase) + createIndexDef.Length;
+                ExecuteNonQuery("DROP INDEX " + indexSql.Substring(indexNameStart, (origTableStart - 4) - indexNameStart));
+
+                // Create index on new table
+                ExecuteNonQuery(indexSql.Substring(0, origTableStart) + newTable + " " + indexSql.Substring(origTableEnd));
+            }
+        }
 
 		public override void RemoveColumn(string table, string column)
 		{

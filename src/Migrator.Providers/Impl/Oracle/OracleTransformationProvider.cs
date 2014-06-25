@@ -524,5 +524,10 @@ namespace Migrator.Providers.Oracle
 
 	        return indexes.ToArray();
         }
+
+        public override string Concatenate(params string[] strings)
+        {
+            return string.Join(" || ", strings);
+        }
 	}
 }

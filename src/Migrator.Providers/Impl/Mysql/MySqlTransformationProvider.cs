@@ -315,5 +315,10 @@ namespace Migrator.Providers.Mysql
         {
             return ConstraintExists(table, name);
         }
+
+        public override string Concatenate(params string[] strings)
+        {
+            return "CONCAT(" + string.Join(", ", strings) + ")";
+        }
     }
 }

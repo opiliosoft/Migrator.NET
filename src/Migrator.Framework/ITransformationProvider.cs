@@ -619,5 +619,7 @@ namespace Migrator.Framework
         /// </summary>
         /// <param name="table">The table name</param>
 	    void RemoveAllIndexes(string table);
+
+	    string Concatenate(params string[] strings);
 	}
 }

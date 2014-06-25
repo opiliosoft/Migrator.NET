@@ -8,28 +8,32 @@ namespace Migrator.Providers.SQLite
 	{
 		public SQLiteDialect()
 		{
-			RegisterColumnType(DbType.Binary, "BLOB");
-			RegisterColumnType(DbType.Byte, "INTEGER");
-			RegisterColumnType(DbType.Int16, "INTEGER");
-			RegisterColumnType(DbType.Int32, "INTEGER");
-			RegisterColumnType(DbType.Int64, "INTEGER");
-			RegisterColumnType(DbType.SByte, "INTEGER");
-			RegisterColumnType(DbType.UInt16, "INTEGER");
-			RegisterColumnType(DbType.UInt32, "INTEGER");
-			RegisterColumnType(DbType.UInt64, "INTEGER");
-			RegisterColumnType(DbType.Currency, "NUMERIC");
-			RegisterColumnType(DbType.Decimal, "NUMERIC");
-			RegisterColumnType(DbType.Double, "NUMERIC");
-			RegisterColumnType(DbType.Single, "NUMERIC");
-			RegisterColumnType(DbType.VarNumeric, "NUMERIC");
-			RegisterColumnType(DbType.String, "TEXT");
-			RegisterColumnType(DbType.AnsiStringFixedLength, "TEXT");
-			RegisterColumnType(DbType.StringFixedLength, "TEXT");
-			RegisterColumnType(DbType.DateTime, "DATETIME");
-            RegisterColumnType(DbType.Date, "DATETIME");
-			RegisterColumnType(DbType.Time, "DATETIME");
-			RegisterColumnType(DbType.Boolean, "INTEGER");
-			RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
+            RegisterColumnType(DbType.Binary, "BINARY");
+            RegisterColumnType(DbType.Byte, "TINYINT");
+            RegisterColumnType(DbType.Int16, "SMALLINT");
+            RegisterColumnType(DbType.Int32, "INTEGER");
+            RegisterColumnType(DbType.Int64, "INTEGER");
+            RegisterColumnType(DbType.SByte, "INTEGER");
+            RegisterColumnType(DbType.UInt16, "INTEGER");
+            RegisterColumnType(DbType.UInt32, "INTEGER");
+            RegisterColumnType(DbType.UInt64, "INTEGER");
+
+            RegisterColumnType(DbType.Currency, "CURRENCY");
+            RegisterColumnType(DbType.Decimal, "DECIMAL");
+            RegisterColumnType(DbType.Double, "DOUBLE");
+            RegisterColumnType(DbType.Single, "REAL");
+            RegisterColumnType(DbType.VarNumeric, "NUMERIC");
+
+            RegisterColumnType(DbType.String, "TEXT");
+            RegisterColumnType(DbType.StringFixedLength, "TEXT");
+            RegisterColumnType(DbType.AnsiString, "TEXT");
+            RegisterColumnType(DbType.AnsiStringFixedLength, "TEXT");
+
+            RegisterColumnType(DbType.Date, "DATE");
+            RegisterColumnType(DbType.DateTime, "DATETIME");
+            RegisterColumnType(DbType.Time, "TIME");
+            RegisterColumnType(DbType.Boolean, "BOOLEAN"); // Important for Dapper to know it should map to a bool
+            RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
 
 			RegisterProperty(ColumnProperty.Identity, "AUTOINCREMENT");
             RegisterProperty(ColumnProperty.CaseSensitive, "COLLATE NOCASE"); 
