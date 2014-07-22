@@ -371,7 +371,12 @@ namespace Migrator.Providers.SQLite
 			return false;
 		}
 
-		public override string[] GetTables()
+	    public override string[] GetConstraints(string table)
+	    {
+	        return new string[] { };
+	    }
+
+	    public override string[] GetTables()
 		{
 			var tables = new List<string>();
 
