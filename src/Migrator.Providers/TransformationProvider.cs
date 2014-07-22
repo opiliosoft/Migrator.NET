@@ -1362,11 +1362,19 @@ namespace Migrator.Providers
                     new Column("Scope", DbType.String, 50, ColumnProperty.NotNull | ColumnProperty.PrimaryKey, "default"),
                     new Column("TimeStamp", DbType.DateTime));                 
             }
-            else if (!ColumnExists(_schemaInfotable, "Scope"))
+            else
             {
-                AddColumn(_schemaInfotable, "Scope", DbType.String, 50, ColumnProperty.NotNull, "default");
-                RemoveAllConstraints(_schemaInfotable);
-                AddPrimaryKey("PK_SchemaInfo", _schemaInfotable, new[] { "Version", "Scope" });
+                if (!ColumnExists(_schemaInfotable, "Scope"))
+                {
+                    AddColumn(_schemaInfotable, "Scope", DbType.String, 50, ColumnProperty.NotNull, "default");
+                    RemoveAllConstraints(_schemaInfotable);
+                    AddPrimaryKey("PK_SchemaInfo", _schemaInfotable, new[] { "Version", "Scope" });
+                }
+
+                if (!ColumnExists(_schemaInfotable, "TimeStamp"))
+                {
+                    AddColumn(_schemaInfotable, "TimeStamp", DbType.DateTime);
+                }
             }
         }
 
