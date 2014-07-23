@@ -31,6 +31,7 @@ namespace Migrator.Providers.SQLite
 
             RegisterColumnType(DbType.Date, "DATE");
             RegisterColumnType(DbType.DateTime, "DATETIME");
+            RegisterColumnType(DbType.DateTimeOffset, "TEXT");
             RegisterColumnType(DbType.Time, "TIME");
             RegisterColumnType(DbType.Boolean, "BOOLEAN"); // Important for Dapper to know it should map to a bool
             RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");

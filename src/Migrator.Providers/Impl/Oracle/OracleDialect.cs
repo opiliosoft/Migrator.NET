@@ -22,6 +22,7 @@ namespace Migrator.Providers.Oracle
 			RegisterColumnType(DbType.Currency, "NUMBER(19,1)");
 			RegisterColumnType(DbType.Date, "DATE");
 			RegisterColumnType(DbType.DateTime, "TIMESTAMP(4)");
+            RegisterColumnType(DbType.DateTimeOffset, "TIMESTAMP(4)");
 			RegisterColumnType(DbType.Decimal, "NUMBER(19,5)");
 			RegisterColumnType(DbType.Decimal, 19, "NUMBER(19, $l)");
 			// having problems with both ODP and OracleClient from MS not being able

@@ -25,6 +25,7 @@ namespace Migrator.Providers.Impl.Ingres
 			this.RegisterColumnType(DbType.Currency, "MONEY");
 			this.RegisterColumnType(DbType.Date, "DATE");
 			this.RegisterColumnType(DbType.DateTime, "DATETIME");
+            this.RegisterColumnType(DbType.DateTimeOffset, "DATETIME");
 			this.RegisterColumnType(DbType.Decimal, "NUMERIC(19,5)");
 			this.RegisterColumnType(DbType.Decimal, 19, "NUMERIC(19, $l)");
 			this.RegisterColumnType(DbType.Double, "DOUBLE");

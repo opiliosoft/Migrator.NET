@@ -29,6 +29,7 @@ namespace Migrator.Providers.Mysql
 			RegisterColumnType(DbType.Currency, "MONEY");
 			RegisterColumnType(DbType.Date, "DATE");
 			RegisterColumnType(DbType.DateTime, "DATETIME");
+            RegisterColumnType(DbType.DateTimeOffset, "DATETIME");
 			RegisterColumnType(DbType.Decimal, "NUMERIC(19,5)");
 			RegisterColumnType(DbType.Decimal, 19, "NUMERIC(19, $l)");
 			RegisterColumnType(DbType.Double, "DOUBLE");

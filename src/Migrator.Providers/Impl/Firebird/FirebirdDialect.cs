@@ -19,6 +19,7 @@ namespace Migrator.Providers.Impl.Firebird
             RegisterColumnType(DbType.Currency, "MONEY");
             RegisterColumnType(DbType.Date, "TIMESTAMP");
             RegisterColumnType(DbType.DateTime, "TIMESTAMP");
+            RegisterColumnType(DbType.DateTimeOffset, "TIMESTAMP");
             RegisterColumnType(DbType.Decimal, "DECIMAL");
             RegisterColumnType(DbType.Double, "DOUBLE PRECISION"); //synonym for FLOAT(53)
             RegisterColumnType(DbType.Guid, "CHAR(38)");

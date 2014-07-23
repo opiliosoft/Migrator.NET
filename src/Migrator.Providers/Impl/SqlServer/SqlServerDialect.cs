@@ -24,6 +24,7 @@ namespace Migrator.Providers.SqlServer
 			RegisterColumnType(DbType.Currency, "MONEY");
 			RegisterColumnType(DbType.Date, "DATETIMEOffset(7)");
             RegisterColumnType(DbType.DateTime, "DATETIMEOffset(7)");
+            RegisterColumnType(DbType.DateTimeOffset, "DATETIMEOffset(7)");
             RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)");
             RegisterColumnType(DbType.Decimal, 19, "DECIMAL(19, $l)");
             RegisterColumnType(DbType.Double, "DOUBLE PRECISION"); //synonym for FLOAT(53)
