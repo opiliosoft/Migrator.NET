@@ -22,8 +22,8 @@ namespace Migrator.Providers.SqlServer
 			RegisterColumnType(DbType.Boolean, "BIT");
 			RegisterColumnType(DbType.Byte, "TINYINT");
 			RegisterColumnType(DbType.Currency, "MONEY");
-			RegisterColumnType(DbType.Date, "DATETIMEOffset(7)");
-            RegisterColumnType(DbType.DateTime, "DATETIMEOffset(7)");
+            RegisterColumnType(DbType.Date, "DATETIME");
+            RegisterColumnType(DbType.DateTime, "DATETIME");
             RegisterColumnType(DbType.DateTimeOffset, "DATETIMEOffset(7)");
             RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)");
             RegisterColumnType(DbType.Decimal, 19, "DECIMAL(19, $l)");
