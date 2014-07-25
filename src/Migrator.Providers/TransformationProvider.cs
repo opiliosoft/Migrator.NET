@@ -1539,7 +1539,7 @@ namespace Migrator.Providers
 
         protected virtual string GetPrimaryKeyConstraintName(string table)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public virtual void RemovePrimaryKey(string table)

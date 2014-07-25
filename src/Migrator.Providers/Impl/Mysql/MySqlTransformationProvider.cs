@@ -53,7 +53,14 @@ namespace Migrator.Providers.Mysql
                 if (tuple.Item3 == "FOREIGN KEY")
                     RemoveForeignKey(tuple.Item1, tuple.Item2);
                 else if (tuple.Item3 == "PRIMARY KEY")
-                    ExecuteNonQuery(String.Format("ALTER TABLE {0} DROP PRIMARY KEY", table));
+                {
+                    try
+                    {
+                        ExecuteNonQuery(String.Format("ALTER TABLE {0} DROP PRIMARY KEY", table));
+                    }
+                    catch (Exception)
+                    { }
+                }
                 else if (tuple.Item3 == "UNIQUE")
                     RemoveIndex(tuple.Item1, tuple.Item2);
             }

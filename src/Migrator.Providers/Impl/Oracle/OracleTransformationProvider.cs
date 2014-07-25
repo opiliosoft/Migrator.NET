@@ -177,6 +177,52 @@ namespace Migrator.Providers.Oracle
 			ExecuteNonQuery(String.Format("ALTER TABLE {0} ADD {1}", table, sqlColumn));
 		}
 
+        public override string[] GetConstraints(string table)
+        {
+            var constraints = new List<string>();
+            //using (
+            //    IDataReader reader =
+            //        ExecuteQuery(
+            //            String.Format("SELECT CONSTRAINT_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE LOWER(TABLE_NAME) = LOWER('{0}')", table)))
+            //{
+            //    while (reader.Read())
+            //    {
+            //        constraints.Add(reader.GetString(0));
+            //    }
+            //}
+
+            using (
+                IDataReader reader =
+                    ExecuteQuery(
+                        String.Format("SELECT constraint_name FROM user_constraints WHERE lower(table_name) = '{0}'", table.ToLower())))
+            {
+                while (reader.Read())
+                {
+                    constraints.Add(reader.GetString(0));
+                }
+            }
+
+            return constraints.ToArray();
+        }
+
+        protected override string GetPrimaryKeyConstraintName(string table)
+        {
+            var constraints = new List<string>();
+
+            using (
+                IDataReader reader =
+                    ExecuteQuery(
+                        String.Format("SELECT constraint_name FROM user_constraints WHERE lower(table_name) = '{0}' and constraint_type = 'P'", table.ToLower())))
+            {
+                while (reader.Read())
+                {
+                    constraints.Add(reader.GetString(0));
+                }
+            }
+
+            return constraints.FirstOrDefault();
+        }
+
 		public override bool ConstraintExists(string table, string name)
 		{
 			string sql =
@@ -207,7 +253,7 @@ namespace Migrator.Providers.Oracle
             string sql = string.Format("SELECT COUNT(table_name) FROM user_tables WHERE lower(table_name) = '{0}'", table.ToLower());
 
             if (_defaultSchema != null)
-                sql = string.Format("SELECT COUNT(table_name) FROM all_tables WHERE lower(owner) = '{0}' and lower(table_name) = '{1}'", _defaultSchema.ToLower(), table.ToLower());
+                sql = string.Format("SELECT COUNT(table_name) FROM user_tables WHERE lower(owner) = '{0}' and lower(table_name) = '{1}'", _defaultSchema.ToLower(), table.ToLower());
 
             Logger.Log(sql);
             object count = ExecuteScalar(sql);
@@ -472,19 +518,19 @@ namespace Migrator.Providers.Oracle
             }
         }
 
-        protected override string GetPrimaryKeyConstraintName(string table)
-        {
-            var sql = "select constraint_name " +
-                        "from user_indexes join user_constraints on user_indexes.index_name = user_constraints.constraint_name " +
-                        "where lower(user_indexes.table_name) = lower('{0}') and constraint_type = 'P'";
+        //protected override string GetPrimaryKeyConstraintName(string table)
+        //{
+        //    var sql = "select constraint_name " +
+        //                "from user_indexes join user_constraints on user_indexes.index_name = user_constraints.constraint_name " +
+        //                "where lower(user_indexes.table_name) = lower('{0}') and constraint_type = 'P'";
 
-            sql = string.Format(sql, table);
+        //    sql = string.Format(sql, table);
 
-            using (IDataReader reader = ExecuteQuery(sql))
-            {
-                return reader.Read() ? reader.GetString(0) : null;
-            }
-        }
+        //    using (IDataReader reader = ExecuteQuery(sql))
+        //    {
+        //        return reader.Read() ? reader.GetString(0) : null;
+        //    }
+        //}
         
 	    public override Index[] GetIndexes(string table)
         {
