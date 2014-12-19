@@ -66,7 +66,7 @@ namespace Migrator.Providers.Mysql
 			RegisterUnsignedCompatible(DbType.Double);
 			RegisterUnsignedCompatible(DbType.Single);
 
-			AddReservedWords("KEY");
+			AddReservedWords("KEY", "MAXVALUE");
 	   }
 
 		public override string QuoteTemplate
