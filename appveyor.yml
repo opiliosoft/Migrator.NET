@@ -19,6 +19,8 @@ build:
 after_build:
   - ps: .\nuget\pack.ps1
 
+test:
+
 artifacts:
   - path: src\Migrator\bin\Migrator\Debug\DotNetProjects.Migrator.dll
     name: DotNetProjects.Migrator.dll
