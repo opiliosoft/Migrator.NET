@@ -487,7 +487,13 @@ namespace Migrator.Providers
             return "";
         }
 
-	    public IDbConnection Connection { get; }
+	    public IDbConnection Connection
+	    {
+	        get
+	        {
+	            return null;
+	        }
+	    }
 
 	    public IEnumerable<string> GetTables(string schema)
 	    {
