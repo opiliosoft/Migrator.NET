@@ -80,7 +80,6 @@
       <Link>default.build</Link>
     </None>
     <None Include="MigratorDotNet.snk" />
-    <None Include="Package.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />

@@ -145,7 +145,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="MigratorDotNet.snk" />
-    <None Include="Package.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Migrator.Framework\DotNetProjects.Migrator.Framework.csproj">

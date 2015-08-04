@@ -104,7 +104,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="MigratorDotNet.snk" />
-    <None Include="Package.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
