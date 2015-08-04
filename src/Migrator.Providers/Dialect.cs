@@ -230,10 +230,8 @@ namespace Migrator.Providers
             }
             else if (defaultValue is String)
             {
-                if (!defaultValue.ToString().StartsWith("'")) 
-                    defaultValue = "'" + defaultValue + "'";
                 defaultValue = ((String)defaultValue).Replace("'", "''");
-                defaultValue = ((String)defaultValue).Substring(1, ((String)defaultValue).Length - 2);
+                defaultValue = "'" + defaultValue + "'";
             }
 
 			return String.Format("DEFAULT {0}", defaultValue);

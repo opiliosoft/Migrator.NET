@@ -84,7 +84,7 @@ namespace Migrator.Tests
 		{
 			var mapper = new ColumnPropertiesMapper(new SqlServerDialect(), "varchar(30)");
 			mapper.MapColumnProperties(new Column("foo", DbType.String, 0, "'NEW'"));
-			Assert.AreEqual("[foo] varchar(30) DEFAULT 'NEW'", mapper.ColumnSql);
+			Assert.AreEqual("[foo] varchar(30) DEFAULT '''NEW'''", mapper.ColumnSql);
 		}
 
 		[Test]
@@ -92,7 +92,7 @@ namespace Migrator.Tests
 		{
 			var mapper = new ColumnPropertiesMapper(new SqlServerDialect(), "varchar(30)");
 			mapper.MapColumnProperties(new Column("foo", DbType.String, 0, "NULL"));
-			Assert.AreEqual("[foo] varchar(30) DEFAULT NULL", mapper.ColumnSql);
+			Assert.AreEqual("[foo] varchar(30) DEFAULT 'NULL'", mapper.ColumnSql);
 		}
 
 		[Test]

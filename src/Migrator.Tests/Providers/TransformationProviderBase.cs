@@ -24,9 +24,27 @@ namespace Migrator.Tests.Providers
         {
             // Because MySql doesn't support schema transaction
             // we got to remove the tables manually... sad...
-            _provider.RemoveTable("TestTwo");
-            _provider.RemoveTable("Test");
-            _provider.RemoveTable("SchemaInfo");
+            try
+            {
+                _provider.RemoveTable("TestTwo");
+            }
+            catch (Exception)
+            {
+            }
+            try
+            {
+                _provider.RemoveTable("Test");
+            }
+            catch (Exception)
+            {
+            }
+            try
+            {
+                _provider.RemoveTable("SchemaInfo");
+            }
+            catch (Exception)
+            {
+            }
         }
 
         public void AddDefaultTable()

@@ -1,5 +1,6 @@
 using System;
 using System.Configuration;
+using System.Linq;
 using Migrator.Framework;
 using Migrator.Providers;
 
@@ -13,8 +14,7 @@ namespace Migrator.Tests
 		[Test]
 		public void CanGetDialectsForProvider()
 		{
-			var providers = new[] {"SqlServer", "Mysql", "SQLite", "PostgreSQL", "SqlServer2005", "SqlServerCe", "Oracle"};
-            foreach (ProviderTypes provider in Enum.GetValues(typeof(ProviderTypes)))
+			foreach (ProviderTypes provider in Enum.GetValues(typeof(ProviderTypes)).Cast<ProviderTypes>().Where(x=>x!=ProviderTypes.none))
             {
                 Assert.IsNotNull(ProviderFactory.DialectForProvider(provider));
             }

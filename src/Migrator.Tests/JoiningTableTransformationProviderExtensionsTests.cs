@@ -43,7 +43,7 @@ namespace Migrator.Tests
 
 			object[] args = provider.GetArgumentsForCallsMadeOn(stub => stub.AddTable(null, (Column[]) null))[0];
 
-			Column lhsColumn = ((Column[]) args[1])[0];
+            Column lhsColumn = ((IDbField[]) args[1])[0] as Column;
 
 			Assert.AreEqual(lhsColumn.Name, "TestScenarioId");
 			Assert.AreEqual(DbType.Guid, lhsColumn.Type);
@@ -81,7 +81,7 @@ namespace Migrator.Tests
 
 			object[] args = provider.GetArgumentsForCallsMadeOn(stub => stub.AddTable(null, (Column[]) null))[0];
 
-			Column rhsColumn = ((Column[]) args[1])[1];
+			Column rhsColumn = ((IDbField[]) args[1])[1] as Column;
 
 			Assert.AreEqual(rhsColumn.Name, "VersionId");
 			Assert.AreEqual(DbType.Guid, rhsColumn.Type);
