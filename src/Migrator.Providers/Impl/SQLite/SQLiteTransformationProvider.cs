@@ -24,8 +24,9 @@ namespace Migrator.Providers.SQLite
 
         protected virtual void CreateConnection(string providerName)
         {
-            if (string.IsNullOrEmpty(providerName)) providerName = "System.Data.SQLite";
-            var fac = DbProviderFactories.GetFactory(providerName);
+            if (string.IsNullOrEmpty(providerName))
+                providerName = "System.Data.SQLite";
+            var fac = DbProviderFactoriesHelper.GetFactory(providerName, "System.Data.SQLite", "System.Data.SQLite.SQLiteFactory");
             _connection = fac.CreateConnection(); // new SQLiteConnection(_connectionString);
             _connection.ConnectionString = _connectionString;
             _connection.Open();

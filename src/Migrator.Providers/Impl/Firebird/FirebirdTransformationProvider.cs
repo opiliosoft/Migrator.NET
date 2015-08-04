@@ -16,7 +16,7 @@ namespace Migrator.Providers.Impl.Firebird
             : base(dialect, connectionString, null, scope)
         {
             if (string.IsNullOrEmpty(providerName)) providerName = "FirebirdSql.Data.FirebirdClient";
-            var fac = DbProviderFactories.GetFactory(providerName);
+            var fac = DbProviderFactoriesHelper.GetFactory(providerName, "FirebirdSql.Data.FirebirdClient", "FirebirdSql.Data.FirebirdClient.FirebirdClientFactory");
             _connection = fac.CreateConnection();
             _connection.ConnectionString = _connectionString;
             this._connection.Open();

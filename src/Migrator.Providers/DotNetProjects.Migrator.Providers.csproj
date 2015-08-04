@@ -68,6 +68,7 @@
     </Compile>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="ColumnPropertiesMapper.cs" />
+    <Compile Include="DbProviderFactoriesHelper.cs" />
     <Compile Include="Dialect.cs" />
     <Compile Include="ForeignKeyConstraintMapper.cs" />
     <Compile Include="Impl\Firebird\FirebirdColumnPropertiesMapper.cs" />

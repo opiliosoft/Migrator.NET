@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>DotNetProjects.Migrator.Providers</id>
-    <version>4.0</version>
+    <version>4.0.1</version>
     <authors>DotNetProjects</authors>
     <owners>DotNetProjects</owners>
     <licenseUrl>https://www.mozilla.org/MPL/1.1/</licenseUrl>

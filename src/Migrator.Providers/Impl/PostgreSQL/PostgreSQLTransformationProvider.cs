@@ -29,7 +29,7 @@ namespace Migrator.Providers.PostgreSQL
 			: base(dialect, connectionString, defaultSchema, scope)
 		{
             if (string.IsNullOrEmpty(providerName)) providerName = "Npgsql";
-            var fac = DbProviderFactories.GetFactory(providerName);
+            var fac = DbProviderFactoriesHelper.GetFactory(providerName, "Npgsql", "Npgsql.NpgsqlFactory");
             _connection = fac.CreateConnection(); //new NpgsqlConnection();
 			_connection.ConnectionString = _connectionString;
 			_connection.Open();
