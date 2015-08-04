@@ -12,11 +12,11 @@
     <copyright>Copyright 2015</copyright>
   </metadata>
   <files>
-    <file src="..\src\Migrator\bin\Migrator\Debug\DotNetProjects.Migrator.dll" target="lib\net40" />
-    <file src="..\src\Migrator\bin\Migrator\Debug\DotNetProjects.Migrator.pdb" target="lib\net40" />
-	<file src="..\src\Migrator\bin\Migrator\Debug\DotNetProjects.Migrator.Framework.dll" target="lib\net40" />
-    <file src="..\src\Migrator\bin\Migrator\Debug\DotNetProjects.Migrator.Framework.pdb" target="lib\net40" />
-	<file src="..\src\Migrator\bin\Migrator\Debug\DotNetProjects.Migrator.Providers.dll" target="lib\net40" />
-    <file src="..\src\Migrator\bin\Migrator\Debug\DotNetProjects.Migrator.Providers.pdb" target="lib\net40" />
+    <file src="..\src\Migrator\bin\Migrator\Release\DotNetProjects.Migrator.dll" target="lib\net40" />
+    <file src="..\src\Migrator\bin\Migrator\Release\DotNetProjects.Migrator.pdb" target="lib\net40" />
+	<file src="..\src\Migrator\bin\Migrator\Release\DotNetProjects.Migrator.Framework.dll" target="lib\net40" />
+    <file src="..\src\Migrator\bin\Migrator\Release\DotNetProjects.Migrator.Framework.pdb" target="lib\net40" />
+	<file src="..\src\Migrator\bin\Migrator\Release\DotNetProjects.Migrator.Providers.dll" target="lib\net40" />
+    <file src="..\src\Migrator\bin\Migrator\Release\DotNetProjects.Migrator.Providers.pdb" target="lib\net40" />
   </files>
 </package>
