@@ -1,4 +1,4 @@
 ﻿using System.Reflection;
 
-[assembly: AssemblyTitle("Migrator.Framework")]
-[assembly: AssemblyDescription("Migrator Framework")]
+[assembly: AssemblyTitle("DotNetProjects.Migrator.Framework")]
+[assembly: AssemblyDescription("DotNetProjects.Migrator Framework")]

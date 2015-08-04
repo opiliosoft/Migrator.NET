@@ -1,4 +1,4 @@
 ﻿using System.Reflection;
 
-[assembly: AssemblyTitle("Migrator.Providers")]
+[assembly: AssemblyTitle("DotNetProjects.Migrator.Providers")]
 [assembly: AssemblyDescription("Standard Migration Provider")]
