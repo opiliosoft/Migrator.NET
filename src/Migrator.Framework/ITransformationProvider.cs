@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 
 namespace Migrator.Framework
 {
@@ -621,5 +622,11 @@ namespace Migrator.Framework
 	    void RemoveAllIndexes(string table);
 
 	    string Concatenate(params string[] strings);
+
+        IDbConnection Connection { get; }
+
+	    IEnumerable<string> GetTables(string schema);
+
+	    IEnumerable<string> GetColumns(string schema, string table);
 	}
 }

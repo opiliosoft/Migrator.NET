@@ -486,5 +486,17 @@ namespace Migrator.Providers
         {
             return "";
         }
+
+	    public IDbConnection Connection { get; }
+
+	    public IEnumerable<string> GetTables(string schema)
+	    {
+	        throw new NotImplementedException();
+	    }
+
+	    public IEnumerable<string> GetColumns(string schema, string table)
+	    {
+	        throw new NotImplementedException();
+	    }
 	}
 }

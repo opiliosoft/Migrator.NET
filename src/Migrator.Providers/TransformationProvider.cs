@@ -14,6 +14,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -1573,6 +1574,32 @@ namespace Migrator.Providers
         public virtual string Concatenate(params string[] strings)
         {
             return string.Join(" || ", strings);
+        }
+
+        public IDbConnection Connection
+        {
+            get { return _connection; }
+        }
+
+        public IEnumerable<string> GetTables(string schema)
+        {
+            var tableRestrictions = new string[4];
+            tableRestrictions[1] = schema;
+
+            var c = _connection as DbConnection;
+            var tables = c.GetSchema("Tables", tableRestrictions);
+            return from DataRow row in tables.Rows select row.Field<string>("TABLE_NAME");
+        }
+
+        public IEnumerable<string> GetColumns(string schema, string table)
+        {
+            var tableRestrictions = new string[4];
+            tableRestrictions[1] = schema;
+            tableRestrictions[2] = table;
+
+            var c = _connection as DbConnection;
+            var tables = c.GetSchema("Columns", tableRestrictions);
+            return from DataRow row in tables.Rows select row.Field<string>("TABLE_NAME");
         }
     }
 }
