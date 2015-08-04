@@ -1,4 +1,7 @@
 $root = (split-path -parent $MyInvocation.MyCommand.Definition) + '\..'
+
+Write-Host "root: $root"
+
 $version = [System.Reflection.Assembly]::LoadFile("$root\src\Migrator\bin\Migrator\Debug\DotNetProjects.Migrator.dll").GetName().Version
 $versionStr = "{0}.{1}.{2}" -f ($version.Major, $version.Minor, $version.Build)
 
