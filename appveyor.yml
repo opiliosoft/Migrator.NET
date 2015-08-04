@@ -19,10 +19,20 @@ build:
 after_build:
   - ps: .\nuget\pack.ps1
 
-#artifacts:
-#  - path: MarkdownLog\bin\Release\MarkdownLog.dll
-#    name: MarkdownLog.dll
-#  - path: '**\*.nupkg'
+artifacts:
+  - path: src\Migrator\bin\Migrator\Debug\DotNetProjects.Migrator.dll
+    name: DotNetProjects.Migrator.dll
+  - path: src\Migrator\bin\Migrator\Debug\DotNetProjects.Migrator.pdb
+    name: DotNetProjects.Migrator.pdb
+  - path: src\Migrator\bin\Migrator\Debug\DotNetProjects.Migrator.Framework.dll
+    name: DotNetProjects.Migrator.Framework.dll
+  - path: src\Migrator\bin\Migrator\Debug\DotNetProjects.Migrator.Framework.pdb
+    name: DotNetProjects.Migrator.Framework.pdb
+  - path: src\Migrator\bin\Migrator\Debug\DotNetProjects.Migrator.Providers.dll
+    name: DotNetProjects.Migrator.Providers.dll
+  - path: src\Migrator\bin\Migrator\Debug\DotNetProjects.Migrator.Providers.pdb
+    name: DotNetProjects.Migrator.Providers.pdb
+  - path: '**\*.nupkg'
 
 #uncomment to publish to NuGet
 deploy:
