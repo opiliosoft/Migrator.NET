@@ -9,6 +9,10 @@ But has also a few changes:
   - Different Migration Scopes in one Database
 
 
+NuGet
+-----
+https://www.nuget.org/packages/DotNetProjects.Migrator/
+
 Introduction
 ------------
 
