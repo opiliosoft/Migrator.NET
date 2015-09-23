@@ -35,7 +35,12 @@ namespace Migrator.Providers.PostgreSQL
 			_connection.Open();
 		}
 
-	    public override Index[] GetIndexes(string table)
+        public PostgreSQLTransformationProvider(Dialect dialect, IDbConnection connection, string defaultSchema, string scope, string providerName)
+           : base(dialect, connection, defaultSchema, scope)
+        {                              
+        }
+
+        public override Index[] GetIndexes(string table)
 	    {
             var retVal = new List<Index>();
 

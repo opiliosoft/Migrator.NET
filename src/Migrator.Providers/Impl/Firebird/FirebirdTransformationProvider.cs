@@ -12,7 +12,7 @@ namespace Migrator.Providers.Impl.Firebird
     /// </summary>
     public class FirebirdTransformationProvider : TransformationProvider
     {
-          public FirebirdTransformationProvider(Dialect dialect, string connectionString, string scope, string providerName)
+        public FirebirdTransformationProvider(Dialect dialect, string connectionString, string scope, string providerName)
             : base(dialect, connectionString, null, scope)
         {
             if (string.IsNullOrEmpty(providerName)) providerName = "FirebirdSql.Data.FirebirdClient";
@@ -20,6 +20,11 @@ namespace Migrator.Providers.Impl.Firebird
             _connection = fac.CreateConnection();
             _connection.ConnectionString = _connectionString;
             this._connection.Open();
+        }
+
+        public FirebirdTransformationProvider(Dialect dialect, IDbConnection connection, string scope, string providerName)
+           : base(dialect, connection, null, scope)
+        {                                  
         }
 
         public override void AddColumn(string table, string sqlColumn)

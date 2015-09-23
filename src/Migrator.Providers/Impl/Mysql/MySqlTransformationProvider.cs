@@ -22,6 +22,11 @@ namespace Migrator.Providers.Mysql
             _connection.Open();
         }
 
+        public MySqlTransformationProvider(Dialect dialect, IDbConnection connection, string scope, string providerName)
+           : base(dialect, connection, null, scope)
+        {                            
+        }
+
         public override void RemoveForeignKey(string table, string name)
         {
             if (ForeignKeyExists(table, name))

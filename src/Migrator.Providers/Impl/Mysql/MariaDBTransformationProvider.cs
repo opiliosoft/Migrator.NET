@@ -22,6 +22,11 @@ namespace Migrator.Providers.Mysql
             _connection.Open();
         }
 
+        public MariaDBTransformationProvider(Dialect dialect, IDbConnection connection, string scope, string providerName)
+           : base(dialect, connection, scope, providerName)
+        {                            
+        }
+
         //public override void RenameColumn(string tableName, string oldColumnName, string newColumnName)
         //{
         //    if (ColumnExists(tableName, newColumnName))

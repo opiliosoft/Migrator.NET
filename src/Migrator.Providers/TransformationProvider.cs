@@ -40,6 +40,7 @@ namespace Migrator.Providers
         readonly ForeignKeyConstraintMapper constraintMapper = new ForeignKeyConstraintMapper();
         protected List<long> _appliedMigrations;
         protected IDbConnection _connection;
+        protected bool _outsideConnection = false;
         protected Dialect _dialect;
         ILogger _logger;
         IDbTransaction _transaction;
@@ -49,6 +50,16 @@ namespace Migrator.Providers
             _dialect = dialect;
             _connectionString = connectionString;
 			_defaultSchema = defaultSchema;
+            _logger = new Logger(false);
+            _scope = scope;
+        }
+
+        protected TransformationProvider(Dialect dialect, IDbConnection connection, string defaultSchema, string scope)
+        {
+            _dialect = dialect;
+            _connection = connection;
+            _outsideConnection = true;
+            _defaultSchema = defaultSchema;
             _logger = new Logger(false);
             _scope = scope;
         }
@@ -1091,7 +1102,10 @@ namespace Migrator.Providers
                 }
                 finally
                 {
-                    _connection.Close();
+                    if (!_outsideConnection)
+                    {
+                        _connection.Close();
+                    }
                 }
             }
             _transaction = null;
@@ -1110,7 +1124,10 @@ namespace Migrator.Providers
                 }
                 finally
                 {
-                    _connection.Close();
+                    if (!_outsideConnection)
+                    {
+                        _connection.Close();
+                    }
                 }
             }
             _transaction = null;
@@ -1205,11 +1222,19 @@ namespace Migrator.Providers
         {
             if (_connection != null && _connection.State == ConnectionState.Open)
             {
-                _connection.Close();               
+                if (!_outsideConnection)
+                {
+                    _connection.Close();
+                }
             }
 
             if (_connection != null)
-                _connection.Dispose();
+            {
+                if (!_outsideConnection)
+                {
+                    _connection.Close();
+                }
+            }
 
             _connection = null;
         }

@@ -22,6 +22,11 @@ namespace Migrator.Providers.SQLite
            this.CreateConnection(providerName);
 		}
 
+        public SQLiteTransformationProvider(Dialect dialect, IDbConnection connection, string scope, string providerName)
+           : base(dialect, connection, null, scope)
+        {                             
+        }
+
         protected virtual void CreateConnection(string providerName)
         {
             if (string.IsNullOrEmpty(providerName))

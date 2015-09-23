@@ -18,6 +18,11 @@ namespace Migrator.Providers.SQLite
           
 		}
 
+        public SQLiteMonoTransformationProvider(Dialect dialect, IDbConnection connection, string scope, string providerName)
+           : base(dialect, connection, scope, providerName)
+        {            
+        }
+
         protected override void CreateConnection(string providerName)
         {
             if (string.IsNullOrEmpty(providerName))

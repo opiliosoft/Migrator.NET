@@ -31,6 +31,12 @@ namespace Migrator.Providers.SqlServer
             CreateConnection(providerName);
         }
 
+        public SqlServerTransformationProvider(Dialect dialect, IDbConnection connection, string defaultSchema, string scope, string providerName)
+           : base(dialect, connection, defaultSchema, scope)
+        {                             
+        }
+
+
         protected virtual void CreateConnection(string providerName)
         {
             if (string.IsNullOrEmpty(providerName))

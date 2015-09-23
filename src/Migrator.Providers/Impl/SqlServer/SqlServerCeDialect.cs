@@ -19,5 +19,12 @@ namespace Migrator.Providers.SqlServer
 		{
 			return new SqlServerCeTransformationProvider(dialect, connectionString, scope, providerName);
 		}
-	}
+
+        public override ITransformationProvider GetTransformationProvider(Dialect dialect, IDbConnection connection,
+         string defaultSchema,
+         string scope, string providerName)
+        {
+            return new SqlServerCeTransformationProvider(dialect, connection, scope, providerName);
+        }
+    }
 }

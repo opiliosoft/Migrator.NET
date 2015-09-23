@@ -29,7 +29,12 @@ namespace Migrator.Providers.SqlServer
 		{
 		}
 
-		protected override void CreateConnection(string providerName)
+        public SqlServerCeTransformationProvider(Dialect dialect, IDbConnection connection, string scope, string providerName)
+           : base(dialect, connection, null, scope, providerName)
+        {                            
+        }
+
+        protected override void CreateConnection(string providerName)
         {
             if (string.IsNullOrEmpty(providerName)) providerName = "System.Data.SqlServerCe.3.5";
             var fac = DbProviderFactories.GetFactory(providerName);

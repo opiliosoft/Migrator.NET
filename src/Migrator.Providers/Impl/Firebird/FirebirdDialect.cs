@@ -1,8 +1,6 @@
 using System;
 using System.Data;
-
 using Migrator.Framework;
-using Migrator.Providers.Mysql;
 
 namespace Migrator.Providers.Impl.Firebird
 {
@@ -59,5 +57,12 @@ namespace Migrator.Providers.Impl.Firebird
 
             return new FirebirdColumnPropertiesMapper(this, type);
         }
-	}
+
+        public override ITransformationProvider GetTransformationProvider(Dialect dialect, IDbConnection connection,
+          string defaultSchema,
+          string scope, string providerName)
+        {
+            return new FirebirdTransformationProvider(dialect, connection, scope, providerName);
+        }
+    }
 }

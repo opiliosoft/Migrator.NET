@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 
 namespace Migrator.Providers.Impl.Informix
@@ -17,6 +18,11 @@ namespace Migrator.Providers.Impl.Informix
             _connection = fac.CreateConnection(); 
             _connection.ConnectionString = _connectionString;
             this._connection.Open();
+        }
+
+        public InformixTransformationProvider(Dialect dialect, IDbConnection connection, string scope, string providerName)
+           : base(dialect, connection, null, scope)
+        {                            
         }
 
         public override List<string> GetDatabases()

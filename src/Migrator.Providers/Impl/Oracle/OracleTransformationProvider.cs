@@ -18,6 +18,11 @@ namespace Migrator.Providers.Oracle
             this.CreateConnection(providerName);
 		}
 
+        public OracleTransformationProvider(Dialect dialect, IDbConnection connection, string defaultSchema, string scope, string providerName)
+           : base(dialect, connection, defaultSchema, scope)
+        {                              
+        }
+
         protected virtual void CreateConnection(string providerName)
         {
             if (string.IsNullOrEmpty(providerName)) providerName = "Oracle.DataAccess.Client";

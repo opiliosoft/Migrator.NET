@@ -16,6 +16,11 @@ namespace Migrator.Providers.Oracle
            
 		}
 
+        public MsOracleTransformationProvider(Dialect dialect, IDbConnection connection, string defaultSchema, string scope, string providerName)
+           : base(dialect, connection, defaultSchema, scope, providerName)
+        {                            
+        }
+
         protected override void CreateConnection(string providerName)
         {
             if (string.IsNullOrEmpty(providerName)) providerName = "System.Data.OracleClient";

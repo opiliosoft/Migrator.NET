@@ -79,8 +79,15 @@ namespace Migrator.Providers.Oracle
 		{
 			return new OracleTransformationProvider(dialect, connectionString, defaultSchema, scope, providerName);
 		}
-		
-		public override ColumnPropertiesMapper GetColumnMapper(Column column)
+
+        public override ITransformationProvider GetTransformationProvider(Dialect dialect, IDbConnection connection,
+           string defaultSchema,
+           string scope, string providerName)
+        {
+            return new OracleTransformationProvider(dialect, connection, defaultSchema, scope, providerName);
+        }
+
+        public override ColumnPropertiesMapper GetColumnMapper(Column column)
 		{
 			string type = column.Size > 0 ? GetTypeName(column.Type, column.Size) : GetTypeName(column.Type);
 			if (!IdentityNeedsType && column.IsIdentity)

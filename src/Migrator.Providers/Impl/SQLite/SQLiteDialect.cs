@@ -59,5 +59,11 @@ namespace Migrator.Providers.SQLite
 		{
 			return new SQLiteTransformationProvider(dialect, connectionString, scope, providerName);
 		}
+
+	    public override ITransformationProvider GetTransformationProvider(Dialect dialect, IDbConnection connection, string defaultSchema,
+	        string scope, string providerName)
+	    {
+            return new SQLiteTransformationProvider(dialect, connection, scope, providerName);
+        }
 	}
 }

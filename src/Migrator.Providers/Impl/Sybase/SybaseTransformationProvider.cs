@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 
 namespace Migrator.Providers.Impl.Sybase
@@ -14,6 +15,11 @@ namespace Migrator.Providers.Impl.Sybase
             _connection = fac.CreateConnection();
             _connection.ConnectionString = _connectionString;
             this._connection.Open();
+        }
+
+        public SybaseTransformationProvider(Dialect dialect, IDbConnection connection, string scope, string providerName)
+           : base(dialect, connection, null, scope)
+        {                            
         }
 
         public override List<string> GetDatabases()

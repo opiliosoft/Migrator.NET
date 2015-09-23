@@ -13,6 +13,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Reflection;
 using Migrator.Framework;
 using Migrator.Providers;
@@ -52,7 +53,14 @@ namespace Migrator
 
             return dialectInstance.NewProviderForDialect(connectionString, defaultSchema, scope, providerName);            
         }
-      
+
+        public static ITransformationProvider Create(ProviderTypes providerType, IDbConnection connection, string defaultSchema, string scope = "default", string providerName = "")
+        {
+            Dialect dialectInstance = DialectForProvider(providerType);
+
+            return dialectInstance.NewProviderForDialect(connection, defaultSchema, scope, providerName);
+        }
+
         public static Dialect DialectForProvider(ProviderTypes providerType)
         {
             switch (providerType)

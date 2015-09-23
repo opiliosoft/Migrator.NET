@@ -79,7 +79,14 @@ namespace Migrator.Providers.SqlServer
 			return new SqlServerTransformationProvider(dialect, connectionString, defaultSchema ?? DboSchemaName, scope, providerName);
 		}
 
-		public override string Quote(string value)
+        public override ITransformationProvider GetTransformationProvider(Dialect dialect, IDbConnection connection,
+        string defaultSchema,
+        string scope, string providerName)
+        {
+            return new SqlServerTransformationProvider(dialect, connection, defaultSchema ?? DboSchemaName, scope, providerName);
+        }
+
+        public override string Quote(string value)
 		{
 			int firstDotIndex = value.IndexOf('.');
 			if (firstDotIndex >= 0)

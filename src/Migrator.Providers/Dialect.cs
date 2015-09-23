@@ -92,21 +92,27 @@ namespace Migrator.Providers
 		}
 
         public abstract ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope, string providerName);
+        public abstract ITransformationProvider GetTransformationProvider(Dialect dialect, IDbConnection connection, string defaultSchema, string scope, string providerName);
 
         public ITransformationProvider NewProviderForDialect(string connectionString, string defaultSchema, string scope, string providerName)
 		{
 			return GetTransformationProvider(this, connectionString, defaultSchema, scope, providerName);
 		}
 
-		/// <summary>
-		/// Subclasses register a typename for the given type code and maximum
-		/// column length. <c>$l</c> in the type name will be replaced by the column
-		/// length (if appropriate)
-		/// </summary>
-		/// <param name="code">The typecode</param>
-		/// <param name="capacity">Maximum length of database type</param>
-		/// <param name="name">The database type name</param>
-		protected void RegisterColumnType(DbType code, int capacity, string name)
+        public ITransformationProvider NewProviderForDialect(IDbConnection connection, string defaultSchema, string scope, string providerName)
+        {
+            return GetTransformationProvider(this, connection, defaultSchema, scope, providerName);
+        }
+
+        /// <summary>
+        /// Subclasses register a typename for the given type code and maximum
+        /// column length. <c>$l</c> in the type name will be replaced by the column
+        /// length (if appropriate)
+        /// </summary>
+        /// <param name="code">The typecode</param>
+        /// <param name="capacity">Maximum length of database type</param>
+        /// <param name="name">The database type name</param>
+        protected void RegisterColumnType(DbType code, int capacity, string name)
 		{
 			typeNames.Put(code, capacity, name);
 		}

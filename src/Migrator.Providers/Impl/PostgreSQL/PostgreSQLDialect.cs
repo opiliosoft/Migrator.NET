@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using Migrator.Framework;
+using Migrator.Providers.Oracle;
 
 namespace Migrator.Providers.PostgreSQL
 {
@@ -98,6 +99,13 @@ namespace Migrator.Providers.PostgreSQL
         public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope, string providerName)
 		{
 			return new PostgreSQLTransformationProvider(dialect, connectionString, defaultSchema, scope, providerName);
-		}        
+		}
+
+        public override ITransformationProvider GetTransformationProvider(Dialect dialect, IDbConnection connection,
+          string defaultSchema,
+          string scope, string providerName)
+        {
+            return new PostgreSQLTransformationProvider(dialect, connection, defaultSchema, scope, providerName);
+        }
     }
 }
