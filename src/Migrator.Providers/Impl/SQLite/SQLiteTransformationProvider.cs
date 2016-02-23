@@ -417,9 +417,18 @@ namespace Migrator.Providers.SQLite
                         column.ColumnProperty |= ColumnProperty.Null;
                     }
 
-				    column.DefaultValue = reader[4] == DBNull.Value ? null : reader[4];
+				    var defValue = reader[4] == DBNull.Value ? null : reader[4];
 
-                    if (Convert.ToBoolean(reader[5]))
+					if (defValue is string && ((string) defValue).StartsWith("'") && ((string) defValue).EndsWith("'"))
+					{
+						column.DefaultValue = ((string) defValue).Substring(1, ((string) defValue).Length - 2);
+					}
+					else
+					{
+						column.DefaultValue = defValue;
+					}
+
+					if (Convert.ToBoolean(reader[5]))
                     {
                         column.ColumnProperty |= ColumnProperty.PrimaryKey;
                     }
