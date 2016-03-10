@@ -1058,7 +1058,7 @@ namespace Migrator.Providers
             }
             else
             {
-                return ExecuteNonQuery(String.Format("DELETE FROM {0} WHERE ({1})", table, JoinColumnsAndValues(columns, values)));
+                return ExecuteNonQuery(String.Format("DELETE FROM {0} WHERE ({1})", table, JoinColumnsAndValues(columns, values, " and ")));
             }
         }
 
@@ -1423,6 +1423,11 @@ namespace Migrator.Providers
 
         public virtual string JoinColumnsAndValues(string[] columns, string[] values)
         {
+            return JoinColumnsAndValues(columns, values, ", ");
+        }
+
+        public virtual string JoinColumnsAndValues(string[] columns, string[] values, string joinSeperator)
+        {
             string[] quotedValues = QuoteValues(values);
             var namesAndValues = new string[columns.Length];
             for (int i = 0; i < columns.Length; i++)
@@ -1430,7 +1435,7 @@ namespace Migrator.Providers
                 namesAndValues[i] = String.Format("{0}={1}", columns[i], quotedValues[i]);
             }
 
-            return String.Join(", ", namesAndValues);
+            return String.Join(joinSeperator, namesAndValues);
         }
 
         public virtual string GenerateParameterName(int index)
