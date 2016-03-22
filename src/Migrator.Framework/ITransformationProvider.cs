@@ -510,6 +510,9 @@ namespace Migrator.Framework
 
 	    int Update(string table, string[] columns, object[] values, string[] whereColumns, object[] whereValues);
 
+	    int Update(string table, string[] columns, object[] values, string[] whereColumns, object[] whereValues,
+	        bool useDbTypes);
+
 		/// <summary>
 		/// Get a command instance
 		/// </summary>

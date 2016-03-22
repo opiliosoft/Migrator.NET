@@ -936,7 +936,13 @@ namespace Migrator.Providers
             }
         }
 
-        public virtual int Update(string table, string[] columns, object[] values, string[] whereColumns, object[] whereValues)
+        public virtual int Update(string table, string[] columns, object[] values, string[] whereColumns,
+            object[] whereValues)
+        {
+            return Update(table, columns, values, whereColumns, whereValues, false);
+        }
+
+        public virtual int Update(string table, string[] columns, object[] values, string[] whereColumns, object[] whereValues, bool useDbTypes)
         {
             if (string.IsNullOrEmpty(table)) throw new ArgumentNullException("table");
             if (columns == null) throw new ArgumentNullException("columns");
@@ -974,31 +980,69 @@ namespace Migrator.Providers
 
                 int paramCount = 0;
 
-                foreach (object value in values)
+                if (useDbTypes)
                 {
-                    IDbDataParameter parameter = command.CreateParameter();
+                    var columnsType = this.GetColumns(table);
 
-                    ConfigureParameterWithValue(parameter, paramCount, value);
+                    for (int index = 0; index < values.Length; index++)
+                    {
+                        object value = values[index];
+                        var colname = columns[index];
+                        var column = columnsType.First(x => x.Name.ToLower() == colname.ToLower());
+                        IDbDataParameter parameter = command.CreateParameter();
 
-                    parameter.ParameterName = GenerateParameterName(paramCount);
+                        ConfigureParameterWithValueFromDbtype(parameter, paramCount, value, column.Type);
 
-                    command.Parameters.Add(parameter);
+                        parameter.ParameterName = GenerateParameterName(paramCount);
 
-                    paramCount++;
+                        command.Parameters.Add(parameter);
+
+                        paramCount++;
+                    }
+
+                    for (int index = 0; index < whereValues.Length; index++)
+                    {
+                        object value = whereValues[index];
+                        var colname = whereColumns[index];
+                        var column = columnsType.First(x => x.Name.ToLower() == colname.ToLower());                        
+                        IDbDataParameter parameter = command.CreateParameter();
+
+                        ConfigureParameterWithValueFromDbtype(parameter, paramCount, value, column.Type);
+
+                        parameter.ParameterName = GenerateParameterName(paramCount);
+
+                        command.Parameters.Add(parameter);
+
+                        paramCount++;
+                    }
                 }
-
-                foreach (object value in whereValues)
+                else
                 {
+                    foreach (object value in values)
+                    {
+                        IDbDataParameter parameter = command.CreateParameter();
 
-                    IDbDataParameter parameter = command.CreateParameter();
+                        ConfigureParameterWithValue(parameter, paramCount, value);
 
-                    ConfigureParameterWithValue(parameter, paramCount, value);
+                        parameter.ParameterName = GenerateParameterName(paramCount);
 
-                    parameter.ParameterName = GenerateParameterName(paramCount);
+                        command.Parameters.Add(parameter);
 
-                    command.Parameters.Add(parameter);
+                        paramCount++;
+                    }
 
-                    paramCount++;                    
+                    foreach (object value in whereValues)
+                    {
+                        IDbDataParameter parameter = command.CreateParameter();
+
+                        ConfigureParameterWithValue(parameter, paramCount, value);
+
+                        parameter.ParameterName = GenerateParameterName(paramCount);
+
+                        command.Parameters.Add(parameter);
+
+                        paramCount++;
+                    }
                 }
 
                 Logger.Trace(command.CommandText);
@@ -1515,6 +1559,19 @@ namespace Migrator.Providers
             else
             {
                 throw new NotSupportedException(string.Format("TransformationProvider does not support value: {0} of type: {1}", value, value.GetType()));
+            }
+        }
+
+        protected virtual void ConfigureParameterWithValueFromDbtype(IDbDataParameter parameter, int index, object value, DbType dbType)
+        {
+            if (dbType == DbType.Guid && value is string)
+            {
+                parameter.DbType = DbType.Guid;
+                parameter.Value = Guid.Parse((string) value);
+            }
+            else
+            {
+                ConfigureParameterWithValue(parameter, index, value);
             }
         }
 

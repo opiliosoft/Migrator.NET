@@ -301,7 +301,12 @@ namespace Migrator.Providers
             return 0;
         }
 
-		public int Delete(string table, string[] columns, string[] columnValues)
+	    public int Update(string table, string[] columns, object[] values, string[] whereColumns, object[] whereValues, bool useDbTypes)
+	    {
+	        return 0;
+	    }
+
+	    public int Delete(string table, string[] columns, string[] columnValues)
 		{
 			return 0;
 		}
