@@ -754,6 +754,7 @@ namespace Migrator.Providers
                         }
                     }
 
+                    Logger.Trace(cmd.CommandText);
                     return cmd.ExecuteNonQuery();
                 }
                 catch (Exception ex)
@@ -930,6 +931,7 @@ namespace Migrator.Providers
                     paramCount++;
                 }
 
+                Logger.Trace(command.CommandText);
                 return command.ExecuteNonQuery();
             }
         }
@@ -999,6 +1001,7 @@ namespace Migrator.Providers
                     paramCount++;                    
                 }
 
+                Logger.Trace(command.CommandText);
                 return command.ExecuteNonQuery();
             }
         }
