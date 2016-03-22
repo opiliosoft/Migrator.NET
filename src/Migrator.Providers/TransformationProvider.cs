@@ -935,14 +935,8 @@ namespace Migrator.Providers
                 return command.ExecuteNonQuery();
             }
         }
-
-        public virtual int Update(string table, string[] columns, object[] values, string[] whereColumns,
-            object[] whereValues)
-        {
-            return Update(table, columns, values, whereColumns, whereValues, false);
-        }
-
-        public virtual int Update(string table, string[] columns, object[] values, string[] whereColumns, object[] whereValues, bool useDbTypes)
+        
+        public virtual int Update(string table, string[] columns, object[] values, string[] whereColumns, object[] whereValues)
         {
             if (string.IsNullOrEmpty(table)) throw new ArgumentNullException("table");
             if (columns == null) throw new ArgumentNullException("columns");
@@ -980,44 +974,7 @@ namespace Migrator.Providers
 
                 int paramCount = 0;
 
-                if (useDbTypes)
-                {
-                    var columnsType = this.GetColumns(table);
-
-                    for (int index = 0; index < values.Length; index++)
-                    {
-                        object value = values[index];
-                        var colname = columns[index];
-                        var column = columnsType.First(x => x.Name.ToLower() == colname.ToLower());
-                        IDbDataParameter parameter = command.CreateParameter();
-
-                        ConfigureParameterWithValueFromDbtype(parameter, paramCount, value, column.Type);
-
-                        parameter.ParameterName = GenerateParameterName(paramCount);
-
-                        command.Parameters.Add(parameter);
-
-                        paramCount++;
-                    }
-
-                    for (int index = 0; index < whereValues.Length; index++)
-                    {
-                        object value = whereValues[index];
-                        var colname = whereColumns[index];
-                        var column = columnsType.First(x => x.Name.ToLower() == colname.ToLower());                        
-                        IDbDataParameter parameter = command.CreateParameter();
-
-                        ConfigureParameterWithValueFromDbtype(parameter, paramCount, value, column.Type);
-
-                        parameter.ParameterName = GenerateParameterName(paramCount);
-
-                        command.Parameters.Add(parameter);
-
-                        paramCount++;
-                    }
-                }
-                else
-                {
+                
                     foreach (object value in values)
                     {
                         IDbDataParameter parameter = command.CreateParameter();
@@ -1043,7 +1000,7 @@ namespace Migrator.Providers
 
                         paramCount++;
                     }
-                }
+                
 
                 Logger.Trace(command.CommandText);
                 return command.ExecuteNonQuery();
@@ -1559,34 +1516,6 @@ namespace Migrator.Providers
             else
             {
                 throw new NotSupportedException(string.Format("TransformationProvider does not support value: {0} of type: {1}", value, value.GetType()));
-            }
-        }
-
-        protected virtual void ConfigureParameterWithValueFromDbtype(IDbDataParameter parameter, int index, object value, DbType dbType)
-        {
-            if (dbType == DbType.Guid && value is string)
-            {
-                parameter.DbType = DbType.Guid;
-                parameter.Value = Guid.Parse((string) value);
-            }
-            else if (dbType == DbType.DateTime && value is string)
-            {
-                parameter.DbType = DbType.DateTime;
-                parameter.Value = DateTime.Parse((string)value);
-            }
-            else if (dbType == DbType.Decimal && value is string)
-            {
-                parameter.DbType = DbType.Decimal;
-                parameter.Value = decimal.Parse((string)value);
-            }
-            //else if (dbType == DbType.Int64 && value is string)
-            //{
-            //    parameter.DbType = dbType;
-            //    parameter.Value = decimal.Parse((string)value);
-            //}
-            else
-            {
-                ConfigureParameterWithValue(parameter, index, value);
             }
         }
 
