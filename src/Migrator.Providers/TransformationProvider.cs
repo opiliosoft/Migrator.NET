@@ -1569,6 +1569,21 @@ namespace Migrator.Providers
                 parameter.DbType = DbType.Guid;
                 parameter.Value = Guid.Parse((string) value);
             }
+            else if (dbType == DbType.DateTime && value is string)
+            {
+                parameter.DbType = DbType.DateTime;
+                parameter.Value = DateTime.Parse((string)value);
+            }
+            else if (dbType == DbType.Decimal && value is string)
+            {
+                parameter.DbType = DbType.Decimal;
+                parameter.Value = decimal.Parse((string)value);
+            }
+            //else if (dbType == DbType.Int64 && value is string)
+            //{
+            //    parameter.DbType = dbType;
+            //    parameter.Value = decimal.Parse((string)value);
+            //}
             else
             {
                 ConfigureParameterWithValue(parameter, index, value);
