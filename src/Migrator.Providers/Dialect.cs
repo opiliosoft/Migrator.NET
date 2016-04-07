@@ -9,7 +9,7 @@ namespace Migrator.Providers
 	/// <summary>
 	/// Defines the implementations specific details for a particular database.
 	/// </summary>
-	public abstract class Dialect
+	public abstract class Dialect : IDialect
 	{
 		readonly Dictionary<ColumnProperty, string> propertyMap = new Dictionary<ColumnProperty, string>();
 		readonly HashSet<string> reservedWords = new HashSet<string>();

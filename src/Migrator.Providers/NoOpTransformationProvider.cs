@@ -19,7 +19,7 @@ namespace Migrator.Providers
 		{
 		}
 
-		public Dialect Dialect
+		public IDialect Dialect
 		{
 			get { return null; }
 		}

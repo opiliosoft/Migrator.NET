@@ -17,10 +17,12 @@ namespace Migrator.Framework
 
         string SchemaInfoTable { get; set; }
 
-		/// <summary>
-		/// The list of Migrations currently applied to the database.
-		/// </summary>
-		List<long> AppliedMigrations { get; }
+        IDialect Dialect { get; }
+
+        /// <summary>
+        /// The list of Migrations currently applied to the database.
+        /// </summary>
+        List<long> AppliedMigrations { get; }
 
         /// <summary>
         /// Connection string to the database

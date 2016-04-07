@@ -79,7 +79,7 @@ namespace Migrator.Providers
             }
         }
 
-        public Dialect Dialect
+        public IDialect Dialect
         {
             get { return _dialect; }
         }
@@ -1614,7 +1614,7 @@ namespace Migrator.Providers
         {
             get { return _connection; }
         }
-
+       
         public IEnumerable<string> GetTables(string schema)
         {
             var tableRestrictions = new string[4];
