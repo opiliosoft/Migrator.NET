@@ -69,6 +69,11 @@ namespace Migrator.Providers.Mysql
             AddReservedWords("KEY", "MAXVALUE");
         }
 
+        public override int MaxKeyLength
+        {
+            get { return 767; }
+        }
+
         public override string QuoteTemplate
         {
             get { return "`{0}`"; }

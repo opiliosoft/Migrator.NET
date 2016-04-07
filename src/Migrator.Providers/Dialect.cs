@@ -24,7 +24,17 @@ namespace Migrator.Providers
 			RegisterProperty(ColumnProperty.PrimaryKey, "PRIMARY KEY");            
 		}
 
-		public virtual bool ColumnNameNeedsQuote
+	    public virtual int MaxKeyLength
+	    {
+            get { return int.MaxValue; }
+	    }
+
+        public virtual int MaxFieldNameLength
+        {
+            get { return int.MaxValue; }
+        }
+
+        public virtual bool ColumnNameNeedsQuote
 		{
 			get { return false; }
 		}
