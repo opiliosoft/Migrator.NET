@@ -754,6 +754,7 @@ namespace Migrator.Providers
                         }
                     }
 
+                    Logger.Trace(cmd.CommandText);
                     return cmd.ExecuteNonQuery();
                 }
                 catch (Exception ex)
@@ -930,10 +931,11 @@ namespace Migrator.Providers
                     paramCount++;
                 }
 
+                Logger.Trace(command.CommandText);
                 return command.ExecuteNonQuery();
             }
         }
-
+        
         public virtual int Update(string table, string[] columns, object[] values, string[] whereColumns, object[] whereValues)
         {
             if (string.IsNullOrEmpty(table)) throw new ArgumentNullException("table");
@@ -972,33 +974,35 @@ namespace Migrator.Providers
 
                 int paramCount = 0;
 
-                foreach (object value in values)
-                {
-                    IDbDataParameter parameter = command.CreateParameter();
+                
+                    foreach (object value in values)
+                    {
+                        IDbDataParameter parameter = command.CreateParameter();
 
-                    ConfigureParameterWithValue(parameter, paramCount, value);
+                        ConfigureParameterWithValue(parameter, paramCount, value);
 
-                    parameter.ParameterName = GenerateParameterName(paramCount);
+                        parameter.ParameterName = GenerateParameterName(paramCount);
 
-                    command.Parameters.Add(parameter);
+                        command.Parameters.Add(parameter);
 
-                    paramCount++;
-                }
+                        paramCount++;
+                    }
 
-                foreach (object value in whereValues)
-                {
+                    foreach (object value in whereValues)
+                    {
+                        IDbDataParameter parameter = command.CreateParameter();
 
-                    IDbDataParameter parameter = command.CreateParameter();
+                        ConfigureParameterWithValue(parameter, paramCount, value);
 
-                    ConfigureParameterWithValue(parameter, paramCount, value);
+                        parameter.ParameterName = GenerateParameterName(paramCount);
 
-                    parameter.ParameterName = GenerateParameterName(paramCount);
+                        command.Parameters.Add(parameter);
 
-                    command.Parameters.Add(parameter);
+                        paramCount++;
+                    }
+                
 
-                    paramCount++;                    
-                }
-
+                Logger.Trace(command.CommandText);
                 return command.ExecuteNonQuery();
             }
         }
