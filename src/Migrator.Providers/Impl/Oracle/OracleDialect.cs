@@ -61,7 +61,12 @@ namespace Migrator.Providers.Oracle
 	        get { return 30; }
 	    }
 
-	    public override bool NeedsNullForNullableWhenAlteringTable
+        public override int MaxKeyLength
+        {
+            get { return 767; }
+        }
+
+        public override bool NeedsNullForNullableWhenAlteringTable
 		{
 			get { return true; }
 		}

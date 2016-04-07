@@ -26,7 +26,7 @@ namespace Migrator.Providers
 
 	    public virtual int MaxKeyLength
 	    {
-            get { return int.MaxValue; }
+            get { return 900; }
 	    }
 
         public virtual int MaxFieldNameLength
