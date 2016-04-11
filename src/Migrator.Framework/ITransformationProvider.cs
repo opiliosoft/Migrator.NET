@@ -349,23 +349,34 @@ namespace Migrator.Framework
 
 	    ForeignKeyConstraint[] GetForeignKeyConstraints(string table);
 
-		/// <summary>
-		/// Insert data into a table
-		/// </summary>
-		/// <param name="table">The table that will get the new data</param>
-		/// <param name="columns">The names of the columns</param>
-		/// <param name="values">The values in the same order as the columns</param>
-		/// <returns></returns>
-		int Insert(string table, string[] columns, object[] values);
+	    string GetWhereString(string[] whereColumns, object[] whereValues);
 
-		/// <summary>
-		/// Delete data from a table
-		/// </summary>
-		/// <param name="table">The table that will have the data deleted</param>
-		/// <param name="columns">The names of the columns used in a where clause</param>
-		/// <param name="values">The values in the same order as the columns</param>
-		/// <returns></returns>
-		int Delete(string table, string[] columns, string[] values);
+        /// <summary>
+        /// Insert data into a table
+        /// </summary>
+        /// <param name="table">The table that will get the new data</param>
+        /// <param name="columns">The names of the columns</param>
+        /// <param name="values">The values in the same order as the columns</param>
+        /// <returns></returns>
+        int Insert(string table, string[] columns, object[] values);
+
+	    /// <summary>
+	    /// Insert data into a table (if it not exists)
+	    /// </summary>
+	    /// <param name="table">The table that will get the new data</param>
+	    /// <param name="columns">The names of the columns</param>
+	    /// <param name="values">The values in the same order as the columns</param>
+	    /// <returns></returns>
+	    int InsertIfNotExists(string table, string[] columns, object[] values, string[] whereColumns, object[] whereValues);
+
+        /// <summary>
+        /// Delete data from a table
+        /// </summary>
+        /// <param name="table">The table that will have the data deleted</param>
+        /// <param name="columns">The names of the columns used in a where clause</param>
+        /// <param name="values">The values in the same order as the columns</param>
+        /// <returns></returns>
+        int Delete(string table, string[] columns, string[] values);
 
 		/// <summary>
 		/// Delete data from a table

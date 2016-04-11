@@ -45,10 +45,20 @@ namespace Migrator.Providers
 	        return null;
 	    }
 
+	    public string GetWhereString(string[] whereColumns, object[] whereValues)
+	    {
+            return null;
+        }
+
 	    public int Insert(string table, string[] columns, object[] values)
 		{
 			return 0;
 		}
+
+	    public int InsertIfNotExists(string table, string[] columns, object[] values, string[] whereColumns, object[] whereValues)
+	    {
+            return 0;
+        }
 
 	    public List<string> ExecuteStringQuery(string sql, params object[] args)
 	    {

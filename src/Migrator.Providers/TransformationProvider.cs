@@ -954,20 +954,11 @@ namespace Migrator.Providers
                 builder.Append(GenerateParameterName(i));
             }
 
-            var builder2 = new StringBuilder();
-            for (int i = 0; i < whereColumns.Length; i++)
-            {
-                if (builder2.Length > 0) builder2.Append(" AND ");
-                builder2.Append(QuoteColumnNameIfRequired(whereColumns[i]));
-                builder2.Append(" = ");
-                builder2.Append(GenerateParameterName(i + values.Count()));
-            }
-
             using (IDbCommand command = _connection.CreateCommand())
             {
                 command.Transaction = _transaction;
 
-                var query = String.Format("UPDATE {0} SET {1} WHERE {2}", table, builder.ToString(), builder2.ToString());
+                var query = String.Format("UPDATE {0} SET {1} WHERE {2}", table, builder.ToString(), GetWhereString(whereColumns, whereValues));
                
                 command.CommandText = query;
                 command.CommandType = CommandType.Text;
@@ -1051,6 +1042,35 @@ namespace Migrator.Providers
                 }
 
                 return command.ExecuteNonQuery();
+            }
+        }
+
+        public virtual string GetWhereString(string[] whereColumns, object[] whereValues)
+        {
+            var builder2 = new StringBuilder();
+            for (int i = 0; i < whereColumns.Length; i++)
+            {
+                if (builder2.Length > 0) builder2.Append(" AND ");
+                builder2.Append(QuoteColumnNameIfRequired(whereColumns[i]));
+                builder2.Append(" = ");
+                builder2.Append(GenerateParameterName(i + whereValues.Count()));
+            }
+
+            return builder2.ToString();
+        }
+
+        public virtual int InsertIfNotExists(string table, string[] columns, object[] values, string[] whereColumns, object[] whereValues)
+        {
+            using (var reader = this.Select(whereColumns[0], table, GetWhereString(whereColumns, whereValues)))
+            {
+                if (!reader.Read())
+                {
+                    reader.Close();
+                    return this.Insert(table, columns, values);
+                }
+                else
+                    return 0;
+                    reader.Close();
             }
         }
 
