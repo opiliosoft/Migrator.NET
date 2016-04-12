@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -871,6 +872,49 @@ namespace Migrator.Providers
             return ExecuteQuery(String.Format("SELECT {0} FROM {1} WHERE {2}", what, from, where));
         }
 
+        public virtual IDataReader Select(string table, string[] columns, string[] whereColumns, object[] whereValues)
+        {
+            if (string.IsNullOrEmpty(table)) throw new ArgumentNullException("table");
+            if (columns == null) throw new ArgumentNullException("columns");
+            
+            table = QuoteTableNameIfRequired(table);
+
+            var builder = new StringBuilder();
+            for (int i = 0; i < columns.Length; i++)
+            {
+                if (builder.Length > 0) builder.Append(", ");
+                builder.Append(QuoteColumnNameIfRequired(columns[i]));
+            }
+
+            using (IDbCommand command = _connection.CreateCommand())
+            {
+                command.Transaction = _transaction;
+
+                var query = String.Format("SELECT {0} FROM {1} WHERE {2}", builder.ToString(), table, GetWhereString(whereColumns, whereValues));
+
+                command.CommandText = query;
+                command.CommandType = CommandType.Text;
+
+                int paramCount = 0;
+               
+                foreach (object value in whereValues)
+                {
+                    IDbDataParameter parameter = command.CreateParameter();
+
+                    ConfigureParameterWithValue(parameter, paramCount, value);
+
+                    parameter.ParameterName = GenerateParameterName(paramCount);
+
+                    command.Parameters.Add(parameter);
+
+                    paramCount++;
+                }
+                
+                Logger.Trace(command.CommandText);
+                return command.ExecuteReader();
+            }
+        }
+
         public object SelectScalar(string what, string from)
         {
             return SelectScalar(what, from, "1=1");
@@ -958,7 +1002,7 @@ namespace Migrator.Providers
             {
                 command.Transaction = _transaction;
 
-                var query = String.Format("UPDATE {0} SET {1} WHERE {2}", table, builder.ToString(), GetWhereString(whereColumns, whereValues));
+                var query = String.Format("UPDATE {0} SET {1} WHERE {2}", table, builder.ToString(), GetWhereString(whereColumns, whereValues, values.Length));
                
                 command.CommandText = query;
                 command.CommandType = CommandType.Text;
@@ -1045,7 +1089,7 @@ namespace Migrator.Providers
             }
         }
 
-        public virtual string GetWhereString(string[] whereColumns, object[] whereValues)
+        protected virtual string GetWhereString(string[] whereColumns, object[] whereValues, int parameterStartIndex = 0)
         {
             var builder2 = new StringBuilder();
             for (int i = 0; i < whereColumns.Length; i++)
@@ -1053,7 +1097,7 @@ namespace Migrator.Providers
                 if (builder2.Length > 0) builder2.Append(" AND ");
                 builder2.Append(QuoteColumnNameIfRequired(whereColumns[i]));
                 builder2.Append(" = ");
-                builder2.Append(GenerateParameterName(i + whereValues.Count()));
+                builder2.Append(GenerateParameterName(i + parameterStartIndex));
             }
 
             return builder2.ToString();
@@ -1061,7 +1105,7 @@ namespace Migrator.Providers
 
         public virtual int InsertIfNotExists(string table, string[] columns, object[] values, string[] whereColumns, object[] whereValues)
         {
-            using (var reader = this.Select(whereColumns[0], table, GetWhereString(whereColumns, whereValues)))
+            using (var reader = this.Select(table, new [] { whereColumns[0] }, whereColumns, whereValues))
             {
                 if (!reader.Read())
                 {
@@ -1069,8 +1113,10 @@ namespace Migrator.Providers
                     return this.Insert(table, columns, values);
                 }
                 else
-                    return 0;
+                {
                     reader.Close();
+                    return 0;
+                }
             }
         }
 

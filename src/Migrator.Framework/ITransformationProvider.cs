@@ -349,9 +349,7 @@ namespace Migrator.Framework
 
 	    ForeignKeyConstraint[] GetForeignKeyConstraints(string table);
 
-	    string GetWhereString(string[] whereColumns, object[] whereValues);
-
-        /// <summary>
+	    /// <summary>
         /// Insert data into a table
         /// </summary>
         /// <param name="table">The table that will get the new data</param>
@@ -470,13 +468,23 @@ namespace Migrator.Framework
 		/// <returns></returns>
 		IDataReader Select(string what, string from, string where);
 
-		/// <summary>
-		/// Get values from a table
-		/// </summary>
-		/// <param name="what">The columns to select</param>
-		/// <param name="from">The table to select from</param>
-		/// <returns></returns>
-		IDataReader Select(string what, string from);
+	    /// <summary>
+	    /// Get values from a table
+	    /// </summary>
+	    /// <param name="table"></param>
+	    /// <param name="columns"></param>
+	    /// <param name="whereColumns"></param>
+	    /// <param name="whereValues"></param>
+	    /// <returns></returns>
+	    IDataReader Select(string table, string[] columns, string[] whereColumns, object[] whereValues);
+
+        /// <summary>
+        /// Get values from a table
+        /// </summary>
+        /// <param name="what">The columns to select</param>
+        /// <param name="from">The table to select from</param>
+        /// <returns></returns>
+        IDataReader Select(string what, string from);
 
 		/// <summary>
 		/// Get a single value from a table

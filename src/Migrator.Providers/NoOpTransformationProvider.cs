@@ -44,12 +44,7 @@ namespace Migrator.Providers
 	    {
 	        return null;
 	    }
-
-	    public string GetWhereString(string[] whereColumns, object[] whereValues)
-	    {
-            return null;
-        }
-
+       
 	    public int Insert(string table, string[] columns, object[] values)
 		{
 			return 0;
@@ -276,7 +271,12 @@ namespace Migrator.Providers
 			return null;
 		}
 
-		public IDataReader Select(string what, string from)
+	    public IDataReader Select(string table, string[] columns, string[] whereColumns, object[] whereValues)
+	    {
+            return null;
+        }
+
+	    public IDataReader Select(string what, string from)
 		{
 			return null;
 		}
