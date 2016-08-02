@@ -896,8 +896,6 @@ namespace Migrator.Providers
                 {
                     query = String.Format("SELECT {0} FROM {1} WHERE {2}", builder.ToString(), table, GetWhereString(whereColumns, whereValues));
                 }
-                else
-
 
                 command.CommandText = query;
                 command.CommandType = CommandType.Text;
