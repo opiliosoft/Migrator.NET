@@ -903,20 +903,23 @@ namespace Migrator.Providers
                 command.CommandType = CommandType.Text;
 
                 int paramCount = 0;
-               
-                foreach (object value in whereValues)
+
+                if (whereColumns != null)
                 {
-                    IDbDataParameter parameter = command.CreateParameter();
+                    foreach (object value in whereValues)
+                    {
+                        IDbDataParameter parameter = command.CreateParameter();
 
-                    ConfigureParameterWithValue(parameter, paramCount, value);
+                        ConfigureParameterWithValue(parameter, paramCount, value);
 
-                    parameter.ParameterName = GenerateParameterName(paramCount);
+                        parameter.ParameterName = GenerateParameterName(paramCount);
 
-                    command.Parameters.Add(parameter);
+                        command.Parameters.Add(parameter);
 
-                    paramCount++;
+                        paramCount++;
+                    }
                 }
-                
+
                 Logger.Trace(command.CommandText);
                 return command.ExecuteReader();
             }
