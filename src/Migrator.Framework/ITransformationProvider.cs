@@ -476,7 +476,7 @@ namespace Migrator.Framework
 	    /// <param name="whereColumns"></param>
 	    /// <param name="whereValues"></param>
 	    /// <returns></returns>
-	    IDataReader Select(string table, string[] columns, string[] whereColumns, object[] whereValues);
+	    IDataReader Select(string table, string[] columns, string[] whereColumns = null, object[] whereValues = null);
 
         /// <summary>
         /// Get values from a table

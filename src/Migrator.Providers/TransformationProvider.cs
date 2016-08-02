@@ -872,7 +872,7 @@ namespace Migrator.Providers
             return ExecuteQuery(String.Format("SELECT {0} FROM {1} WHERE {2}", what, from, where));
         }
 
-        public virtual IDataReader Select(string table, string[] columns, string[] whereColumns, object[] whereValues)
+        public virtual IDataReader Select(string table, string[] columns, string[] whereColumns = null, object[] whereValues = null)
         {
             if (string.IsNullOrEmpty(table)) throw new ArgumentNullException("table");
             if (columns == null) throw new ArgumentNullException("columns");
@@ -890,7 +890,14 @@ namespace Migrator.Providers
             {
                 command.Transaction = _transaction;
 
-                var query = String.Format("SELECT {0} FROM {1} WHERE {2}", builder.ToString(), table, GetWhereString(whereColumns, whereValues));
+                var query = String.Format("SELECT {0} FROM {1}", builder.ToString(), table);
+
+                if (whereColumns != null)
+                {
+                    query = String.Format("SELECT {0} FROM {1} WHERE {2}", builder.ToString(), table, GetWhereString(whereColumns, whereValues));
+                }
+                else
+
 
                 command.CommandText = query;
                 command.CommandType = CommandType.Text;
