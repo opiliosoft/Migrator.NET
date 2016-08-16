@@ -13,6 +13,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Migrator.Framework;
 using Migrator.Framework.Loggers;
@@ -32,17 +33,17 @@ namespace Migrator
 		protected bool _dryrun;
 		ILogger _logger = new Logger(false);
 
-        public Migrator(ProviderTypes provider, string connectionString, string defaultSchema, Assembly migrationAssembly)
+		public Migrator(ProviderTypes provider, string connectionString, string defaultSchema, Assembly migrationAssembly)
 			: this(provider, connectionString, defaultSchema, migrationAssembly, false)
 		{
 		}
 
-        public Migrator(ProviderTypes provider, string connectionString, string defaultSchema, Assembly migrationAssembly, bool trace)
+		public Migrator(ProviderTypes provider, string connectionString, string defaultSchema, Assembly migrationAssembly, bool trace)
 			: this(ProviderFactory.Create(provider, connectionString, defaultSchema), migrationAssembly, trace)
 		{
 		}
 
-        public Migrator(ProviderTypes provider, string connectionString, string defaultSchema, Assembly migrationAssembly, bool trace, ILogger logger)
+		public Migrator(ProviderTypes provider, string connectionString, string defaultSchema, Assembly migrationAssembly, bool trace, ILogger logger)
 			: this(ProviderFactory.Create(provider, connectionString, defaultSchema), migrationAssembly, trace, logger)
 		{
 		}
@@ -75,22 +76,22 @@ namespace Migrator
 			get { return _migrationLoader.MigrationsTypes; }
 		}
 
-        /// <summary>
-        /// Set or get the Schema Info table name, where the migration applied are saved
-        /// Default is: SchemaInfo
-        /// </summary>
-        public string SchemaInfoTableName
-        {
-            get
-            {
-                return _provider.SchemaInfoTable;
-            }
+		/// <summary>
+		/// Set or get the Schema Info table name, where the migration applied are saved
+		/// Default is: SchemaInfo
+		/// </summary>
+		public string SchemaInfoTableName
+		{
+			get
+			{
+				return _provider.SchemaInfoTable;
+			}
 
-            set
-            {
-                _provider.SchemaInfoTable = value;
-            }
-        }
+			set
+			{
+				_provider.SchemaInfoTable = value;
+			}
+		}
 
 		/// <summary>
 		/// Returns the current migrations applied to the database.
@@ -117,6 +118,15 @@ namespace Migrator
 		{
 			get { return _dryrun; }
 			set { _dryrun = value; }
+		}
+
+		public long AssemblyLastMigrationVersion {
+			get { return _migrationLoader.LastVersion; }
+		}
+
+		public long LastAppliedMigrationVersion
+		{
+			get { return AppliedMigrations.Max(); }
 		}
 
 		/// <summary>

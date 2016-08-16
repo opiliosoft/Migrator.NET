@@ -15,19 +15,19 @@ namespace Migrator.Framework
 		/// </summary>
 		ITransformationProvider this[string provider] { get; }
 
-        string SchemaInfoTable { get; set; }
+		string SchemaInfoTable { get; set; }
 
-        IDialect Dialect { get; }
+		IDialect Dialect { get; }
 
-        /// <summary>
-        /// The list of Migrations currently applied to the database.
-        /// </summary>
-        List<long> AppliedMigrations { get; }
+		/// <summary>
+		/// The list of Migrations currently applied to the database.
+		/// </summary>
+		List<long> AppliedMigrations { get; }
 
-        /// <summary>
-        /// Connection string to the database
-        /// </summary>
-        String ConnectionString { get; }
+		/// <summary>
+		/// Connection string to the database
+		/// </summary>
+		String ConnectionString { get; }
 
 		/// <summary>
 		/// Logger used to log details of operations performed during migration
@@ -181,7 +181,7 @@ namespace Migrator.Framework
 		/// <param name="primaryColumn">The column that is the primary key (eg. PK_id)</param>
 		/// <param name="constraint">Constraint parameters</param>
 		void GenerateForeignKey(string foreignTable, string foreignColumn, string primaryTable, string primaryColumn,
-		                        ForeignKeyConstraintType constraint);
+								ForeignKeyConstraintType constraint);
 
 		/// <summary>
 		/// Add a foreign key constraint when you don't care about the name of the constraint.
@@ -230,14 +230,14 @@ namespace Migrator.Framework
 		/// <param name="checkSql">The check constraint definition.</param>
 		void AddCheckConstraint(string name, string table, string checkSql);
 
-	    void AddView(string name, string tableName, params IViewField[] fields);
+		void AddView(string name, string tableName, params IViewField[] fields);
 
 		/// <summary>
 		/// Add a table
 		/// </summary>
 		/// <param name="name">The name of the table to add.</param>
 		/// <param name="columns">The columns that are part of the table.</param>
-        void AddTable(string name, params IDbField[] columns);
+		void AddTable(string name, params IDbField[] columns);
 
 		/// <summary>
 		/// Add a table
@@ -245,7 +245,7 @@ namespace Migrator.Framework
 		/// <param name="name">The name of the table to add.</param>
 		/// <param name="engine">The name of the database engine to use. (MySQL)</param>
 		/// <param name="columns">The columns that are part of the table.</param>
-        void AddTable(string name, string engine, params IDbField[] columns);
+		void AddTable(string name, string engine, params IDbField[] columns);
 
 		/// <summary>
 		/// Start a transction
@@ -259,7 +259,7 @@ namespace Migrator.Framework
 		/// <param name="column">An instance of a <see cref="Column">Column</see> with the specified properties and the name of an existing column</param>
 		void ChangeColumn(string table, Column column);
 
-        void RemoveColumnDefaultValue(string table, string column);
+		void RemoveColumnDefaultValue(string table, string column);
 
 		/// <summary>
 		/// Check to see if a column exists
@@ -290,14 +290,14 @@ namespace Migrator.Framework
 		/// <returns></returns>
 		bool PrimaryKeyExists(string table, string name);
 
-        /// <summary>
-        /// Execute an arbitrary SQL query
-        /// </summary>
-        /// <param name="sql">The SQL to execute.</param>
-        /// <param name="timeout">timeout</param>
-        /// <param name="args">Array of parameters of type object</param>
-        /// <returns></returns>
-        int ExecuteNonQuery(string sql, int timeout, object[] args);
+		/// <summary>
+		/// Execute an arbitrary SQL query
+		/// </summary>
+		/// <param name="sql">The SQL to execute.</param>
+		/// <param name="timeout">timeout</param>
+		/// <param name="args">Array of parameters of type object</param>
+		/// <returns></returns>
+		int ExecuteNonQuery(string sql, int timeout, object[] args);
 
 		/// <summary>
 		/// Execute an arbitrary SQL query
@@ -307,7 +307,7 @@ namespace Migrator.Framework
 		/// <returns></returns>
 		int ExecuteNonQuery(string sql,int timeout);
 
-	    int ExecuteNonQuery(string sql);
+		int ExecuteNonQuery(string sql);
 		/// <summary>
 		/// Execute an arbitrary SQL query
 		/// </summary>
@@ -322,9 +322,9 @@ namespace Migrator.Framework
 		/// <returns>A single value that is returned.</returns>
 		object ExecuteScalar(string sql);
 
-	    List<string> ExecuteStringQuery(string sql, params object[] args);
+		List<string> ExecuteStringQuery(string sql, params object[] args);
 
-	    Index[] GetIndexes(string table);
+		Index[] GetIndexes(string table);
 
 		/// <summary>
 		/// Get the information about the columns in a table
@@ -347,34 +347,34 @@ namespace Migrator.Framework
 		/// <returns>The names of all the tables.</returns>
 		string[] GetTables();
 
-	    ForeignKeyConstraint[] GetForeignKeyConstraints(string table);
+		ForeignKeyConstraint[] GetForeignKeyConstraints(string table);
 
-	    /// <summary>
-        /// Insert data into a table
-        /// </summary>
-        /// <param name="table">The table that will get the new data</param>
-        /// <param name="columns">The names of the columns</param>
-        /// <param name="values">The values in the same order as the columns</param>
-        /// <returns></returns>
-        int Insert(string table, string[] columns, object[] values);
+		/// <summary>
+		/// Insert data into a table
+		/// </summary>
+		/// <param name="table">The table that will get the new data</param>
+		/// <param name="columns">The names of the columns</param>
+		/// <param name="values">The values in the same order as the columns</param>
+		/// <returns></returns>
+		int Insert(string table, string[] columns, object[] values);
 
-	    /// <summary>
-	    /// Insert data into a table (if it not exists)
-	    /// </summary>
-	    /// <param name="table">The table that will get the new data</param>
-	    /// <param name="columns">The names of the columns</param>
-	    /// <param name="values">The values in the same order as the columns</param>
-	    /// <returns></returns>
-	    int InsertIfNotExists(string table, string[] columns, object[] values, string[] whereColumns, object[] whereValues);
+		/// <summary>
+		/// Insert data into a table (if it not exists)
+		/// </summary>
+		/// <param name="table">The table that will get the new data</param>
+		/// <param name="columns">The names of the columns</param>
+		/// <param name="values">The values in the same order as the columns</param>
+		/// <returns></returns>
+		int InsertIfNotExists(string table, string[] columns, object[] values, string[] whereColumns, object[] whereValues);
 
-        /// <summary>
-        /// Delete data from a table
-        /// </summary>
-        /// <param name="table">The table that will have the data deleted</param>
-        /// <param name="columns">The names of the columns used in a where clause</param>
-        /// <param name="values">The values in the same order as the columns</param>
-        /// <returns></returns>
-        int Delete(string table, string[] columns, string[] values);
+		/// <summary>
+		/// Delete data from a table
+		/// </summary>
+		/// <param name="table">The table that will have the data deleted</param>
+		/// <param name="columns">The names of the columns used in a where clause</param>
+		/// <param name="values">The values in the same order as the columns</param>
+		/// <returns></returns>
+		int Delete(string table, string[] columns, string[] values);
 
 		/// <summary>
 		/// Delete data from a table
@@ -385,12 +385,12 @@ namespace Migrator.Framework
 		/// <returns></returns>
 		int Delete(string table, string whereColumn, string whereValue);
 
-	    /// <summary>
-	    /// Truncate data from a table
-	    /// </summary>
-        /// <param name="table">The table that will have the data deleted</param>
-	    /// <returns></returns>
-	    int TruncateTable(string table);
+		/// <summary>
+		/// Truncate data from a table
+		/// </summary>
+		/// <param name="table">The table that will have the data deleted</param>
+		/// <returns></returns>
+		int TruncateTable(string table);
 
 		/// <summary>
 		/// Marks a Migration version number as having been applied
@@ -425,13 +425,13 @@ namespace Migrator.Framework
 		/// <param name="name">The name of the constraint to remove</param>
 		void RemoveConstraint(string table, string name);
 
-	    void RemoveAllConstraints(string table);
+		void RemoveAllConstraints(string table);
 
-        /// <summary>
-        /// Remove an existing primary key
-        /// </summary>
-        /// <param name="table">The table that contains the primary key.</param>        
-        void RemovePrimaryKey(string table);
+		/// <summary>
+		/// Remove an existing primary key
+		/// </summary>
+		/// <param name="table">The table that contains the primary key.</param>        
+		void RemovePrimaryKey(string table);
 
 		/// <summary>
 		/// Remove an existing table
@@ -468,23 +468,23 @@ namespace Migrator.Framework
 		/// <returns></returns>
 		IDataReader Select(string what, string from, string where);
 
-	    /// <summary>
-	    /// Get values from a table
-	    /// </summary>
-	    /// <param name="table"></param>
-	    /// <param name="columns"></param>
-	    /// <param name="whereColumns"></param>
-	    /// <param name="whereValues"></param>
-	    /// <returns></returns>
-	    IDataReader Select(string table, string[] columns, string[] whereColumns = null, object[] whereValues = null);
+		/// <summary>
+		/// Get values from a table
+		/// </summary>
+		/// <param name="table"></param>
+		/// <param name="columns"></param>
+		/// <param name="whereColumns"></param>
+		/// <param name="whereValues"></param>
+		/// <returns></returns>
+		IDataReader Select(string table, string[] columns, string[] whereColumns = null, object[] whereValues = null);
 
-        /// <summary>
-        /// Get values from a table
-        /// </summary>
-        /// <param name="what">The columns to select</param>
-        /// <param name="from">The table to select from</param>
-        /// <returns></returns>
-        IDataReader Select(string what, string from);
+		/// <summary>
+		/// Get values from a table
+		/// </summary>
+		/// <param name="what">The columns to select</param>
+		/// <param name="from">The table to select from</param>
+		/// <returns></returns>
+		IDataReader Select(string what, string from);
 
 		/// <summary>
 		/// Get a single value from a table
@@ -529,7 +529,7 @@ namespace Migrator.Framework
 		/// <returns></returns>
 		int Update(string table, string[] columns, object[] values, string where);
 
-	    int Update(string table, string[] columns, object[] values, string[] whereColumns, object[] whereValues);
+		int Update(string table, string[] columns, object[] values, string[] whereColumns, object[] whereValues);
 
 		/// <summary>
 		/// Get a command instance
@@ -543,12 +543,12 @@ namespace Migrator.Framework
 		/// <param name="schemaBuilder"></param>
 		void ExecuteSchemaBuilder(SchemaBuilder.SchemaBuilder schemaBuilder);
 
-	    
-        void RemoveAllForeignKeys(string tableName, string columnName);
+		
+		void RemoveAllForeignKeys(string tableName, string columnName);
 
-	    bool IsThisProvider(string provider);
+		bool IsThisProvider(string provider);
 
-        /// <summary>
+		/// <summary>
 		/// Quote a multiple column names, if required
 		/// </summary>
 		/// <param name="columnNames"></param>
@@ -576,46 +576,46 @@ namespace Migrator.Framework
 		/// <returns></returns>
 		string Encode(Guid guid);
 
-        /// <summary>
-        /// Change the target database
-        /// </summary>
-        /// <param name="databaseName">Name of the new target database</param>
-        void SwitchDatabase(string databaseName);
+		/// <summary>
+		/// Change the target database
+		/// </summary>
+		/// <param name="databaseName">Name of the new target database</param>
+		void SwitchDatabase(string databaseName);
 
 
-        /// <summary>
-        /// Get a list of databases available on the server
-        /// </summary>
-        List<string> GetDatabases();
+		/// <summary>
+		/// Get a list of databases available on the server
+		/// </summary>
+		List<string> GetDatabases();
 
-        /// <summary>
-        /// Checks to see if a database with specific name exists on the server
-        /// </summary>
-        bool DatabaseExists(string name);
+		/// <summary>
+		/// Checks to see if a database with specific name exists on the server
+		/// </summary>
+		bool DatabaseExists(string name);
 
-        /// <summary>
-        /// Create a new database on the server
-        /// </summary>
-        /// <param name="databaseName">Name of the new database</param>
-        void CreateDatabases(string databaseName);
+		/// <summary>
+		/// Create a new database on the server
+		/// </summary>
+		/// <param name="databaseName">Name of the new database</param>
+		void CreateDatabases(string databaseName);
 
-        /// <summary>
-        /// Delete a database from the server
-        /// </summary>
-        /// <param name="databaseName">Name of the database to delete</param>
-        void DropDatabases(string databaseName);
+		/// <summary>
+		/// Delete a database from the server
+		/// </summary>
+		/// <param name="databaseName">Name of the database to delete</param>
+		void DropDatabases(string databaseName);
 
-	    void AddIndex(string table, Index index);
+		void AddIndex(string table, Index index);
 
-        /// <summary>
+		/// <summary>
 		/// Add a multi-column index to a table
 		/// </summary>
 		/// <param name="name">The name of the index to add.</param>
 		/// <param name="table">The name of the table that will get the index.</param>
 		/// <param name="columns">The name of the column or columns that are in the index.</param>
 		void AddIndex(string name, string table, params string[] columns);
-        
-        /// <summary>
+		
+		/// <summary>
 		/// Check to see if an index exists
 		/// </summary>
 		/// <param name="name">The name of the index</param>
@@ -623,31 +623,31 @@ namespace Migrator.Framework
 		/// <returns></returns>
 		bool IndexExists(string table, string name);
 
-        /// <summary>
+		/// <summary>
 		/// Remove an existing index
 		/// </summary>
 		/// <param name="table">The table that contains the index.</param>
 		/// <param name="name">The name of the index to remove</param>
 		void RemoveIndex(string table, string name);
 
-        /// <summary>
-        /// Generate parameter name based on an index number
-        /// </summary>        
-        /// <param name="index">The index number of the parameter</param>
-	    string GenerateParameterName(int index);
+		/// <summary>
+		/// Generate parameter name based on an index number
+		/// </summary>        
+		/// <param name="index">The index number of the parameter</param>
+		string GenerateParameterName(int index);
 
-        /// <summary>
-        /// Remove all indexes of a table
-        /// </summary>
-        /// <param name="table">The table name</param>
-	    void RemoveAllIndexes(string table);
+		/// <summary>
+		/// Remove all indexes of a table
+		/// </summary>
+		/// <param name="table">The table name</param>
+		void RemoveAllIndexes(string table);
 
-	    string Concatenate(params string[] strings);
+		string Concatenate(params string[] strings);
 
-        IDbConnection Connection { get; }
+		IDbConnection Connection { get; }
 
-	    IEnumerable<string> GetTables(string schema);
+		IEnumerable<string> GetTables(string schema);
 
-	    IEnumerable<string> GetColumns(string schema, string table);
+		IEnumerable<string> GetColumns(string schema, string table);
 	}
 }
