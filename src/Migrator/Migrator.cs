@@ -124,9 +124,14 @@ namespace Migrator
 			get { return _migrationLoader.LastVersion; }
 		}
 
-		public long LastAppliedMigrationVersion
+		public long? LastAppliedMigrationVersion
 		{
-			get { return AppliedMigrations.Max(); }
+			get
+			{
+				if (AppliedMigrations.Count() == 0)
+					return null;
+				return AppliedMigrations.Max();
+			}
 		}
 
 		/// <summary>
