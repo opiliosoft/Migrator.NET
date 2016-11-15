@@ -311,7 +311,7 @@ namespace Migrator.Providers
             return 0;
         }
 
-	    public int Delete(string table, string[] columns, string[] columnValues)
+	    public int Delete(string table, string[] columns = null, object[] columnValues = null)
 		{
 			return 0;
 		}

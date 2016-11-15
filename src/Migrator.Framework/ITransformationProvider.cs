@@ -374,7 +374,7 @@ namespace Migrator.Framework
 		/// <param name="columns">The names of the columns used in a where clause</param>
 		/// <param name="values">The values in the same order as the columns</param>
 		/// <returns></returns>
-		int Delete(string table, string[] columns, string[] values);
+		int Delete(string table, string[] whereColumns = null, object[] whereValues = null);
 
 		/// <summary>
 		/// Delete data from a table

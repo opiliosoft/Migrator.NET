@@ -37,7 +37,7 @@ namespace Migrator.Providers
     {
         private string _scope;
         protected readonly string _connectionString;
-		protected readonly string _defaultSchema;
+        protected readonly string _defaultSchema;
         readonly ForeignKeyConstraintMapper constraintMapper = new ForeignKeyConstraintMapper();
         protected List<long> _appliedMigrations;
         protected IDbConnection _connection;
@@ -50,7 +50,7 @@ namespace Migrator.Providers
         {
             _dialect = dialect;
             _connectionString = connectionString;
-			_defaultSchema = defaultSchema;
+            _defaultSchema = defaultSchema;
             _logger = new Logger(false);
             _scope = scope;
         }
@@ -177,14 +177,14 @@ namespace Migrator.Providers
 
         public virtual Column GetColumnByName(string table, string columnName)
         {
-			var columns = GetColumns(table);
-			return columns.First(column => column.Name.Equals(columnName, StringComparison.OrdinalIgnoreCase));
+            var columns = GetColumns(table);
+            return columns.First(column => column.Name.Equals(columnName, StringComparison.OrdinalIgnoreCase));
         }
 
         public virtual string[] GetTables()
         {
             var tables = new List<string>();
-			using (IDataReader reader = ExecuteQuery("SELECT table_name FROM INFORMATION_SCHEMA.TABLES"))
+            using (IDataReader reader = ExecuteQuery("SELECT table_name FROM INFORMATION_SCHEMA.TABLES"))
             {
                 while (reader.Read())
                 {
@@ -335,50 +335,50 @@ namespace Migrator.Providers
         }
         public virtual void RemoveTable(string name)
         {
-		    if (!TableExists(name))
-			{
+            if (!TableExists(name))
+            {
                 throw new MigrationException(String.Format("Table with name '{0}' does not exist to rename", name));
-			}
-			
+            }
+            
             ExecuteNonQuery(String.Format("DROP TABLE {0}", name));
         }
 
         public virtual void RenameTable(string oldName, string newName)
         {
-		    oldName = QuoteTableNameIfRequired(oldName);
-		    newName = QuoteTableNameIfRequired(newName);
+            oldName = QuoteTableNameIfRequired(oldName);
+            newName = QuoteTableNameIfRequired(newName);
 
             if (TableExists(newName))
-			{
+            {
                 throw new MigrationException(String.Format("Table with name '{0}' already exists", newName));
-			}
+            }
 
-			if (!TableExists(oldName))
-			{
+            if (!TableExists(oldName))
+            {
                 throw new MigrationException(String.Format("Table with name '{0}' does not exist to rename", oldName));
-			}
+            }
 
-			ExecuteNonQuery(String.Format("ALTER TABLE {0} RENAME TO {1}", oldName, newName));
+            ExecuteNonQuery(String.Format("ALTER TABLE {0} RENAME TO {1}", oldName, newName));
         }
 
         public virtual void RenameColumn(string tableName, string oldColumnName, string newColumnName)
         {
-		    if (ColumnExists(tableName, newColumnName))
-			{
-			    throw new MigrationException(String.Format("Table '{0}' has column named '{1}' already", tableName, newColumnName));
-			}
+            if (ColumnExists(tableName, newColumnName))
+            {
+                throw new MigrationException(String.Format("Table '{0}' has column named '{1}' already", tableName, newColumnName));
+            }
 
             if (!ColumnExists(tableName, oldColumnName))
-		    {
-		        throw new MigrationException(string.Format("The table '{0}' does not have a column named '{1}'", tableName, oldColumnName));
-		    }
+            {
+                throw new MigrationException(string.Format("The table '{0}' does not have a column named '{1}'", tableName, oldColumnName));
+            }
 
             var column = GetColumnByName(tableName, oldColumnName);
 
-		    var quotedNewColumnName = QuoteColumnNameIfRequired(newColumnName);
+            var quotedNewColumnName = QuoteColumnNameIfRequired(newColumnName);
 
             ExecuteNonQuery(String.Format("ALTER TABLE {0} RENAME COLUMN {1} TO {2}", tableName, Dialect.Quote(column.Name), quotedNewColumnName));
-		}
+        }
 
         public virtual void RemoveColumn(string table, string column)
         {
@@ -387,9 +387,9 @@ namespace Migrator.Providers
                 throw new MigrationException(string.Format("The table '{0}' does not have a column named '{1}'", table, column));                
             }
 
-		    var existingColumn = GetColumnByName(table, column);
+            var existingColumn = GetColumnByName(table, column);
 
-		    ExecuteNonQuery(String.Format("ALTER TABLE {0} DROP COLUMN {1} ", table, Dialect.Quote(existingColumn.Name)));
+            ExecuteNonQuery(String.Format("ALTER TABLE {0} DROP COLUMN {1} ", table, Dialect.Quote(existingColumn.Name)));
         }
 
         public virtual bool ColumnExists(string table, string column)
@@ -614,7 +614,7 @@ namespace Migrator.Providers
 
         /// <summary>
         /// Guesses the name of the foreign key and add it
-		/// </see>
+        /// </see>
         /// </summary>
         public virtual void GenerateForeignKey(string primaryTable, string[] primaryColumns, string refTable,
                                                string[] refColumns)
@@ -634,7 +634,7 @@ namespace Migrator.Providers
 
         /// <summary>
         /// Guesses the name of the foreign key and add it
-		/// </see>
+        /// </see>
         /// </summary>
         public virtual void GenerateForeignKey(string primaryTable, string[] primaryColumns, string refTable,
                                                string[] refColumns, ForeignKeyConstraintType constraint)
@@ -724,7 +724,7 @@ namespace Migrator.Providers
         }
 
         public virtual int ExecuteNonQuery(string sql, int timeout, params object[] args)
-		{         
+        {         
             if (args==null)
             {
                 Logger.Trace(sql);
@@ -740,7 +740,7 @@ namespace Migrator.Providers
             {
                 try
                 {
-				    cmd.CommandTimeout = timeout;
+                    cmd.CommandTimeout = timeout;
 
                     if (args != null)
                     {
@@ -761,7 +761,7 @@ namespace Migrator.Providers
                 catch (Exception ex)
                 {
                     Logger.Warn(ex.Message);
-					throw new Exception(string.Format("Error occured executing sql: {0}, see inner exception for details, error: " + ex, sql), ex);
+                    throw new Exception(string.Format("Error occured executing sql: {0}, see inner exception for details, error: " + ex, sql), ex);
                 }
             }
         }
@@ -1128,15 +1128,47 @@ namespace Migrator.Providers
             }
         }
 
-        public virtual int Delete(string table, string[] columns, string[] values)
+        public virtual int Delete(string table, string[] whereColumns = null, object[] whereValues = null)
         {
-            if (null == columns || null == values)
+            if (string.IsNullOrEmpty(table)) throw new ArgumentNullException("table");
+
+
+            if (null == whereColumns || null == whereValues)
             {
                 return ExecuteNonQuery(String.Format("DELETE FROM {0}", table));
             }
             else
             {
-                return ExecuteNonQuery(String.Format("DELETE FROM {0} WHERE ({1})", table, JoinColumnsAndValues(columns, values, " and ")));
+                table = QuoteTableNameIfRequired(table);
+
+                using (IDbCommand command = _connection.CreateCommand())
+                {
+                    command.Transaction = _transaction;
+
+                    var query = String.Format("DELETE FROM {0} WHERE ({1})", table,
+                        GetWhereString(whereColumns, whereValues));
+
+                    command.CommandText = query;
+                    command.CommandType = CommandType.Text;
+
+                    int paramCount = 0;
+
+                    foreach (object value in whereValues)
+                    {
+                        IDbDataParameter parameter = command.CreateParameter();
+
+                        ConfigureParameterWithValue(parameter, paramCount, value);
+
+                        parameter.ParameterName = GenerateParameterName(paramCount);
+
+                        command.Parameters.Add(parameter);
+
+                        paramCount++;
+                    }
+
+                    Logger.Trace(command.CommandText);
+                    return command.ExecuteNonQuery();
+                }
             }
         }
 
@@ -1461,7 +1493,7 @@ namespace Migrator.Providers
             EnsureHasConnection();
             if (!TableExists(_schemaInfotable))
             {
-				AddTable(_schemaInfotable,
+                AddTable(_schemaInfotable,
                     new Column("Version", DbType.Int64, ColumnProperty.NotNull | ColumnProperty.PrimaryKey),
                     new Column("Scope", DbType.String, 50, ColumnProperty.NotNull | ColumnProperty.PrimaryKey, "default"),
                     new Column("TimeStamp", DbType.DateTime));                 
@@ -1609,13 +1641,13 @@ namespace Migrator.Providers
         }
 
         public virtual void RemoveIndex(string table, string name)
-		{
-			if (TableExists(table) && IndexExists(table, name))
-			{
-			    name = QuoteConstraintNameIfRequired(name);
-				ExecuteNonQuery(String.Format("DROP INDEX {0}", name));
-			}
-		}
+        {
+            if (TableExists(table) && IndexExists(table, name))
+            {
+                name = QuoteConstraintNameIfRequired(name);
+                ExecuteNonQuery(String.Format("DROP INDEX {0}", name));
+            }
+        }
 
         public virtual void AddIndex(string table, Index index)
         {
@@ -1623,12 +1655,12 @@ namespace Migrator.Providers
         }
 
         public virtual void AddIndex(string name, string table, params string[] columns)
-		{
-			if (IndexExists(table, name))
-			{
-				Logger.Warn("Index {0} already exists", name);
-				return;
-			}
+        {
+            if (IndexExists(table, name))
+            {
+                Logger.Warn("Index {0} already exists", name);
+                return;
+            }
 
             name = QuoteConstraintNameIfRequired(name);
 
@@ -1637,14 +1669,14 @@ namespace Migrator.Providers
             columns = QuoteColumnNamesIfRequired(columns);
 
             ExecuteNonQuery(String.Format("CREATE INDEX {0} ON {1} ({2}) ", name, table, string.Join(", ", columns)));
-		}
+        }
 
-	    protected string QuoteConstraintNameIfRequired(string name)
-	    {
-	        return _dialect.ConstraintNameNeedsQuote ? _dialect.Quote(name) : name;
-	    }
+        protected string QuoteConstraintNameIfRequired(string name)
+        {
+            return _dialect.ConstraintNameNeedsQuote ? _dialect.Quote(name) : name;
+        }
 
-	    public abstract bool IndexExists(string table, string name);
+        public abstract bool IndexExists(string table, string name);
 
         protected virtual string GetPrimaryKeyConstraintName(string table)
         {
