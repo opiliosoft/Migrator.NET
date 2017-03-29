@@ -7,16 +7,16 @@ using Migrator.Framework;
 
 namespace Migrator.Providers.SQLite
 {
-	/// <summary>
-	/// Summary description for SQLiteTransformationProvider.
-	/// </summary>
+    /// <summary>
+    /// Summary description for SQLiteTransformationProvider.
+    /// </summary>
     public class SQLiteMonoTransformationProvider : SQLiteTransformationProvider
-	{
+    {
         public SQLiteMonoTransformationProvider(Dialect dialect, string connectionString, string scope, string providerName)
             : base(dialect, connectionString, scope, providerName)
-		{
+        {
           
-		}
+        }
 
         public SQLiteMonoTransformationProvider(Dialect dialect, IDbConnection connection, string scope, string providerName)
            : base(dialect, connection, scope, providerName)

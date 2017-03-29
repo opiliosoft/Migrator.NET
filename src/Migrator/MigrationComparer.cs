@@ -14,6 +14,7 @@
 using System;
 using System.Collections.Generic;
 using Migrator.Framework;
+using System.Reflection;
 
 namespace Migrator
 {
@@ -31,8 +32,13 @@ namespace Migrator
 
 		public int Compare(Type x, Type y)
 		{
+#if NETSTANDARD1_6
+			var attribOfX = x.GetTypeInfo().GetCustomAttribute<MigrationAttribute>();
+			var attribOfY = y.GetTypeInfo().GetCustomAttribute<MigrationAttribute>();
+#else
 			var attribOfX = (MigrationAttribute) Attribute.GetCustomAttribute(x, typeof (MigrationAttribute));
 			var attribOfY = (MigrationAttribute) Attribute.GetCustomAttribute(y, typeof (MigrationAttribute));
+#endif
 
 			if (_ascending)
 				return attribOfX.Version.CompareTo(attribOfY.Version);

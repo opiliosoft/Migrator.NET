@@ -15,7 +15,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -26,6 +25,7 @@ using Migrator.Framework.Support;
 
 using ForeignKeyConstraintType = Migrator.Framework.ForeignKeyConstraintType;
 using ForeignKeyConstraint = Migrator.Framework.ForeignKeyConstraint;
+using System.Reflection;
 
 namespace Migrator.Providers
 {
@@ -461,7 +461,11 @@ namespace Migrator.Providers
 
         public bool DatabaseExists(string name)
         {
+#if NETSTANDARD1_6
+            return GetDatabases().Any(c => string.Equals(name, c, StringComparison.CurrentCultureIgnoreCase));
+#else
             return GetDatabases().Any(c => string.Equals(name, c, StringComparison.InvariantCultureIgnoreCase));
+#endif
         }
 
         public virtual void CreateDatabases(string databaseName)
@@ -794,7 +798,11 @@ namespace Migrator.Providers
         {
             if (CurrentMigration != null)
             {
+#if NETSTANDARD1_6
+                var assembly = CurrentMigration.GetType().GetTypeInfo().Assembly;
+#else
                 var assembly = CurrentMigration.GetType().Assembly;
+#endif
 
                 string sqlText;
                 string file = (new System.Uri(assembly.CodeBase)).AbsolutePath;
@@ -809,7 +817,11 @@ namespace Migrator.Providers
         {
             if (CurrentMigration != null)
             {
+#if NETSTANDARD1_6
+                var assembly = CurrentMigration.GetType().GetTypeInfo().Assembly;
+#else
                 var assembly = CurrentMigration.GetType().Assembly;
+#endif
 
                 string sqlText;
                 string embeddedResourceName = TransformationProviderUtility.GetQualifiedResourcePath(assembly, resourceName);
@@ -1521,14 +1533,13 @@ namespace Migrator.Providers
 
         public virtual string[] QuoteValues(string[] values)
         {
-            return Array.ConvertAll(values,
-                                    delegate(string val)
-                                    {
-                                        if (null == val)
-                                            return "null";
-                                        else
-                                            return String.Format("'{0}'", val.Replace("'", "''"));
-                                    });
+            return values.Select(val =>
+            {
+                if (null == val)
+                    return "null";
+                else
+                    return String.Format("'{0}'", val.Replace("'", "''"));
+            }).ToArray();
         }
 
         public virtual string JoinColumnsAndValues(string[] columns, string[] values)
@@ -1723,16 +1734,23 @@ namespace Migrator.Providers
        
         public IEnumerable<string> GetTables(string schema)
         {
+#if NETSTANDARD1_6
+            return null;
+#else
             var tableRestrictions = new string[4];
             tableRestrictions[1] = schema;
 
             var c = _connection as DbConnection;
             var tables = c.GetSchema("Tables", tableRestrictions);
             return from DataRow row in tables.Rows select row.Field<string>("TABLE_NAME");
+#endif
         }
 
         public IEnumerable<string> GetColumns(string schema, string table)
         {
+#if NETSTANDARD1_6
+            return null;
+#else
             var tableRestrictions = new string[4];
             tableRestrictions[1] = schema;
             tableRestrictions[2] = table;
@@ -1740,6 +1758,7 @@ namespace Migrator.Providers
             var c = _connection as DbConnection;
             var tables = c.GetSchema("Columns", tableRestrictions);
             return from DataRow row in tables.Rows select row.Field<string>("TABLE_NAME");
+#endif
         }
     }
 }

@@ -51,16 +51,16 @@ namespace Migrator.Providers
 		readonly Dictionary<DbType, SortedList<int, string>> weighted =
 			new Dictionary<DbType, SortedList<int, string>>();
 
-        public DbType GetDbType(string type)
-        {
-            type = type.Trim().ToLower();
-            var retval = defaults.Where(x => x.Value.Trim().ToLower().StartsWith(type)).Select(x => x.Key);
-            if (retval.Any())
-                return retval.First();
-            return weighted.Where(x => x.Value.Where(y => y.Value.Trim().ToLower().StartsWith(type)).Any()).Select(x => x.Key).FirstOrDefault();
-        }
+		public DbType GetDbType(string type)
+		{
+			type = type.Trim().ToLower();
+			var retval = defaults.Where(x => x.Value.Trim().ToLower().StartsWith(type)).Select(x => x.Key);
+			if (retval.Any())
+				return retval.First();
+			return weighted.Where(x => x.Value.Where(y => y.Value.Trim().ToLower().StartsWith(type)).Any()).Select(x => x.Key).FirstOrDefault();
+		}
 
-	    /// <summary>
+		/// <summary>
 		/// Get default type name for specified type
 		/// </summary>
 		/// <param name="typecode">the type key</param>

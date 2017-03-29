@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Migrator.Framework;
 using Migrator.Providers;
+using System.Reflection;
 
 namespace Migrator
 {
@@ -28,8 +29,8 @@ namespace Migrator
 			get
 			{
 				return _goForward
-				       	? NextMigration()
-				       	: PreviousMigration();
+						? NextMigration()
+						: PreviousMigration();
 			}
 		}
 
@@ -38,8 +39,8 @@ namespace Migrator
 			get
 			{
 				return _goForward
-				       	? PreviousMigration()
-				       	: NextMigration();
+						? PreviousMigration()
+						: NextMigration();
 			}
 		}
 
@@ -63,7 +64,12 @@ namespace Migrator
 		public override void Migrate(IMigration migration)
 		{
 			_provider.BeginTransaction();
+#if NETSTANDARD1_6
+			var attr = migration.GetType().GetTypeInfo().GetCustomAttribute<MigrationAttribute>();
+#else
 			var attr = (MigrationAttribute) Attribute.GetCustomAttribute(migration.GetType(), typeof (MigrationAttribute));
+#endif
+
 
 			if (_provider.AppliedMigrations.Contains(attr.Version))
 			{
@@ -81,12 +87,12 @@ namespace Migrator
 			_logger.MigrateUp(Current, migration.Name);
 			if (! DryRun)
 			{
-                var tProvider = _provider as TransformationProvider;
-			    if (tProvider != null) 
-                    tProvider.CurrentMigration = migration;
+				var tProvider = _provider as TransformationProvider;
+				if (tProvider != null) 
+					tProvider.CurrentMigration = migration;
 
 				migration.Up();
-                _provider.MigrationApplied(attr.Version, attr.Scope);
+				_provider.MigrationApplied(attr.Version, attr.Scope);
 				_provider.Commit();
 				migration.AfterUp();
 			}
@@ -98,12 +104,12 @@ namespace Migrator
 			_logger.MigrateDown(Current, migration.Name);
 			if (! DryRun)
 			{
-                var tProvider = _provider as TransformationProvider;
-                if (tProvider != null)
-                    tProvider.CurrentMigration = migration;
+				var tProvider = _provider as TransformationProvider;
+				if (tProvider != null)
+					tProvider.CurrentMigration = migration;
 
 				migration.Down();
-                _provider.MigrationUnApplied(attr.Version, attr.Scope);
+				_provider.MigrationUnApplied(attr.Version, attr.Scope);
 				_provider.Commit();
 				migration.AfterDown();
 			}

@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>MigratorDotNet.snk</AssemblyOriginatorKeyFile>
+    <AssemblyName>DotNetProjects.Migrator</AssemblyName>
+    <RootNamespace>DotNetProjects.Migrator</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Compile\ScriptEngine.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\config\GlobalAssemblyInfo.cs" Link="GlobalAssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\default.build" Link="default.build" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Migrator.Framework\DotNetProjects.Migrator.Framework.core.csproj" />
+    <ProjectReference Include="..\Migrator.Providers\DotNetProjects.Migrator.Providers.core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Compile\" />
+  </ItemGroup>
+
+</Project>

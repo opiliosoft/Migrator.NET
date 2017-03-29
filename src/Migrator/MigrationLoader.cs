@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Migrator.Framework;
+using System.Linq;
 
 namespace Migrator
 {
@@ -84,13 +85,23 @@ namespace Migrator
 			var migrations = new List<Type>();
 			foreach (Type t in asm.GetExportedTypes())
 			{
-				var attrib =
-					(MigrationAttribute) Attribute.GetCustomAttribute(t, typeof (MigrationAttribute));
+				
 
+#if NETSTANDARD1_6
+				var attrib = t.GetType().GetTypeInfo().GetCustomAttribute<MigrationAttribute>();
+				if (attrib != null && typeof(IMigration).GetTypeInfo().IsAssignableFrom(t) && !attrib.Ignore)
+				{
+					migrations.Add(t);
+				}
+#else
+				var attrib = (MigrationAttribute) Attribute.GetCustomAttribute(t, typeof (MigrationAttribute));
 				if (attrib != null && typeof (IMigration).IsAssignableFrom(t) && !attrib.Ignore)
 				{
 					migrations.Add(t);
 				}
+#endif
+
+
 			}
 
 			migrations.Sort(new MigrationTypeComparer(true));
@@ -105,17 +116,18 @@ namespace Migrator
 		/// <returns>Version number sepcified in the attribute</returns>
 		public static long GetMigrationVersion(Type t)
 		{
-			var attrib = (MigrationAttribute)
-			             Attribute.GetCustomAttribute(t, typeof (MigrationAttribute));
-
+#if NETSTANDARD1_6
+			var attrib = t.GetType().GetTypeInfo().GetCustomAttribute<MigrationAttribute>();
+#else
+			var attrib = (MigrationAttribute) Attribute.GetCustomAttribute(t, typeof (MigrationAttribute));
+#endif
 			return attrib.Version;
 		}
 
 		public List<long> GetAvailableMigrations()
 		{
-			//List<int> availableMigrations = new List<int>();
 			_migrationsTypes.Sort(new MigrationTypeComparer(true));
-			return _migrationsTypes.ConvertAll(GetMigrationVersion);
+			return _migrationsTypes.Select(x => GetMigrationVersion(x)).ToList();
 		}
 
 		public IMigration GetMigration(long version)

@@ -16,7 +16,7 @@ namespace Migrator.Framework
 
 			Type type = typeof (T);
 
-			if (value == null || Convert.IsDBNull(value)) return defaultValue();
+			if (value == null || value == DBNull.Value) return defaultValue();
 
 			if (type == typeof (DateTime?) || type == typeof (DateTime))
 			{

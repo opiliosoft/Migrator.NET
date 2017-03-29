@@ -24,17 +24,17 @@ namespace Migrator.Providers
 			RegisterProperty(ColumnProperty.PrimaryKey, "PRIMARY KEY");            
 		}
 
-	    public virtual int MaxKeyLength
-	    {
-            get { return 900; }
-	    }
+		public virtual int MaxKeyLength
+		{
+			get { return 900; }
+		}
 
-        public virtual int MaxFieldNameLength
-        {
-            get { return int.MaxValue; }
-        }
+		public virtual int MaxFieldNameLength
+		{
+			get { return int.MaxValue; }
+		}
 
-        public virtual bool ColumnNameNeedsQuote
+		public virtual bool ColumnNameNeedsQuote
 		{
 			get { return false; }
 		}
@@ -101,28 +101,28 @@ namespace Migrator.Providers
 			return isReserved;
 		}
 
-        public abstract ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope, string providerName);
-        public abstract ITransformationProvider GetTransformationProvider(Dialect dialect, IDbConnection connection, string defaultSchema, string scope, string providerName);
+		public abstract ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope, string providerName);
+		public abstract ITransformationProvider GetTransformationProvider(Dialect dialect, IDbConnection connection, string defaultSchema, string scope, string providerName);
 
-        public ITransformationProvider NewProviderForDialect(string connectionString, string defaultSchema, string scope, string providerName)
+		public ITransformationProvider NewProviderForDialect(string connectionString, string defaultSchema, string scope, string providerName)
 		{
 			return GetTransformationProvider(this, connectionString, defaultSchema, scope, providerName);
 		}
 
-        public ITransformationProvider NewProviderForDialect(IDbConnection connection, string defaultSchema, string scope, string providerName)
-        {
-            return GetTransformationProvider(this, connection, defaultSchema, scope, providerName);
-        }
+		public ITransformationProvider NewProviderForDialect(IDbConnection connection, string defaultSchema, string scope, string providerName)
+		{
+			return GetTransformationProvider(this, connection, defaultSchema, scope, providerName);
+		}
 
-        /// <summary>
-        /// Subclasses register a typename for the given type code and maximum
-        /// column length. <c>$l</c> in the type name will be replaced by the column
-        /// length (if appropriate)
-        /// </summary>
-        /// <param name="code">The typecode</param>
-        /// <param name="capacity">Maximum length of database type</param>
-        /// <param name="name">The database type name</param>
-        protected void RegisterColumnType(DbType code, int capacity, string name)
+		/// <summary>
+		/// Subclasses register a typename for the given type code and maximum
+		/// column length. <c>$l</c> in the type name will be replaced by the column
+		/// length (if appropriate)
+		/// </summary>
+		/// <param name="code">The typecode</param>
+		/// <param name="capacity">Maximum length of database type</param>
+		/// <param name="name">The database type name</param>
+		protected void RegisterColumnType(DbType code, int capacity, string name)
 		{
 			typeNames.Put(code, capacity, name);
 		}
@@ -147,12 +147,12 @@ namespace Migrator.Providers
 			return new ColumnPropertiesMapper(this, type);
 		}
 
-        public virtual DbType GetDbTypeFromString(string type)
-        {
-            return typeNames.GetDbType(type);            
-        }
+		public virtual DbType GetDbTypeFromString(string type)
+		{
+			return typeNames.GetDbType(type);            
+		}
 
-        /// <summary>
+		/// <summary>
 		/// Get the name of the database type associated with the given 
 		/// </summary>
 		/// <param name="type">The DbType</param>
@@ -196,17 +196,17 @@ namespace Migrator.Providers
 			return GetTypeName(type);
 		}
 
-        /// <summary>
-        /// <para>Get the type from the specified database type name.</para>
-        /// <para>Note: This does not work perfectly, but it will do for most cases.</para>
-        /// </summary>
-        /// <param name="databaseTypeName">The name of the type.</param>
-        /// <returns>The <see cref="DbType"/>.</returns>
-        public virtual DbType GetDbType(string databaseTypeName)
-        {
-            return typeNames.GetDbType(databaseTypeName);
-        }
-        
+		/// <summary>
+		/// <para>Get the type from the specified database type name.</para>
+		/// <para>Note: This does not work perfectly, but it will do for most cases.</para>
+		/// </summary>
+		/// <param name="databaseTypeName">The name of the type.</param>
+		/// <returns>The <see cref="DbType"/>.</returns>
+		public virtual DbType GetDbType(string databaseTypeName)
+		{
+			return typeNames.GetDbType(databaseTypeName);
+		}
+		
 		public void RegisterProperty(ColumnProperty property, string sql)
 		{
 			if (! propertyMap.ContainsKey(property))
@@ -232,23 +232,23 @@ namespace Migrator.Providers
 
 		public virtual string Default(object defaultValue)
 		{
-            if (defaultValue is String && defaultValue.ToString() == String.Empty)
-            {
-                defaultValue = "''";
-            }
-            else if (defaultValue is Guid)
-            {
-                return String.Format("DEFAULT '{0}'", defaultValue.ToString());
-            }
-            else if (defaultValue is DateTime)
-            {
-                return String.Format("DEFAULT '{0}'", ((DateTime)defaultValue).ToString("yyyy-MM-dd HH:mm:ss"));
-            }
-            else if (defaultValue is String)
-            {
-                defaultValue = ((String)defaultValue).Replace("'", "''");
-                defaultValue = "'" + defaultValue + "'";
-            }
+			if (defaultValue is String && defaultValue.ToString() == String.Empty)
+			{
+				defaultValue = "''";
+			}
+			else if (defaultValue is Guid)
+			{
+				return String.Format("DEFAULT '{0}'", defaultValue.ToString());
+			}
+			else if (defaultValue is DateTime)
+			{
+				return String.Format("DEFAULT '{0}'", ((DateTime)defaultValue).ToString("yyyy-MM-dd HH:mm:ss"));
+			}
+			else if (defaultValue is String)
+			{
+				defaultValue = ((String)defaultValue).Replace("'", "''");
+				defaultValue = "'" + defaultValue + "'";
+			}
 
 			return String.Format("DEFAULT {0}", defaultValue);
 		}
@@ -262,16 +262,16 @@ namespace Migrator.Providers
 			return mapper;
 		}
 
-        public ColumnPropertiesMapper GetAndMapColumnPropertiesWithoutDefault(Column column)
-        {
-            ColumnPropertiesMapper mapper = GetColumnMapper(column);
-            mapper.MapColumnPropertiesWithoutDefault(column);
-            if (column.DefaultValue != null && column.DefaultValue != DBNull.Value)
-                mapper.Default = column.DefaultValue;
-            return mapper;
-        }
+		public ColumnPropertiesMapper GetAndMapColumnPropertiesWithoutDefault(Column column)
+		{
+			ColumnPropertiesMapper mapper = GetColumnMapper(column);
+			mapper.MapColumnPropertiesWithoutDefault(column);
+			if (column.DefaultValue != null && column.DefaultValue != DBNull.Value)
+				mapper.Default = column.DefaultValue;
+			return mapper;
+		}
 
-        /// <summary>
+		/// <summary>
 		/// Subclasses register which DbTypes are unsigned-compatible (ie, available in signed and unsigned variants)
 		/// </summary>
 		/// <param name="type"></param>

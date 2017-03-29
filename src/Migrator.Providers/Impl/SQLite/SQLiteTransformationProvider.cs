@@ -11,16 +11,16 @@ using ForeignKeyConstraint = Migrator.Framework.ForeignKeyConstraint;
 
 namespace Migrator.Providers.SQLite
 {
-	/// <summary>
-	/// Summary description for SQLiteTransformationProvider.
-	/// </summary>
+    /// <summary>
+    /// Summary description for SQLiteTransformationProvider.
+    /// </summary>
     public class SQLiteTransformationProvider : TransformationProvider
-	{
+    {
         public SQLiteTransformationProvider(Dialect dialect, string connectionString, string scope, string providerName)
-			: base(dialect, connectionString, null, scope)
+            : base(dialect, connectionString, null, scope)
         {
            this.CreateConnection(providerName);
-		}
+        }
 
         public SQLiteTransformationProvider(Dialect dialect, IDbConnection connection, string scope, string providerName)
            : base(dialect, connection, null, scope)
@@ -37,11 +37,11 @@ namespace Migrator.Providers.SQLite
             _connection.Open();
         }
 
-		public override void AddForeignKey(string name, string primaryTable, string[] primaryColumns, string refTable,
-		                                   string[] refColumns, ForeignKeyConstraintType constraint)
-		{
-			// NOOP Because SQLite doesn't support foreign keys
-		}
+        public override void AddForeignKey(string name, string primaryTable, string[] primaryColumns, string refTable,
+                                           string[] refColumns, ForeignKeyConstraintType constraint)
+        {
+            // NOOP Because SQLite doesn't support foreign keys
+        }
 
         private string GetSqlForAddTable(string tableName, string colDefsSql, string compositeDefSql)
         {
@@ -226,44 +226,44 @@ namespace Migrator.Providers.SQLite
             }
         }
 
-		public override void RemoveColumn(string table, string column)
-		{
-			if (! (TableExists(table) && ColumnExists(table, column)))
-				return;
+        public override void RemoveColumn(string table, string column)
+        {
+            if (! (TableExists(table) && ColumnExists(table, column)))
+                return;
 
 
-		    var newColumns = GetColumns(table).Where(x => x.Name != column).ToArray();
+            var newColumns = GetColumns(table).Where(x => x.Name != column).ToArray();
             
             AddTable(table + "_temp", null, newColumns);
-		    var colNamesSql = string.Join(", ", newColumns.Select(x => x.Name));
+            var colNamesSql = string.Join(", ", newColumns.Select(x => x.Name));
             ExecuteQuery(String.Format("INSERT INTO {0}_temp SELECT {1} FROM {0}", table, colNamesSql));
-			RemoveTable(table);
-			ExecuteQuery(String.Format("ALTER TABLE {0}_temp RENAME TO {0}", table));
-		}
+            RemoveTable(table);
+            ExecuteQuery(String.Format("ALTER TABLE {0}_temp RENAME TO {0}", table));
+        }
 
-		public override void RenameColumn(string tableName, string oldColumnName, string newColumnName)
-		{
-			if (ColumnExists(tableName, newColumnName))
-				throw new MigrationException(String.Format("Table '{0}' has column named '{1}' already", tableName, newColumnName));
+        public override void RenameColumn(string tableName, string oldColumnName, string newColumnName)
+        {
+            if (ColumnExists(tableName, newColumnName))
+                throw new MigrationException(String.Format("Table '{0}' has column named '{1}' already", tableName, newColumnName));
 
-			if (ColumnExists(tableName, oldColumnName))
-			{
-			    var columnDef = GetColumns(tableName).First(x => x.Name == oldColumnName);
+            if (ColumnExists(tableName, oldColumnName))
+            {
+                var columnDef = GetColumns(tableName).First(x => x.Name == oldColumnName);
 
-			    //if (columnDef.IsPrimaryKey)
-			    {
-			        columnDef.Name = newColumnName;
-			        this.changeColumnInternal(tableName, new[] { oldColumnName }, new[] { columnDef });
-			    }
-			    /*else
-			    {
-			        columnDef.Name = newColumnName;
-			        AddColumn(tableName, columnDef);
-			        ExecuteQuery(String.Format("UPDATE {0} SET {1}={2}", tableName, newColumnName, oldColumnName));
-			        RemoveColumn(tableName, oldColumnName);
-			    }*/
-			}
-		}
+                //if (columnDef.IsPrimaryKey)
+                {
+                    columnDef.Name = newColumnName;
+                    this.changeColumnInternal(tableName, new[] { oldColumnName }, new[] { columnDef });
+                }
+                /*else
+                {
+                    columnDef.Name = newColumnName;
+                    AddColumn(tableName, columnDef);
+                    ExecuteQuery(String.Format("UPDATE {0} SET {1}={2}", tableName, newColumnName, oldColumnName));
+                    RemoveColumn(tableName, oldColumnName);
+                }*/
+            }
+        }
 
         public override void RemoveColumnDefaultValue(string table, string column)
         {
@@ -273,16 +273,16 @@ namespace Migrator.Providers.SQLite
         }
 
         public override void AddPrimaryKey(string name, string table, params string[] columns)
-	    {
-	        List<Column> newCol = new List<Column>();
-	        foreach (var column in columns)
-	        {
+        {
+            List<Column> newCol = new List<Column>();
+            foreach (var column in columns)
+            {
                 var columnDef = GetColumns(table).First(x => x.Name == column);
-	            columnDef.ColumnProperty |= ColumnProperty.PrimaryKey;
+                columnDef.ColumnProperty |= ColumnProperty.PrimaryKey;
                 newCol.Add(columnDef);
-	        }
-	        this.changeColumnInternal(table, columns, newCol.ToArray());
-	    }
+            }
+            this.changeColumnInternal(table, columns, newCol.ToArray());
+        }
 
         public override void AddUniqueConstraint(string name, string table, params string[] columns)
         {
@@ -292,8 +292,8 @@ namespace Migrator.Providers.SQLite
         }
 
         private void changeColumnInternal(string table, string[] old, IDbField[] columns)
-	    {
-	        var newColumns = GetColumns(table).Where(x => !old.Any(y => x.Name.ToLower() == y.ToLower())).ToList();
+        {
+            var newColumns = GetColumns(table).Where(x => !old.Any(y => x.Name.ToLower() == y.ToLower())).ToList();
             var oldColumnNames = newColumns.Select(x => x.Name).ToList();
             newColumns.AddRange(columns.Where(x => x is Column).Cast<Column>());
             oldColumnNames.AddRange(old);
@@ -310,13 +310,13 @@ namespace Migrator.Providers.SQLite
         }
 
 
-		public override void ChangeColumn(string table, Column column)
-		{
-			if (! ColumnExists(table, column.Name))
-			{
-				Logger.Warn("Column {0}.{1} does not exist", table, column.Name);
-				return;
-			}
+        public override void ChangeColumn(string table, Column column)
+        {
+            if (! ColumnExists(table, column.Name))
+            {
+                Logger.Warn("Column {0}.{1} does not exist", table, column.Name);
+                return;
+            }
 
             if (
                     (column.ColumnProperty & ColumnProperty.PrimaryKey) != ColumnProperty.PrimaryKey && 
@@ -324,89 +324,89 @@ namespace Migrator.Providers.SQLite
                     ((column.ColumnProperty & ColumnProperty.NotNull) != ColumnProperty.NotNull || column.DefaultValue != null) &&
                     (column.DefaultValue == null || (column.DefaultValue.ToString() != "'CURRENT_TIME'" && column.DefaultValue.ToString() != "'CURRENT_DATE'") && column.DefaultValue.ToString() != "'CURRENT_TIMESTAMP'")
                 )
-		    {
-				string tempColumn = "temp_" + column.Name;
-				RenameColumn(table, column.Name, tempColumn);
-				AddColumn(table, column);
-				ExecuteQuery(String.Format("UPDATE {0} SET {1}={2}", table, column.Name, tempColumn));
-				RemoveColumn(table, tempColumn);		        
-		    }
-		    else
-		    {
-		        var newColumns = GetColumns(table).ToArray();
+            {
+                string tempColumn = "temp_" + column.Name;
+                RenameColumn(table, column.Name, tempColumn);
+                AddColumn(table, column);
+                ExecuteQuery(String.Format("UPDATE {0} SET {1}={2}", table, column.Name, tempColumn));
+                RemoveColumn(table, tempColumn);		        
+            }
+            else
+            {
+                var newColumns = GetColumns(table).ToArray();
 
-		        for (int i = 0; i < newColumns.Count(); i++)
-		        {
-		            if (newColumns[i].Name == column.Name)
-		            {
-		                newColumns[i] = column;
-		                break;
-		            }
-		        }
+                for (int i = 0; i < newColumns.Count(); i++)
+                {
+                    if (newColumns[i].Name == column.Name)
+                    {
+                        newColumns[i] = column;
+                        break;
+                    }
+                }
 
                 AddTable(table + "_temp", null, newColumns);
 
-		        var colNamesSql = string.Join(", ", newColumns.Select(x => x.Name));
+                var colNamesSql = string.Join(", ", newColumns.Select(x => x.Name));
                 ExecuteQuery(String.Format("INSERT INTO {0}_temp SELECT {1} FROM {0}", table, colNamesSql));
-			    RemoveTable(table);
-			    ExecuteQuery(String.Format("ALTER TABLE {0}_temp RENAME TO {0}", table));
-		    }
-		}
+                RemoveTable(table);
+                ExecuteQuery(String.Format("ALTER TABLE {0}_temp RENAME TO {0}", table));
+            }
+        }
 
-	    public override int TruncateTable(string table)
-	    {
+        public override int TruncateTable(string table)
+        {
             return ExecuteNonQuery(String.Format("DELETE FROM {0} ", table));
-	    }
+        }
 
-	    public override bool TableExists(string table)
-		{
-			using (IDataReader reader =
-				ExecuteQuery(String.Format("SELECT name FROM sqlite_master WHERE type='table' and lower(name)=lower('{0}')", table)))
-			{
-				return reader.Read();
-			}
-		}
+        public override bool TableExists(string table)
+        {
+            using (IDataReader reader =
+                ExecuteQuery(String.Format("SELECT name FROM sqlite_master WHERE type='table' and lower(name)=lower('{0}')", table)))
+            {
+                return reader.Read();
+            }
+        }
 
-	    public override List<string> GetDatabases()
-	    {
-	        throw new NotImplementedException();
-	    }
+        public override List<string> GetDatabases()
+        {
+            throw new NotImplementedException();
+        }
 
-	    public override bool ConstraintExists(string table, string name)
-		{
-			return false;
-		}
+        public override bool ConstraintExists(string table, string name)
+        {
+            return false;
+        }
 
-	    public override string[] GetConstraints(string table)
-	    {
-	        return new string[] { };
-	    }
+        public override string[] GetConstraints(string table)
+        {
+            return new string[] { };
+        }
 
-	    public override string[] GetTables()
-		{
-			var tables = new List<string>();
+        public override string[] GetTables()
+        {
+            var tables = new List<string>();
 
-			using (IDataReader reader = ExecuteQuery("SELECT name FROM sqlite_master WHERE type='table' AND name <> 'sqlite_sequence' ORDER BY name"))
-			{
-				while (reader.Read())
-				{
-					tables.Add((string) reader[0]);
-				}
-			}
+            using (IDataReader reader = ExecuteQuery("SELECT name FROM sqlite_master WHERE type='table' AND name <> 'sqlite_sequence' ORDER BY name"))
+            {
+                while (reader.Read())
+                {
+                    tables.Add((string) reader[0]);
+                }
+            }
 
-			return tables.ToArray();
-		}
+            return tables.ToArray();
+        }
 
-		public override Column[] GetColumns(string table)
-		{
-		    var columns = new List<Column>();
+        public override Column[] GetColumns(string table)
+        {
+            var columns = new List<Column>();
             using (IDataReader reader = ExecuteQuery(String.Format("PRAGMA table_info('{0}')", table)))
-			{
-				while (reader.Read())
-				{
-				    var column = new Column((string)reader[1]);
+            {
+                while (reader.Read())
+                {
+                    var column = new Column((string)reader[1]);
 
-				    column.Type = _dialect.GetDbTypeFromString((string)reader[2]);
+                    column.Type = _dialect.GetDbTypeFromString((string)reader[2]);
                     
                     if (Convert.ToBoolean(reader[3]))
                     {
@@ -417,52 +417,52 @@ namespace Migrator.Providers.SQLite
                         column.ColumnProperty |= ColumnProperty.Null;
                     }
 
-				    var defValue = reader[4] == DBNull.Value ? null : reader[4];
+                    var defValue = reader[4] == DBNull.Value ? null : reader[4];
 
-					if (defValue is string && ((string) defValue).StartsWith("'") && ((string) defValue).EndsWith("'"))
-					{
-						column.DefaultValue = ((string) defValue).Substring(1, ((string) defValue).Length - 2);
-					}
-					else
-					{
-						column.DefaultValue = defValue;
-					}
+                    if (defValue is string && ((string) defValue).StartsWith("'") && ((string) defValue).EndsWith("'"))
+                    {
+                        column.DefaultValue = ((string) defValue).Substring(1, ((string) defValue).Length - 2);
+                    }
+                    else
+                    {
+                        column.DefaultValue = defValue;
+                    }
 
-					if (Convert.ToBoolean(reader[5]))
+                    if (Convert.ToBoolean(reader[5]))
                     {
                         column.ColumnProperty |= ColumnProperty.PrimaryKey;
                     }
 
                     columns.Add(column);
                    
-				}
-			}
+                }
+            }
 
            
 
-			return columns.ToArray();
-		}
+            return columns.ToArray();
+        }
 
-		public bool IsNullable(string columnDef)
-		{
-			return ! columnDef.Contains("NOT NULL");
-		}
+        public bool IsNullable(string columnDef)
+        {
+            return ! columnDef.Contains("NOT NULL");
+        }
 
-		public bool ColumnMatch(string column, string columnDef)
-		{
-			return columnDef.StartsWith(column + " ") || columnDef.StartsWith(_dialect.Quote(column));
-		}
+        public bool ColumnMatch(string column, string columnDef)
+        {
+            return columnDef.StartsWith(column + " ") || columnDef.StartsWith(_dialect.Quote(column));
+        }
 
         public override bool IndexExists(string table, string name)
-		{
-			using (IDataReader reader =
-				ExecuteQuery(String.Format("SELECT name FROM sqlite_master WHERE type='index' and name='{0}'", name)))
-			{
-				return reader.Read();
-			}
-		}
+        {
+            using (IDataReader reader =
+                ExecuteQuery(String.Format("SELECT name FROM sqlite_master WHERE type='index' and name='{0}'", name)))
+            {
+                return reader.Read();
+            }
+        }
 
-	    public override void AddTable(string name, string engine, params IDbField[] fields)
+        public override void AddTable(string name, string engine, params IDbField[] fields)
         {
             if (TableExists(name))
             {

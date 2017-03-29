@@ -24,12 +24,12 @@ namespace Migrator.Providers
 			get { return null; }
 		}
 
-        public string ConnectionString
-        {
-            get { return String.Empty; }
-	    }
+		public string ConnectionString
+		{
+			get { return String.Empty; }
+		}
 
-	    public virtual ILogger Logger
+		public virtual ILogger Logger
 		{
 			get { return null; }
 			set { }
@@ -40,32 +40,32 @@ namespace Migrator.Providers
 			return null;
 		}
 
-	    public ForeignKeyConstraint[] GetForeignKeyConstraints(string table)
-	    {
-	        return null;
-	    }
-       
-	    public int Insert(string table, string[] columns, object[] values)
+		public ForeignKeyConstraint[] GetForeignKeyConstraints(string table)
+		{
+			return null;
+		}
+	   
+		public int Insert(string table, string[] columns, object[] values)
 		{
 			return 0;
 		}
 
-	    public int InsertIfNotExists(string table, string[] columns, object[] values, string[] whereColumns, object[] whereValues)
-	    {
-            return 0;
-        }
+		public int InsertIfNotExists(string table, string[] columns, object[] values, string[] whereColumns, object[] whereValues)
+		{
+			return 0;
+		}
 
-	    public List<string> ExecuteStringQuery(string sql, params object[] args)
-	    {
-	        return new List<string>();
-	    }
+		public List<string> ExecuteStringQuery(string sql, params object[] args)
+		{
+			return new List<string>();
+		}
 
-	    public Index[] GetIndexes(string table)
-	    {
-	        return null;
-	    }
+		public Index[] GetIndexes(string table)
+		{
+			return null;
+		}
 
-	    public Column[] GetColumns(string table)
+		public Column[] GetColumns(string table)
 		{
 			return null;
 		}
@@ -85,22 +85,22 @@ namespace Migrator.Providers
 			// No Op
 		}
 
-	    public void RemoveAllConstraints(string table)
-	    {
-            // No Op
-	    }
+		public void RemoveAllConstraints(string table)
+		{
+			// No Op
+		}
 
-	    public void RemovePrimaryKey(string table)
-	    {
-            // No Op
-	    }
+		public void RemovePrimaryKey(string table)
+		{
+			// No Op
+		}
 
-	    public void AddView(string name, string tableName, params IViewField[] fields)
-	    {
-            // No Op
-	    }
+		public void AddView(string name, string tableName, params IViewField[] fields)
+		{
+			// No Op
+		}
 
-	    public void AddTable(string name, params IDbField[] columns)
+		public void AddTable(string name, params IDbField[] columns)
 		{
 			// No Op
 		}
@@ -130,12 +130,12 @@ namespace Migrator.Providers
 			// No Op
 		}
 
-	    public void RemoveColumnDefaultValue(string table, string column)
-	    {
-	        // No Op
-	    }
+		public void RemoveColumnDefaultValue(string table, string column)
+		{
+			// No Op
+		}
 
-	    public bool ColumnExists(string table, string column)
+		public bool ColumnExists(string table, string column)
 		{
 			return false;
 		}
@@ -196,13 +196,13 @@ namespace Migrator.Providers
 		}
 
 		public void GenerateForeignKey(string primaryTable, string[] primaryColumns, string refTable,
-		                               string[] refColumns, ForeignKeyConstraintType constraint)
+									   string[] refColumns, ForeignKeyConstraintType constraint)
 		{
 			// No Op
 		}
 
 		public void AddForeignKey(string name, string primaryTable, string primaryColumn, string refTable,
-		                          string refColumn)
+								  string refColumn)
 		{
 			// No Op
 		}
@@ -218,7 +218,7 @@ namespace Migrator.Providers
 		}
 
 		public void AddForeignKey(string name, string primaryTable, string[] primaryColumns, string refTable,
-		                          string[] refColumns, ForeignKeyConstraintType constraint)
+								  string[] refColumns, ForeignKeyConstraintType constraint)
 		{
 			// No Op
 		}
@@ -252,16 +252,16 @@ namespace Migrator.Providers
 		{
 			return 0;
 		}
-        public int ExecuteNonQuery(string sql, int timeout)
-        {
-            return 0;
-        }
-        public int ExecuteNonQuery(string sql, int timeout, object[] parameters)
-        {
-            return 0;
-        }
+		public int ExecuteNonQuery(string sql, int timeout)
+		{
+			return 0;
+		}
+		public int ExecuteNonQuery(string sql, int timeout, object[] parameters)
+		{
+			return 0;
+		}
 
-        public IDataReader ExecuteQuery(string sql)
+		public IDataReader ExecuteQuery(string sql)
 		{
 			return null;
 		}
@@ -271,12 +271,12 @@ namespace Migrator.Providers
 			return null;
 		}
 
-	    public IDataReader Select(string table, string[] columns, string[] whereColumns, object[] whereValues)
-	    {
-            return null;
-        }
+		public IDataReader Select(string table, string[] columns, string[] whereColumns, object[] whereValues)
+		{
+			return null;
+		}
 
-	    public IDataReader Select(string what, string from)
+		public IDataReader Select(string what, string from)
 		{
 			return null;
 		}
@@ -306,12 +306,12 @@ namespace Migrator.Providers
 			return 0;
 		}
 
-        public int Update(string table, string[] columns, object[] values, string[] whereColumns, object[] whereValues)
-        {
-            return 0;
-        }
+		public int Update(string table, string[] columns, object[] values, string[] whereColumns, object[] whereValues)
+		{
+			return 0;
+		}
 
-	    public int Delete(string table, string[] columns = null, object[] columnValues = null)
+		public int Delete(string table, string[] columns = null, object[] columnValues = null)
 		{
 			return 0;
 		}
@@ -321,12 +321,12 @@ namespace Migrator.Providers
 			return 0;
 		}
 
-	    public int TruncateTable(string table)
-	    {
-	        return 0;
-	    }
+		public int TruncateTable(string table)
+		{
+			return 0;
+		}
 
-	    public void BeginTransaction()
+		public void BeginTransaction()
 		{
 			// No Op
 		}
@@ -346,9 +346,9 @@ namespace Migrator.Providers
 			get { return this; }
 		}
 
-	    public string SchemaInfoTable { get; set; }
+		public string SchemaInfoTable { get; set; }
 
-	    public void MigrationApplied(long version, string scope)
+		public void MigrationApplied(long version, string scope)
 		{
 			//no op
 		}
@@ -388,17 +388,17 @@ namespace Migrator.Providers
 			// No Op
 		}
 
-	    public void RemoveAllForeignKeys(string tableName, string columnName)
-	    {
-	        
-	    }
+		public void RemoveAllForeignKeys(string tableName, string columnName)
+		{
+			
+		}
 
-	    public bool IsThisProvider(string provider)
-	    {
-	        return false;
-	    }
+		public bool IsThisProvider(string provider)
+		{
+			return false;
+		}
 
-	    public string[] QuoteColumnNamesIfRequired(params string[] columnNames)
+		public string[] QuoteColumnNamesIfRequired(params string[] columnNames)
 		{
 			throw new NotImplementedException();
 		}
@@ -418,37 +418,37 @@ namespace Migrator.Providers
 			return guid.ToString();
 		}
 
-	    public void SwitchDatabase(string databaseName)
-	    {
-	        
-	    }
+		public void SwitchDatabase(string databaseName)
+		{
+			
+		}
 
-	    public List<string> GetDatabases()
-	    {
-	        return new List<string>();
-	    }
+		public List<string> GetDatabases()
+		{
+			return new List<string>();
+		}
 
-	    public bool DatabaseExists(string name)
-	    {
-	        return true;
-	    }
+		public bool DatabaseExists(string name)
+		{
+			return true;
+		}
 
-	    public void CreateDatabases(string databaseName)
-	    {
-	        
-	    }
+		public void CreateDatabases(string databaseName)
+		{
+			
+		}
 
-	    public void DropDatabases(string databaseName)
-	    {
-	        
-	    }
+		public void DropDatabases(string databaseName)
+		{
+			
+		}
 
-	    public void AddIndex(string table, Index index)
-	    {
-	        
-	    }
+		public void AddIndex(string table, Index index)
+		{
+			
+		}
 
-	    public void Dispose()
+		public void Dispose()
 		{
 			//No Op
 		}
@@ -467,52 +467,52 @@ namespace Migrator.Providers
 		{
 		}
 
-        public void RemoveIndex(string table, string name)
+		public void RemoveIndex(string table, string name)
 		{
 			// No Op
 		}
 
-        public void AddIndex(string name, string table, params string[] columns)
+		public void AddIndex(string name, string table, params string[] columns)
 		{
 			// No Op
 		}
 
-        public bool IndexExists(string table, string name)
+		public bool IndexExists(string table, string name)
 		{
 			return false;
 		}
 
-	    public string GenerateParameterName(int index)
-	    {
-	        return "@p" + index;
-	    }
+		public string GenerateParameterName(int index)
+		{
+			return "@p" + index;
+		}
 
-	    public void RemoveAllIndexes(string table)
-	    {
-	        // No Op
-	    }
+		public void RemoveAllIndexes(string table)
+		{
+			// No Op
+		}
 
-        public string Concatenate(params string[] strings)
-        {
-            return "";
-        }
+		public string Concatenate(params string[] strings)
+		{
+			return "";
+		}
 
-	    public IDbConnection Connection
-	    {
-	        get
-	        {
-	            return null;
-	        }
-	    }
+		public IDbConnection Connection
+		{
+			get
+			{
+				return null;
+			}
+		}
 
-	    public IEnumerable<string> GetTables(string schema)
-	    {
-	        throw new NotImplementedException();
-	    }
+		public IEnumerable<string> GetTables(string schema)
+		{
+			throw new NotImplementedException();
+		}
 
-	    public IEnumerable<string> GetColumns(string schema, string table)
-	    {
-	        throw new NotImplementedException();
-	    }
+		public IEnumerable<string> GetColumns(string schema, string table)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

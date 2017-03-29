@@ -4,10 +4,10 @@ using Migrator.Framework;
 
 namespace Migrator.Providers.SQLite
 {
-	public class SQLiteDialect : Dialect
-	{
-		public SQLiteDialect()
-		{
+    public class SQLiteDialect : Dialect
+    {
+        public SQLiteDialect()
+        {
             RegisterColumnType(DbType.Binary, "BINARY");
             RegisterColumnType(DbType.Byte, "TINYINT");
             RegisterColumnType(DbType.Int16, "SMALLINT");
@@ -36,9 +36,9 @@ namespace Migrator.Providers.SQLite
             RegisterColumnType(DbType.Boolean, "BOOLEAN"); // Important for Dapper to know it should map to a bool
             RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
 
-			RegisterProperty(ColumnProperty.Identity, "AUTOINCREMENT");
+            RegisterProperty(ColumnProperty.Identity, "AUTOINCREMENT");
             RegisterProperty(ColumnProperty.CaseSensitive, "COLLATE NOCASE"); 
-		}
+        }
 
         public override string Default(object defaultValue)
         {
@@ -50,20 +50,20 @@ namespace Migrator.Providers.SQLite
             return base.Default(defaultValue);
         }
 
-		public override bool NeedsNotNullForIdentity
-		{
-			get { return false; }
-		}
+        public override bool NeedsNotNullForIdentity
+        {
+            get { return false; }
+        }
 
         public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope, string providerName)
-		{
-			return new SQLiteTransformationProvider(dialect, connectionString, scope, providerName);
-		}
+        {
+            return new SQLiteTransformationProvider(dialect, connectionString, scope, providerName);
+        }
 
-	    public override ITransformationProvider GetTransformationProvider(Dialect dialect, IDbConnection connection, string defaultSchema,
-	        string scope, string providerName)
-	    {
+        public override ITransformationProvider GetTransformationProvider(Dialect dialect, IDbConnection connection, string defaultSchema,
+            string scope, string providerName)
+        {
             return new SQLiteTransformationProvider(dialect, connection, scope, providerName);
         }
-	}
+    }
 }

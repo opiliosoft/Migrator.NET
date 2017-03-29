@@ -87,7 +87,7 @@ namespace Migrator.Framework.Loggers
 		public void Finished(List<long> appliedVersions, long currentVersion)
 		{
 			_innerLogger.Finished(appliedVersions, currentVersion);
-			_streamWriter.Close();
+			_streamWriter.Dispose();
 		}
 	}
 }

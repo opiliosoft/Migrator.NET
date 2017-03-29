@@ -56,22 +56,26 @@ namespace Migrator.Framework.Support
 			return string.IsNullOrEmpty(schema) ? tableName : string.Format("{0}.{1}", schema, tableName);
 		}
 
-        public static string GetQualifiedResourcePath(Assembly assembly, string resourceName)
-        {
-            var resources = assembly.GetManifestResourceNames();
+		public static string GetQualifiedResourcePath(Assembly assembly, string resourceName)
+		{
+			var resources = assembly.GetManifestResourceNames();
 
-            //resource full name is in format `namespace.resourceName`
-            var sqlScriptParts = resourceName.Split('.').Reverse().ToArray();
-            Func<string, bool> isNameMatch = x => x.Split('.').Reverse().Take(sqlScriptParts.Length).SequenceEqual(sqlScriptParts, StringComparer.InvariantCultureIgnoreCase);
+			//resource full name is in format `namespace.resourceName`
+			var sqlScriptParts = resourceName.Split('.').Reverse().ToArray();
+#if NETSTANDARD1_6
+			Func<string, bool> isNameMatch = x => x.Split('.').Reverse().Take(sqlScriptParts.Length).SequenceEqual(sqlScriptParts, StringComparer.CurrentCultureIgnoreCase);
+#else
+			Func<string, bool> isNameMatch = x => x.Split('.').Reverse().Take(sqlScriptParts.Length).SequenceEqual(sqlScriptParts, StringComparer.InvariantCultureIgnoreCase);
+#endif
 
-            string result = null;
-            var foundResources = resources.Where(isNameMatch).ToArray();
+			string result = null;
+			var foundResources = resources.Where(isNameMatch).ToArray();
 
-            if (foundResources.Length == 0) throw new InvalidOperationException(string.Format("Could not find resource named {0} in assembly {1}", resourceName, assembly.FullName));
+			if (foundResources.Length == 0) throw new InvalidOperationException(string.Format("Could not find resource named {0} in assembly {1}", resourceName, assembly.FullName));
 
-            if (foundResources.Length > 1) throw new InvalidOperationException(string.Format(@"Could not find unique resource named {0} in assembly {1}.Possible candidates are: {2}", resourceName, assembly.FullName, string.Join(Environment.NewLine + "\t", foundResources)));
+			if (foundResources.Length > 1) throw new InvalidOperationException(string.Format(@"Could not find unique resource named {0} in assembly {1}.Possible candidates are: {2}", resourceName, assembly.FullName, string.Join(Environment.NewLine + "\t", foundResources)));
 
-            return foundResources[0];
-        }
+			return foundResources[0];
+		}
 	}
 }

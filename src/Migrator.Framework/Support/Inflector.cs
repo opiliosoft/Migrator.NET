@@ -1,13 +1,14 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace Migrator.Framework.Support
 {
 	public class Inflector
 	{
-		private static readonly ArrayList plurals = new ArrayList();
-		private static readonly ArrayList singulars = new ArrayList();
-		private static readonly ArrayList uncountables = new ArrayList();
+		private static readonly List<Rule> plurals = new List<Rule>();
+		private static readonly List<Rule> singulars = new List<Rule>();
+		private static readonly List<string> uncountables = new List<string>();
 		
 		private Inflector()
 		{

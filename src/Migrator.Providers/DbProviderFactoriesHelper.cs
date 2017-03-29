@@ -10,6 +10,9 @@ namespace Migrator.Providers
     {
         public static DbProviderFactory GetFactory(string providerName, string assemblyName, string factoryProviderType)
         {
+#if NETSTANDARD1_6
+            return null;
+#else
             try
             {
                 return DbProviderFactories.GetFactory(providerName);
@@ -18,6 +21,7 @@ namespace Migrator.Providers
             { }
 
             return (DbProviderFactory)AppDomain.CurrentDomain.CreateInstanceAndUnwrap(assemblyName, factoryProviderType);
+#endif
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Migrator.Providers.Impl.Ingres
             : base(dialect, connectionString, null, scope)
         {
             if (string.IsNullOrEmpty(providerName)) providerName = "Ingres.Client";
-            var fac = DbProviderFactories.GetFactory(providerName);
+            var fac = DbProviderFactoriesHelper.GetFactory(providerName, null, null);
             _connection = fac.CreateConnection();
             _connection.ConnectionString = _connectionString;
             this._connection.Open();

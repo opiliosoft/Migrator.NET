@@ -15,12 +15,15 @@ using System;
 
 namespace Migrator
 {
-	/// <summary>
-	/// Exception thrown in a migration <c>Down()</c> method
-	/// when changes can't be undone.
-	/// </summary>
-	[Serializable]
-	public class IrreversibleMigrationException : Exception
+    /// <summary>
+    /// Exception thrown in a migration <c>Down()</c> method
+    /// when changes can't be undone.
+    /// </summary>
+#if NETSTANDARD1_6
+#else
+    [Serializable]
+#endif
+    public class IrreversibleMigrationException : Exception
 	{
 		public IrreversibleMigrationException() : base("Irreversible migration")
 		{

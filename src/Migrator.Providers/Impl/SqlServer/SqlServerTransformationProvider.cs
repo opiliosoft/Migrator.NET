@@ -26,7 +26,7 @@ namespace Migrator.Providers.SqlServer
     public class SqlServerTransformationProvider : TransformationProvider
     {
         public SqlServerTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope, string providerName)
-			: base(dialect, connectionString, defaultSchema, scope)
+            : base(dialect, connectionString, defaultSchema, scope)
         {
             CreateConnection(providerName);
         }
@@ -41,7 +41,7 @@ namespace Migrator.Providers.SqlServer
         {
             if (string.IsNullOrEmpty(providerName))
                 providerName = "System.Data.SqlClient";
-            var fac = DbProviderFactories.GetFactory(providerName);
+            var fac = DbProviderFactoriesHelper.GetFactory(providerName, null, null);
             _connection = fac.CreateConnection(); //  new SqlConnection();
             _connection.ConnectionString = _connectionString;
             _connection.Open();
@@ -131,28 +131,28 @@ namespace Migrator.Providers.SqlServer
         }
 
         public override bool ColumnExists(string table, string column)
-		{
-			string schema;
-			if (!TableExists(table))
-			{
-				return false;
-			}
-			int firstIndex = table.IndexOf(".");
-			if (firstIndex >= 0)
-			{
-				schema = table.Substring(0, firstIndex);
-				table = table.Substring(firstIndex + 1);
-			}
-			else
-			{
-				schema = _defaultSchema;
-		}
-			using (
-				IDataReader reader = base.ExecuteQuery(string.Format("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '{0}' AND TABLE_NAME='{1}' AND COLUMN_NAME='{2}'", schema, table, column)))
-			{
-				return reader.Read();
-			}
-		}
+        {
+            string schema;
+            if (!TableExists(table))
+            {
+                return false;
+            }
+            int firstIndex = table.IndexOf(".");
+            if (firstIndex >= 0)
+            {
+                schema = table.Substring(0, firstIndex);
+                table = table.Substring(firstIndex + 1);
+            }
+            else
+            {
+                schema = _defaultSchema;
+        }
+            using (
+                IDataReader reader = base.ExecuteQuery(string.Format("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '{0}' AND TABLE_NAME='{1}' AND COLUMN_NAME='{2}'", schema, table, column)))
+            {
+                return reader.Read();
+            }
+        }
 
         public override void RemoveColumnDefaultValue(string table, string column)
         {
@@ -165,23 +165,23 @@ namespace Migrator.Providers.SqlServer
 
         public override bool TableExists(string table)
         {
-			string schema;
+            string schema;
 
-			int firstIndex = table.IndexOf(".");
-			if (firstIndex >= 0)
+            int firstIndex = table.IndexOf(".");
+            if (firstIndex >= 0)
         {            
-				schema = table.Substring(0, firstIndex);
-				table = table.Substring(firstIndex + 1);
+                schema = table.Substring(0, firstIndex);
+                table = table.Substring(firstIndex + 1);
         }
-			else
+            else
         {
-				schema = _defaultSchema;
+                schema = _defaultSchema;
         }
 
-			using (IDataReader reader = base.ExecuteQuery(string.Format("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME='{0}' AND TABLE_SCHEMA='{1}'", table, schema)))
+            using (IDataReader reader = base.ExecuteQuery(string.Format("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME='{0}' AND TABLE_SCHEMA='{1}'", table, schema)))
         {
-				return reader.Read();
-			}
+                return reader.Read();
+            }
         }
 
         public override Index[] GetIndexes(string table)
@@ -346,15 +346,15 @@ FROM    sys.[indexes] Ind
                 throw new MigrationException(String.Format("Table with name '{0}' does not exist to rename", oldName));
             }
             
-				ExecuteNonQuery(String.Format("EXEC sp_rename '{0}', '{1}'", oldName, newName));
+                ExecuteNonQuery(String.Format("EXEC sp_rename '{0}', '{1}'", oldName, newName));
         }
 
-		// Deletes all constraints linked to a column. Sql Server
+        // Deletes all constraints linked to a column. Sql Server
         // doesn't seems to do this.
-		void DeleteColumnConstraints(string table, string column)
+        void DeleteColumnConstraints(string table, string column)
         {
             string sqlContrainte = FindConstraints(table, column);
-			var constraints = new List<string>();
+            var constraints = new List<string>();
             using (IDataReader reader = ExecuteQuery(sqlContrainte))
             {
                 while (reader.Read())
@@ -406,47 +406,47 @@ and co.[Name] = '{1}'",
 
         // FIXME: We should look into implementing this with INFORMATION_SCHEMA if possible
         // so that it would be usable by all the SQL Server implementations
-    	protected virtual string FindConstraints(string table, string column)
-    	{
-		    return string.Format(@"SELECT DISTINCT CU.CONSTRAINT_NAME FROM INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE CU
+        protected virtual string FindConstraints(string table, string column)
+        {
+            return string.Format(@"SELECT DISTINCT CU.CONSTRAINT_NAME FROM INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE CU
 INNER JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS TC
 ON CU.CONSTRAINT_NAME = TC.CONSTRAINT_NAME
 WHERE TC.CONSTRAINT_TYPE = 'FOREIGN KEY'
 AND CU.TABLE_NAME = '{0}'
 AND CU.COLUMN_NAME = '{1}'",
-		            table, column);
+                    table, column);
 
-		    /*return string.Format(
-				"SELECT cont.name FROM sysobjects cont, syscolumns col, sysconstraints cnt  "
-				+ "WHERE cont.parent_obj = col.id AND cnt.constid = cont.id AND cnt.colid=col.colid "
-    		    + "AND col.name = '{1}' AND col.id = object_id('{0}')",
-				table, column);*/
-		}
+            /*return string.Format(
+                "SELECT cont.name FROM sysobjects cont, syscolumns col, sysconstraints cnt  "
+                + "WHERE cont.parent_obj = col.id AND cnt.constid = cont.id AND cnt.colid=col.colid "
+                + "AND col.name = '{1}' AND col.id = object_id('{0}')",
+                table, column);*/
+        }
 
         public override bool IndexExists(string table, string name)
-		{
-			using (IDataReader reader =
-				ExecuteQuery(string.Format("SELECT top 1 * FROM sys.indexes WHERE object_id = OBJECT_ID('{0}') AND name = '{1}'", table, name)))
-			{
-				return reader.Read();
-			}
-		}
+        {
+            using (IDataReader reader =
+                ExecuteQuery(string.Format("SELECT top 1 * FROM sys.indexes WHERE object_id = OBJECT_ID('{0}') AND name = '{1}'", table, name)))
+            {
+                return reader.Read();
+            }
+        }
 
         public override void RemoveIndex(string table, string name)
-		{
-			if (TableExists(table) && IndexExists(table, name))
-			{
-				ExecuteNonQuery(String.Format("DROP INDEX {0} ON {1}", QuoteConstraintNameIfRequired(name), QuoteTableNameIfRequired(table)));
-			}
-    	}
+        {
+            if (TableExists(table) && IndexExists(table, name))
+            {
+                ExecuteNonQuery(String.Format("DROP INDEX {0} ON {1}", QuoteConstraintNameIfRequired(name), QuoteTableNameIfRequired(table)));
+            }
+        }
 
         protected override string GetPrimaryKeyConstraintName(string table)
         {
-			using (IDataReader reader =
-				ExecuteQuery(string.Format("SELECT name FROM sys.indexes WHERE object_id = OBJECT_ID('{0}') AND is_primary_key = 1", table)))
-			{
-			    return reader.Read() ? reader.GetString(0) : null;
-			}
+            using (IDataReader reader =
+                ExecuteQuery(string.Format("SELECT name FROM sys.indexes WHERE object_id = OBJECT_ID('{0}') AND is_primary_key = 1", table)))
+            {
+                return reader.Read() ? reader.GetString(0) : null;
+            }
         }
 
         protected override void ConfigureParameterWithValue(IDbDataParameter parameter, int index, object value)

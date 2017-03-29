@@ -15,10 +15,13 @@ using System;
 
 namespace Migrator
 {
-	/// <summary>
-	/// Exception thrown when a migration number is not unique.
-	/// </summary>
-	[Serializable]
+    /// <summary>
+    /// Exception thrown when a migration number is not unique.
+    /// </summary>
+#if NETSTANDARD1_6
+#else
+    [Serializable]
+#endif
 	public class DuplicatedVersionException : Exception
 	{
 		public DuplicatedVersionException(long version)
