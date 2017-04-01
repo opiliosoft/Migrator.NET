@@ -96,15 +96,15 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Migrator.Framework\DotNetProjects.Migrator.Framework.csproj">
-      <Project>{5270f048-e580-486c-b14c-e5b9f6e539d4}</Project>
+      <Project>{bb1149d1-9253-4d3d-aa7f-0f43d4a126fc}</Project>
       <Name>DotNetProjects.Migrator.Framework</Name>
     </ProjectReference>
     <ProjectReference Include="..\Migrator.Providers\DotNetProjects.Migrator.Providers.csproj">
-      <Project>{d58c68e4-d789-40f7-9078-c9f587d4363c}</Project>
+      <Project>{50582997-f30b-4720-bcb5-a635f8fca967}</Project>
       <Name>DotNetProjects.Migrator.Providers</Name>
     </ProjectReference>
     <ProjectReference Include="..\Migrator\DotNetProjects.Migrator.csproj">
-      <Project>{1fee70a4-aad7-4c60-be60-3f7dc03a8c4d}</Project>
+      <Project>{c6db41a3-8613-4b9d-8b54-ed3ba6111a7d}</Project>
       <Name>DotNetProjects.Migrator</Name>
     </ProjectReference>
   </ItemGroup>

@@ -405,7 +405,7 @@ namespace Migrator.Providers
                     return GetColumns(table).Any(col => col.Name.ToLower() == column.ToLower());
                 return GetColumns(table).Any(col => col.Name == column);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
@@ -461,7 +461,7 @@ namespace Migrator.Providers
 
         public bool DatabaseExists(string name)
         {
-#if NETSTANDARD1_6
+#if NETSTANDARD
             return GetDatabases().Any(c => string.Equals(name, c, StringComparison.CurrentCultureIgnoreCase));
 #else
             return GetDatabases().Any(c => string.Equals(name, c, StringComparison.InvariantCultureIgnoreCase));
@@ -798,7 +798,7 @@ namespace Migrator.Providers
         {
             if (CurrentMigration != null)
             {
-#if NETSTANDARD1_6
+#if NETSTANDARD
                 var assembly = CurrentMigration.GetType().GetTypeInfo().Assembly;
 #else
                 var assembly = CurrentMigration.GetType().Assembly;
@@ -817,7 +817,7 @@ namespace Migrator.Providers
         {
             if (CurrentMigration != null)
             {
-#if NETSTANDARD1_6
+#if NETSTANDARD
                 var assembly = CurrentMigration.GetType().GetTypeInfo().Assembly;
 #else
                 var assembly = CurrentMigration.GetType().Assembly;
@@ -1734,7 +1734,7 @@ namespace Migrator.Providers
        
         public IEnumerable<string> GetTables(string schema)
         {
-#if NETSTANDARD1_6
+#if NETSTANDARD
             return null;
 #else
             var tableRestrictions = new string[4];
@@ -1748,7 +1748,7 @@ namespace Migrator.Providers
 
         public IEnumerable<string> GetColumns(string schema, string table)
         {
-#if NETSTANDARD1_6
+#if NETSTANDARD
             return null;
 #else
             var tableRestrictions = new string[4];

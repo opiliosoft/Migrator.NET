@@ -252,7 +252,7 @@ FROM    sys.[indexes] Ind
             {
                 pkColumns = this.ExecuteStringQuery("SELECT cu.COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE cu WHERE EXISTS ( SELECT tc.* FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS tc WHERE tc.TABLE_NAME = '{0}' AND tc.CONSTRAINT_TYPE = 'PRIMARY KEY' AND tc.CONSTRAINT_NAME = cu.CONSTRAINT_NAME )", table);
             }
-            catch (Exception ex)
+            catch (Exception)
             { }
 
             var columns = new List<Column>();

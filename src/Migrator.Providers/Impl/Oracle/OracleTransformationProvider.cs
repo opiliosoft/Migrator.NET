@@ -445,7 +445,7 @@ namespace Migrator.Providers.Oracle
             {
                 ExecuteQuery(String.Format(@"DROP SEQUENCE {0}_SEQUENCE", name));
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // swallow this because sequence may not have originally existed.
             }

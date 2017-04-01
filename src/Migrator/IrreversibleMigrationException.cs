@@ -19,7 +19,7 @@ namespace Migrator
     /// Exception thrown in a migration <c>Down()</c> method
     /// when changes can't be undone.
     /// </summary>
-#if NETSTANDARD1_6
+#if NETSTANDARD
 #else
     [Serializable]
 #endif

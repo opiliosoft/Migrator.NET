@@ -87,7 +87,7 @@ namespace Migrator
 			{
 				
 
-#if NETSTANDARD1_6
+#if NETSTANDARD
 				var attrib = t.GetType().GetTypeInfo().GetCustomAttribute<MigrationAttribute>();
 				if (attrib != null && typeof(IMigration).GetTypeInfo().IsAssignableFrom(t) && !attrib.Ignore)
 				{
@@ -116,7 +116,7 @@ namespace Migrator
 		/// <returns>Version number sepcified in the attribute</returns>
 		public static long GetMigrationVersion(Type t)
 		{
-#if NETSTANDARD1_6
+#if NETSTANDARD
 			var attrib = t.GetType().GetTypeInfo().GetCustomAttribute<MigrationAttribute>();
 #else
 			var attrib = (MigrationAttribute) Attribute.GetCustomAttribute(t, typeof (MigrationAttribute));

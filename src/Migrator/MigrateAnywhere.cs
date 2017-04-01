@@ -64,7 +64,7 @@ namespace Migrator
 		public override void Migrate(IMigration migration)
 		{
 			_provider.BeginTransaction();
-#if NETSTANDARD1_6
+#if NETSTANDARD
 			var attr = migration.GetType().GetTypeInfo().GetCustomAttribute<MigrationAttribute>();
 #else
 			var attr = (MigrationAttribute) Attribute.GetCustomAttribute(migration.GetType(), typeof (MigrationAttribute));

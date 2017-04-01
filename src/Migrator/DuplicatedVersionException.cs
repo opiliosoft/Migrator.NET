@@ -18,7 +18,7 @@ namespace Migrator
     /// <summary>
     /// Exception thrown when a migration number is not unique.
     /// </summary>
-#if NETSTANDARD1_6
+#if NETSTANDARD
 #else
     [Serializable]
 #endif

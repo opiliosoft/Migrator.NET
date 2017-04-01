@@ -62,7 +62,7 @@ namespace Migrator.Framework.Support
 
 			//resource full name is in format `namespace.resourceName`
 			var sqlScriptParts = resourceName.Split('.').Reverse().ToArray();
-#if NETSTANDARD1_6
+#if NETSTANDARD
 			Func<string, bool> isNameMatch = x => x.Split('.').Reverse().Take(sqlScriptParts.Length).SequenceEqual(sqlScriptParts, StringComparer.CurrentCultureIgnoreCase);
 #else
 			Func<string, bool> isNameMatch = x => x.Split('.').Reverse().Take(sqlScriptParts.Length).SequenceEqual(sqlScriptParts, StringComparer.InvariantCultureIgnoreCase);

@@ -27,17 +27,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migrator.NAnt-vs2010", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migrator.Tests-vs2010", "src\Migrator.Tests\Migrator.Tests-vs2010.csproj", "{882B6A93-67B8-45BF-8636-5796B1B1CBF8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetProjects.Migrator.Framework.core", "src\Migrator.Framework\DotNetProjects.Migrator.Framework.core.csproj", "{BB1149D1-9253-4D3D-AA7F-0F43D4A126FC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetProjects.Migrator.Framework", "src\Migrator.Framework\DotNetProjects.Migrator.Framework.csproj", "{BB1149D1-9253-4D3D-AA7F-0F43D4A126FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetProjects.Migrator.Providers.core", "src\Migrator.Providers\DotNetProjects.Migrator.Providers.core.csproj", "{50582997-F30B-4720-BCB5-A635F8FCA967}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetProjects.Migrator.Providers", "src\Migrator.Providers\DotNetProjects.Migrator.Providers.csproj", "{50582997-F30B-4720-BCB5-A635F8FCA967}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetProjects.Migrator.core", "src\Migrator\DotNetProjects.Migrator.core.csproj", "{C6DB41A3-8613-4B9D-8B54-ED3BA6111A7D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetProjects.Migrator.Framework", "src\Migrator.Framework\DotNetProjects.Migrator.Framework.csproj", "{5270F048-E580-486C-B14C-E5B9F6E539D4}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetProjects.Migrator.Providers", "src\Migrator.Providers\DotNetProjects.Migrator.Providers.csproj", "{D58C68E4-D789-40F7-9078-C9F587D4363C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetProjects.Migrator", "src\Migrator\DotNetProjects.Migrator.csproj", "{1FEE70A4-AAD7-4C60-BE60-3F7DC03A8C4D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetProjects.Migrator", "src\Migrator\DotNetProjects.Migrator.csproj", "{C6DB41A3-8613-4B9D-8B54-ED3BA6111A7D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,18 +67,6 @@ Global
 		{C6DB41A3-8613-4B9D-8B54-ED3BA6111A7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C6DB41A3-8613-4B9D-8B54-ED3BA6111A7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C6DB41A3-8613-4B9D-8B54-ED3BA6111A7D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5270F048-E580-486C-B14C-E5B9F6E539D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5270F048-E580-486C-B14C-E5B9F6E539D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5270F048-E580-486C-B14C-E5B9F6E539D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5270F048-E580-486C-B14C-E5B9F6E539D4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D58C68E4-D789-40F7-9078-C9F587D4363C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D58C68E4-D789-40F7-9078-C9F587D4363C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D58C68E4-D789-40F7-9078-C9F587D4363C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D58C68E4-D789-40F7-9078-C9F587D4363C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1FEE70A4-AAD7-4C60-BE60-3F7DC03A8C4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1FEE70A4-AAD7-4C60-BE60-3F7DC03A8C4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1FEE70A4-AAD7-4C60-BE60-3F7DC03A8C4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1FEE70A4-AAD7-4C60-BE60-3F7DC03A8C4D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -97,8 +79,5 @@ Global
 		{BB1149D1-9253-4D3D-AA7F-0F43D4A126FC} = {9844714F-717A-4C16-97A9-9995BB1B4A8B}
 		{50582997-F30B-4720-BCB5-A635F8FCA967} = {9844714F-717A-4C16-97A9-9995BB1B4A8B}
 		{C6DB41A3-8613-4B9D-8B54-ED3BA6111A7D} = {9844714F-717A-4C16-97A9-9995BB1B4A8B}
-		{5270F048-E580-486C-B14C-E5B9F6E539D4} = {9844714F-717A-4C16-97A9-9995BB1B4A8B}
-		{D58C68E4-D789-40F7-9078-C9F587D4363C} = {9844714F-717A-4C16-97A9-9995BB1B4A8B}
-		{1FEE70A4-AAD7-4C60-BE60-3F7DC03A8C4D} = {9844714F-717A-4C16-97A9-9995BB1B4A8B}
 	EndGlobalSection
 EndGlobal

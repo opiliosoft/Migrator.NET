@@ -32,7 +32,7 @@ namespace Migrator
 
 		public int Compare(Type x, Type y)
 		{
-#if NETSTANDARD1_6
+#if NETSTANDARD
 			var attribOfX = x.GetTypeInfo().GetCustomAttribute<MigrationAttribute>();
 			var attribOfY = y.GetTypeInfo().GetCustomAttribute<MigrationAttribute>();
 #else

@@ -156,7 +156,7 @@ namespace Migrator.Providers.SQLite
         {
             //Check the impl...
             return;
-
+            /*
             // Generate new table definition with foreign key
             string compositeDefSql;
             string[] origColDefs = GetColumnDefs(table, out compositeDefSql);
@@ -195,6 +195,7 @@ namespace Migrator.Providers.SQLite
             // Rename temporary table to original table name
             ExecuteNonQuery(String.Format("ALTER TABLE {0}_temp RENAME TO {0}", table));
             //});
+            */
         }
 
         public string[] GetCreateIndexSqlStrings(string table)

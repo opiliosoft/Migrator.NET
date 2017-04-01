@@ -10,7 +10,7 @@ namespace Migrator.Providers
     {
         public static DbProviderFactory GetFactory(string providerName, string assemblyName, string factoryProviderType)
         {
-#if NETSTANDARD1_6
+#if NETSTANDARD
             return null;
 #else
             try
