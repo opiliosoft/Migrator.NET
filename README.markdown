@@ -67,6 +67,7 @@ What's different in the fork
 In this fork the main changes are:
 
 * Now targets .Net Framework 4.0 instead of 2.0/3.5.
+* NetStandart 2.0 will be supported when released
 * Support for reserved words.
 * Support for guid types across all databases.
 * Utility classes for removing all tables etc. from a database (to support migration integration tests).
