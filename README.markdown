@@ -23,7 +23,7 @@ Usage Example
 
 M_001_InitialSchema.cs
 ```cs
-[Migration(21)]
+[Migration(1)]
 public class M_001_InitialSchema : Migration
 {
 	public override void Up()
