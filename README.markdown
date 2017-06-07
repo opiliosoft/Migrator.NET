@@ -52,7 +52,7 @@ using (var p = ProviderFactory.Create(ProviderTypes.SQLite, connection, null))
 
 	if (migrator.LastAppliedMigrationVersion != null && migrator.LastAppliedMigrationVersion.Value > migrator.AssemblyLastMigrationVersion)
 	{
-		throw new Exception("Database has newer Migrations applied then the MachineService supports");
+		throw new Exception("Database has newer Migrations applied then the Software supports");
 	}
 	else
 	{
