@@ -18,6 +18,49 @@ Introduction
 
 This project is a fork of "ye olde trusty" Migrator.Net - the original project can be found [here on google code][1], and has since [moved to github][2]
   
+Usage Example
+-------------
+
+M_001_InitialSchema.cs
+```cs
+[Migration(21)]
+public class M_001_InitialSchema : Migration
+{
+	public override void Up()
+	{
+		Database.AddTable(
+			"Users",
+			new Column("Id", DbType.Guid, ColumnProperty.NotNull | ColumnProperty.PrimaryKey),
+			new Column("CreationDate", DbType.DateTime, ColumnProperty.NotNull),
+			new Column("ModificationDate", DbType.DateTime, ColumnProperty.NotNull),
+			new Column("Name", DbType.String, 255),
+			new Column("Password", DbType.String, 255),
+			new Column("ExplicitRoles", DbType.String, int.MaxValue));
+	}
+
+	public override void Down()
+	{
+	}
+}
+```
+
+Code to Apply Migration:
+```cs
+using (var p = ProviderFactory.Create(ProviderTypes.SQLite, connection, null))
+{
+	var migrator = new Migrator(p, typeof(M_001_InitialSchema).Assembly, false));
+
+	if (migrator.LastAppliedMigrationVersion != null && migrator.LastAppliedMigrationVersion.Value > migrator.AssemblyLastMigrationVersion)
+	{
+		throw new Exception("Database has newer Migrations applied then the MachineService supports");
+	}
+	else
+	{
+		migrator.MigrateToLastVersion();
+	}
+}
+```
+
 What's different in the fork
 ----------------------------
 
