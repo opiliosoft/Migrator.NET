@@ -30,6 +30,21 @@ namespace Migrator
 			}
 		}
 
+		public MigrationLoader(ITransformationProvider provider, bool trace, params Type[] migrationTypes)
+		{
+			_provider = provider;
+			_migrationsTypes.AddRange(migrationTypes);
+
+			if (trace)
+			{
+				provider.Logger.Trace("Loaded migrations:");
+				foreach (Type t in _migrationsTypes)
+				{
+					provider.Logger.Trace("{0} {1}", GetMigrationVersion(t).ToString().PadLeft(5), StringUtils.ToHumanName(t.Name));
+				}
+			}
+		}
+
 		/// <summary>
 		/// Returns registered migration <see cref="System.Type">types</see>.
 		/// </summary>

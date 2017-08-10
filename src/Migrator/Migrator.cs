@@ -38,8 +38,18 @@ namespace Migrator
 		{
 		}
 
+		public Migrator(ProviderTypes provider, string connectionString, string defaultSchema, params Type[] migrationTypes)
+			: this(provider, connectionString, defaultSchema, false, migrationTypes)
+		{
+		}
+
 		public Migrator(ProviderTypes provider, string connectionString, string defaultSchema, Assembly migrationAssembly, bool trace)
 			: this(ProviderFactory.Create(provider, connectionString, defaultSchema), migrationAssembly, trace)
+		{
+		}
+
+		public Migrator(ProviderTypes provider, string connectionString, string defaultSchema, bool trace, params Type[] migrationTypes)
+			: this(ProviderFactory.Create(provider, connectionString, defaultSchema), trace, migrationTypes)
 		{
 		}
 
@@ -48,8 +58,18 @@ namespace Migrator
 		{
 		}
 
+		public Migrator(ProviderTypes provider, string connectionString, string defaultSchema, bool trace, ILogger logger, params Type[] migrationTypes)
+			: this(ProviderFactory.Create(provider, connectionString, defaultSchema), trace, logger, migrationTypes)
+		{
+		}
+
 		public Migrator(ITransformationProvider provider, Assembly migrationAssembly, bool trace)
 			: this(provider, migrationAssembly, trace, new Logger(trace, new ConsoleWriter()))
+		{
+		}
+
+		public Migrator(ITransformationProvider provider, bool trace, params Type[] migrationTypes)
+			: this(provider, trace, new Logger(trace, new ConsoleWriter()), migrationTypes)
 		{
 		}
 
@@ -59,6 +79,15 @@ namespace Migrator
 			Logger = logger;
 
 			_migrationLoader = new MigrationLoader(provider, migrationAssembly, trace);
+			_migrationLoader.CheckForDuplicatedVersion();
+		}
+
+		public Migrator(ITransformationProvider provider, bool trace, ILogger logger, params Type[] migrationTypes)
+		{
+			_provider = provider;
+			Logger = logger;
+
+			_migrationLoader = new MigrationLoader(provider, trace, migrationTypes);
 			_migrationLoader.CheckForDuplicatedVersion();
 		}
 
