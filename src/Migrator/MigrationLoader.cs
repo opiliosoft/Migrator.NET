@@ -48,7 +48,7 @@ namespace Migrator
 		/// <summary>
 		/// Returns registered migration <see cref="System.Type">types</see>.
 		/// </summary>
-		public List<Type> MigrationsTypes
+		public virtual List<Type> MigrationsTypes
 		{
 			get { return _migrationsTypes; }
 		}
@@ -56,7 +56,7 @@ namespace Migrator
 		/// <summary>
 		/// Returns the last version of the migrations.
 		/// </summary>
-		public long LastVersion
+		public virtual long LastVersion
 		{
 			get
 			{
@@ -66,7 +66,7 @@ namespace Migrator
 			}
 		}
 
-		public void AddMigrations(Assembly migrationAssembly)
+		public virtual void AddMigrations(Assembly migrationAssembly)
 		{
 			if (migrationAssembly != null)
 				_migrationsTypes.AddRange(GetMigrationTypes(migrationAssembly));
@@ -76,7 +76,7 @@ namespace Migrator
 		/// Check for duplicated version in migrations.
 		/// </summary>
 		/// <exception cref="CheckForDuplicatedVersion">CheckForDuplicatedVersion</exception>
-		public void CheckForDuplicatedVersion()
+		public virtual void CheckForDuplicatedVersion()
 		{
 			var versions = new List<long>();
 			foreach (Type t in _migrationsTypes)
@@ -145,19 +145,24 @@ namespace Migrator
 			return _migrationsTypes.Select(x => GetMigrationVersion(x)).ToList();
 		}
 
-		public IMigration GetMigration(long version)
+		public virtual IMigration GetMigration(long version)
 		{
 			foreach (Type t in _migrationsTypes)
 			{
 				if (GetMigrationVersion(t) == version)
 				{
-					var migration = (IMigration) Activator.CreateInstance(t);
+					var migration = CreateInstance(t);
 					migration.Database = _provider;
 					return migration;
 				}
 			}
 
 			return null;
+		}
+
+		public virtual IMigration CreateInstance(Type migrationType)
+		{
+			return (IMigration)Activator.CreateInstance(migrationType);
 		}
 	}
 }

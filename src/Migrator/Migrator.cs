@@ -91,6 +91,15 @@ namespace Migrator
 			_migrationLoader.CheckForDuplicatedVersion();
 		}
 
+		public Migrator(ITransformationProvider provider, ILogger logger, MigrationLoader migrationLoader)
+		{
+			_provider = provider;
+			Logger = logger;
+
+			_migrationLoader = migrationLoader;
+			_migrationLoader.CheckForDuplicatedVersion();
+		}
+
 		public string[] args
 		{
 			get { return _args; }
