@@ -37,8 +37,14 @@ namespace Migrator.Providers.SQLite
             RegisterColumnType(DbType.Guid, "UNIQUEIDENTIFIER");
 
             RegisterProperty(ColumnProperty.Identity, "AUTOINCREMENT");
-            RegisterProperty(ColumnProperty.CaseSensitive, "COLLATE NOCASE"); 
+            RegisterProperty(ColumnProperty.CaseSensitive, "COLLATE NOCASE");
         }
+
+		public override bool ColumnNameNeedsQuote => true;
+
+		public override bool TableNameNeedsQuote => true;
+
+		public override string QuoteTemplate => "\"{0}\"";
 
         public override string Default(object defaultValue)
         {
