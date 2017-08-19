@@ -24,6 +24,8 @@ namespace Migrator.Framework
 		/// </summary>
 		List<long> AppliedMigrations { get; }
 
+		bool IsMigrationApplied(long version, string scope);
+
 		/// <summary>
 		/// Connection string to the database
 		/// </summary>
