@@ -947,7 +947,33 @@ namespace Migrator.Providers
 
 		public virtual object SelectScalar(string what, string from, string[] whereColumns, object[] whereValues)
 		{
-			return ExecuteScalar(String.Format("SELECT {0} FROM {1} WHERE {2}", what, from, GetWhereString(whereColumns, whereValues, whereColumns.Length)));
+			using (IDbCommand command = _connection.CreateCommand())
+			{
+				command.Transaction = _transaction;
+
+				var query = String.Format("SELECT {0} FROM {1} WHERE {2}", what, from, GetWhereString(whereColumns, whereValues, whereColumns.Length));
+
+				command.CommandText = query;
+				command.CommandType = CommandType.Text;
+
+				int paramCount = 0;
+
+				foreach (object value in whereValues)
+				{
+					IDbDataParameter parameter = command.CreateParameter();
+
+					ConfigureParameterWithValue(parameter, paramCount, value);
+
+					parameter.ParameterName = GenerateParameterName(paramCount);
+
+					command.Parameters.Add(parameter);
+
+					paramCount++;
+				}
+
+				Logger.Trace(command.CommandText);
+				return command.ExecuteScalar();
+			}
 		}
 
 		public virtual int Update(string table, string[] columns, object[] values)
