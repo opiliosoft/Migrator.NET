@@ -24,6 +24,11 @@ namespace Migrator.Providers
 			get { return null; }
 		}
 
+		public bool IsMigrationApplied(long version, string scope)
+		{
+			throw new NotImplementedException();
+		}
+
 		public string ConnectionString
 		{
 			get { return String.Empty; }
