@@ -1325,7 +1325,7 @@ namespace Migrator.Providers
 
 		public virtual bool IsMigrationApplied(long version, string scope)
 		{
-			var value = SelectScalar("Version", _schemaInfotable, new[] {"Scope"}, new object[] {scope});
+			var value = SelectScalar("Version", _schemaInfotable, new[] {"Scope", "Version" }, new object[] {scope, version});
 			return Convert.ToInt64(value) == version;
 		}
 
