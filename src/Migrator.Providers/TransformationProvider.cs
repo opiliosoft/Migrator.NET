@@ -951,7 +951,7 @@ namespace Migrator.Providers
 			{
 				command.Transaction = _transaction;
 
-				var query = String.Format("SELECT {0} FROM {1} WHERE {2}", what, from, GetWhereString(whereColumns, whereValues, whereColumns.Length));
+				var query = String.Format("SELECT {0} FROM {1} WHERE {2}", what, from, GetWhereString(whereColumns, whereValues));
 
 				command.CommandText = query;
 				command.CommandType = CommandType.Text;
