@@ -303,8 +303,8 @@ namespace Migrator.Providers.SQLite
             newFieldsPlusUnique.AddRange(columns.Where(x => x is Unique));
 
             AddTable(table + "_temp", null, newFieldsPlusUnique.ToArray());
-            var colNamesNewSql = string.Join(", ", newColumns.Select(x => x.Name));
-            var colNamesSql = string.Join(", ", oldColumnNames);
+            var colNamesNewSql = string.Join(", ", newColumns.Select(x => x.Name).Select(x => QuoteColumnNameIfRequired(x)));
+            var colNamesSql = string.Join(", ", oldColumnNames.Select(x => QuoteColumnNameIfRequired(x)));
             ExecuteQuery(String.Format("INSERT INTO {1}_temp ({0}) SELECT {2} FROM {1}", colNamesNewSql, table, colNamesSql));
             RemoveTable(table);
             ExecuteQuery(String.Format("ALTER TABLE {0}_temp RENAME TO {0}", table));
