@@ -492,7 +492,7 @@ namespace Migrator.Providers.SQLite
 
             string columnsAndIndexes = JoinColumnsAndIndexes(columnProviders);
             
-            var table = _dialect.TableNameNeedsQuote ? _dialect.Quote(name) : name;
+            var table = _dialect.TableNameNeedsQuote ? _dialect.Quote(name) : QuoteTableNameIfRequired(name);
             string sqlCreate;
 
             sqlCreate = String.Format("CREATE TABLE {0} ({1}", table, columnsAndIndexes);
