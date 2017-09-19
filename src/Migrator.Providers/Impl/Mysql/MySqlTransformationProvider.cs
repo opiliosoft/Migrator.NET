@@ -297,9 +297,9 @@ namespace Migrator.Providers.Mysql
 			{
 				if (dropPrimary)
 					ExecuteNonQuery(String.Format("ALTER TABLE {0} DROP PRIMARY KEY", tableName));
-				ExecuteNonQuery(String.Format("ALTER TABLE {0} CHANGE {1} {2} {3}", tableName, oldColumnName, newColumnName, definition));
+				ExecuteNonQuery(String.Format("ALTER TABLE {0} CHANGE {1} {2} {3}", tableName, QuoteColumnNameIfRequired(oldColumnName), QuoteColumnNameIfRequired(newColumnName), definition));
 				if (dropPrimary)
-					ExecuteNonQuery(String.Format("ALTER TABLE {0} ADD PRIMARY KEY({1});", tableName, newColumnName));
+					ExecuteNonQuery(String.Format("ALTER TABLE {0} ADD PRIMARY KEY({1});", tableName, QuoteColumnNameIfRequired(newColumnName)));
 
 			}
 		}
