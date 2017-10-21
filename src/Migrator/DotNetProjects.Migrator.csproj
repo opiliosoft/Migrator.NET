@@ -1,15 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.6;;net40</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net40</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>MigratorDotNet.snk</AssemblyOriginatorKeyFile>
     <AssemblyName>DotNetProjects.Migrator</AssemblyName>
     <RootNamespace>DotNetProjects.Migrator</RootNamespace>
+    <NetStandardImplicitPackageVersion>2.0.0</NetStandardImplicitPackageVersion>
   </PropertyGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <Compile Remove="Compile\ScriptEngine.cs" />
   </ItemGroup>
 
@@ -30,7 +31,7 @@
     <ProjectReference Include="..\Migrator.Providers\DotNetProjects.Migrator.Providers.csproj" />
   </ItemGroup>
 
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <DefineConstants>$(DefineConstants);NETSTANDARD</DefineConstants>
   </PropertyGroup>
 

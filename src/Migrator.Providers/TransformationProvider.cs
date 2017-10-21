@@ -464,7 +464,7 @@ namespace Migrator.Providers
 #if NETSTANDARD
 			return GetDatabases().Any(c => string.Equals(name, c, StringComparison.CurrentCultureIgnoreCase));
 #else
-            return GetDatabases().Any(c => string.Equals(name, c, StringComparison.InvariantCultureIgnoreCase));
+			return GetDatabases().Any(c => string.Equals(name, c, StringComparison.InvariantCultureIgnoreCase));
 #endif
 		}
 
@@ -801,7 +801,7 @@ namespace Migrator.Providers
 #if NETSTANDARD
 				var assembly = CurrentMigration.GetType().GetTypeInfo().Assembly;
 #else
-                var assembly = CurrentMigration.GetType().Assembly;
+				var assembly = CurrentMigration.GetType().Assembly;
 #endif
 
 				string sqlText;
@@ -820,7 +820,7 @@ namespace Migrator.Providers
 #if NETSTANDARD
 				var assembly = CurrentMigration.GetType().GetTypeInfo().Assembly;
 #else
-                var assembly = CurrentMigration.GetType().Assembly;
+				var assembly = CurrentMigration.GetType().Assembly;
 #endif
 
 				string sqlText;
@@ -1325,7 +1325,7 @@ namespace Migrator.Providers
 
 		public virtual bool IsMigrationApplied(long version, string scope)
 		{
-			var value = SelectScalar("Version", _schemaInfotable, new[] {"Scope", "Version" }, new object[] {scope, version});
+			var value = SelectScalar("Version", _schemaInfotable, new[] { "Scope", "Version" }, new object[] { scope, version });
 			return Convert.ToInt64(value) == version;
 		}
 
@@ -1771,31 +1771,23 @@ namespace Migrator.Providers
 
 		public IEnumerable<string> GetTables(string schema)
 		{
-#if NETSTANDARD
-			return null;
-#else
-            var tableRestrictions = new string[4];
-            tableRestrictions[1] = schema;
+			var tableRestrictions = new string[4];
+			tableRestrictions[1] = schema;
 
-            var c = _connection as DbConnection;
-            var tables = c.GetSchema("Tables", tableRestrictions);
-            return from DataRow row in tables.Rows select row.Field<string>("TABLE_NAME");
-#endif
+			var c = _connection as DbConnection;
+			var tables = c.GetSchema("Tables", tableRestrictions);
+			return from DataRow row in tables.Rows select (row["TABLE_NAME"] as string);
 		}
 
 		public IEnumerable<string> GetColumns(string schema, string table)
 		{
-#if NETSTANDARD
-			return null;
-#else
-            var tableRestrictions = new string[4];
-            tableRestrictions[1] = schema;
-            tableRestrictions[2] = table;
+			var tableRestrictions = new string[4];
+			tableRestrictions[1] = schema;
+			tableRestrictions[2] = table;
 
-            var c = _connection as DbConnection;
-            var tables = c.GetSchema("Columns", tableRestrictions);
-            return from DataRow row in tables.Rows select row.Field<string>("TABLE_NAME");
-#endif
+			var c = _connection as DbConnection;
+			var tables = c.GetSchema("Columns", tableRestrictions);
+			return from DataRow row in tables.Rows select (row["TABLE_NAME"] as string);
 		}
 	}
 }

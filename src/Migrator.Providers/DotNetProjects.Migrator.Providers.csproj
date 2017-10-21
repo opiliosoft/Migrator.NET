@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.6;net40</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net40</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>MigratorDotNet.snk</AssemblyOriginatorKeyFile>
@@ -13,12 +13,12 @@
     <Compile Include="..\config\GlobalAssemblyInfo.cs" Link="GlobalAssemblyInfo.cs" />
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.3.0" />
   </ItemGroup>
 
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.6' ">
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <DefineConstants>$(DefineConstants);NETSTANDARD</DefineConstants>
   </PropertyGroup>
 
