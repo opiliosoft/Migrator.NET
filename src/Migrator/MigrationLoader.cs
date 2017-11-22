@@ -131,11 +131,7 @@ namespace Migrator
 		/// <returns>Version number sepcified in the attribute</returns>
 		public static long GetMigrationVersion(Type t)
 		{
-#if NETSTANDARD
-			var attrib = t.GetType().GetTypeInfo().GetCustomAttribute<MigrationAttribute>();
-#else
 			var attrib = (MigrationAttribute) Attribute.GetCustomAttribute(t, typeof (MigrationAttribute));
-#endif
 			return attrib.Version;
 		}
 
