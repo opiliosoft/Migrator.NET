@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Globalization;
 using Migrator.Framework;
 
 namespace Migrator.Providers
@@ -21,7 +20,7 @@ namespace Migrator.Providers
 			RegisterProperty(ColumnProperty.Null, "NULL");
 			RegisterProperty(ColumnProperty.NotNull, "NOT NULL");
 			RegisterProperty(ColumnProperty.Unique, "UNIQUE");
-			RegisterProperty(ColumnProperty.PrimaryKey, "PRIMARY KEY");            
+			RegisterProperty(ColumnProperty.PrimaryKey, "PRIMARY KEY");
 		}
 
 		public virtual int MaxKeyLength
@@ -95,7 +94,7 @@ namespace Migrator.Providers
 
 			if (isReserved)
 			{
-				Console.WriteLine("Reserved word: {0}", reservedWord);
+				//Console.WriteLine("Reserved word: {0}", reservedWord);
 			}
 
 			return isReserved;
