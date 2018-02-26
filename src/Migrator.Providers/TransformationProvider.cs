@@ -260,14 +260,8 @@ namespace Migrator.Providers
 
 				switch (viewJoin.JoinType)
 				{
-					case JoinType.FullOuterJoin:
-						joinType = "FULL OUTER JOIN";
-						break;
 					case JoinType.LeftJoin:
 						joinType = "LEFT JOIN";
-						break;
-					case JoinType.RightJoin:
-						joinType = "RIGHT JOIN";
 						break;
 					case JoinType.Join:
 						joinType = "JOIN";
