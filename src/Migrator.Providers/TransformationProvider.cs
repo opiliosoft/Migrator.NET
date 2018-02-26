@@ -215,28 +215,57 @@ namespace Migrator.Providers
 			}
 		}
 
-		public virtual void AddView(string name, string tableName, params IViewField[] fields)
+		public virtual void AddView(string name, string tableName, params IViewAttributes[] viewAttributes)
 		{
-			var lst =
-				fields.Where(x => string.IsNullOrEmpty(x.TableName) || x.TableName == tableName)
-					.Select(x => x.ColumnName)
-					.ToList();
-
-			int nr = 0;
-			string joins = "";
-			foreach (var joinTable in fields.Where(x => !string.IsNullOrEmpty(x.TableName) && x.TableName != tableName).GroupBy(x => x.TableName))
-			{
-				foreach (var viewField in joinTable)
+			var selectedColumns = viewAttributes.Where(x => x is ViewColumn)
+				.Select(x =>
 				{
-					joins += string.Format("JOIN {0} {1} ON {1}.{2} = {3}.{4} ", viewField.TableName, " T" + nr,
-						viewField.KeyColumnName, viewField.ParentTableName, viewField.ParentKeyColumnName);
-					lst.Add(" T" + nr + "." + viewField.ColumnName);
+					var viewColumn = (ViewColumn)x;
+					return $"{viewColumn.Prefix}.{viewColumn.ColumnName} {viewColumn.Prefix}{viewColumn.ColumnName}";
+				})
+				.ToList();
+
+			var joins = string.Empty;
+
+			foreach (var viewJoin in viewAttributes.Where(x => x is ViewJoin).Cast<ViewJoin>())
+			{
+				var joinType = string.Empty;
+
+				switch (viewJoin.JoinType)
+				{
+					case JoinType.FullOuterJoin:
+						joinType = "FULL OUTER JOIN";
+						break;
+					case JoinType.LeftJoin:
+						joinType = "LEFT JOIN";
+						break;
+					case JoinType.RightJoin:
+						joinType = "RIGHT JOIN";
+						break;
+					case JoinType.Join:
+						joinType = "JOIN";
+						break;
 				}
+
+				var tableAlias = string.IsNullOrEmpty(viewJoin.TableAlias) ? viewJoin.TableName : viewJoin.TableAlias;
+
+				joins += string.Format("{0} {1} {2} ON {2}.{3} = {4}.{5} ", joinType, viewJoin.TableName, tableAlias,
+					viewJoin.ColumnName, viewJoin.ParentTableName, viewJoin.ParentColumnName);
 			}
 
-			var select = string.Format("SELECT {0} FROM {1} {2}", string.Join(",", lst), tableName, joins);
-
+			var select = string.Format("SELECT {0} FROM {1} {1} {2}", string.Join(",", selectedColumns), tableName, joins);
 			var sql = string.Format("CREATE VIEW {0} AS {1}", name, select);
+
+
+			// Works with all DBs. "CREATE OR REPLACE" does not work with SQLite. "DROP IF EXISTS" does not work with oracle.
+			try
+			{
+				ExecuteNonQuery($"DROP VIEW {name}");
+			}
+			catch
+			{
+				// Works with all DBs. "CREATE OR REPLACE" does not work with SQLite. "DROP IF EXISTS" does not work with oracle.
+			}
 
 			ExecuteNonQuery(sql);
 		}
