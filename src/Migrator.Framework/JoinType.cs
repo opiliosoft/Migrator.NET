@@ -3,8 +3,6 @@
 	public enum JoinType
 	{
 		Join,
-		LeftJoin,
-		RightJoin,
-		FullOuterJoin
+		LeftJoin
 	}
 }
