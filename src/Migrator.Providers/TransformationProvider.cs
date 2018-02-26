@@ -215,9 +215,36 @@ namespace Migrator.Providers
 			}
 		}
 
-		public virtual void AddView(string name, string tableName, params IViewAttributes[] viewAttributes)
+		public virtual void AddView(string name, string tableName, params IViewField[] fields)
 		{
-			var selectedColumns = viewAttributes.Where(x => x is ViewColumn)
+			var lst =
+				fields.Where(x => string.IsNullOrEmpty(x.TableName) || x.TableName == tableName)
+					.Select(x => x.ColumnName)
+					.ToList();
+
+			int nr = 0;
+			string joins = "";
+			foreach (var joinTable in fields.Where(x => !string.IsNullOrEmpty(x.TableName) && x.TableName != tableName).GroupBy(x => x.TableName))
+			{
+				foreach (var viewField in joinTable)
+				{
+					joins += string.Format("JOIN {0} {1} ON {1}.{2} = {3}.{4} ", viewField.TableName, " T" + nr,
+						viewField.KeyColumnName, viewField.ParentTableName, viewField.ParentKeyColumnName);
+					lst.Add(" T" + nr + "." + viewField.ColumnName);
+				}
+			}
+
+			var select = string.Format("SELECT {0} FROM {1} {2}", string.Join(",", lst), tableName, joins);
+
+			var sql = string.Format("CREATE VIEW {0} AS {1}", name, select);
+
+			ExecuteNonQuery(sql);
+		}
+
+
+		public virtual void AddView(string name, string tableName, params IViewElement[] viewElement)
+		{
+			var selectedColumns = viewElement.Where(x => x is ViewColumn)
 				.Select(x =>
 				{
 					var viewColumn = (ViewColumn)x;
@@ -227,7 +254,7 @@ namespace Migrator.Providers
 
 			var joins = string.Empty;
 
-			foreach (var viewJoin in viewAttributes.Where(x => x is ViewJoin).Cast<ViewJoin>())
+			foreach (var viewJoin in viewElement.Where(x => x is ViewJoin).Cast<ViewJoin>())
 			{
 				var joinType = string.Empty;
 

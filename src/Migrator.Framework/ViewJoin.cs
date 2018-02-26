@@ -2,7 +2,7 @@
 
 namespace Migrator.Framework
 {
-	public class ViewJoin : IViewAttributes
+	public class ViewJoin : IViewElement
 	{
 		public string TableName { get; }
 		public string TableAlias { get; }

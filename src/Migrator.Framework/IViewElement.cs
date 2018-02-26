@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Migrator.Framework
 {
-    public interface IViewAttributes
+    public interface IViewElement
     {
     }
 }

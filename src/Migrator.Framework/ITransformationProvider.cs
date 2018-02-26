@@ -232,7 +232,9 @@ namespace Migrator.Framework
 		/// <param name="checkSql">The check constraint definition.</param>
 		void AddCheckConstraint(string name, string table, string checkSql);
 
-		void AddView(string name, string tableName, params IViewAttributes[] viewAttributes);
+		void AddView(string name, string tableName, params IViewElement[] viewElement);
+
+		void AddView(string name, string tableName, params IViewField[] fields);
 
 		/// <summary>
 		/// Add a table

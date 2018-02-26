@@ -2,7 +2,7 @@
 
 namespace Migrator.Framework
 {
-	public class ViewColumn : IViewAttributes
+	public class ViewColumn : IViewElement
 	{
 		public string Prefix { get; }
 		public string ColumnName { get; }
