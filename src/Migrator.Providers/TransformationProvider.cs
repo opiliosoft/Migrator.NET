@@ -241,6 +241,56 @@ namespace Migrator.Providers
 			ExecuteNonQuery(sql);
 		}
 
+
+		public virtual void AddView(string name, string tableName, params IViewElement[] viewElements)
+		{
+			var selectedColumns = viewElements.Where(x => x is ViewColumn)
+				.Select(x =>
+				{
+					var viewColumn = (ViewColumn)x;
+					return $"{viewColumn.Prefix}.{viewColumn.ColumnName} {viewColumn.Prefix}{viewColumn.ColumnName}";
+				})
+				.ToList();
+
+			var joins = string.Empty;
+
+			foreach (var viewJoin in viewElements.Where(x => x is ViewJoin).Cast<ViewJoin>())
+			{
+				var joinType = string.Empty;
+
+				switch (viewJoin.JoinType)
+				{
+					case JoinType.LeftJoin:
+						joinType = "LEFT JOIN";
+						break;
+					case JoinType.Join:
+						joinType = "JOIN";
+						break;
+				}
+
+				var tableAlias = string.IsNullOrEmpty(viewJoin.TableAlias) ? viewJoin.TableName : viewJoin.TableAlias;
+
+				joins += string.Format("{0} {1} {2} ON {2}.{3} = {4}.{5} ", joinType, viewJoin.TableName, tableAlias,
+					viewJoin.ColumnName, viewJoin.ParentTableName, viewJoin.ParentColumnName);
+			}
+
+			var select = string.Format("SELECT {0} FROM {1} {1} {2}", string.Join(",", selectedColumns), tableName, joins);
+			var sql = string.Format("CREATE VIEW {0} AS {1}", name, select);
+
+
+			// Works with all DBs. "CREATE OR REPLACE" does not work with SQLite. "DROP IF EXISTS" does not work with oracle.
+			try
+			{
+				ExecuteNonQuery($"DROP VIEW {name}");
+			}
+			catch
+			{
+				// Works with all DBs. "CREATE OR REPLACE" does not work with SQLite. "DROP IF EXISTS" does not work with oracle.
+			}
+
+			ExecuteNonQuery(sql);
+		}
+
 		/// <summary>
 		/// Add a new table
 		/// </summary>

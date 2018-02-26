@@ -100,9 +100,14 @@ namespace Migrator.Providers
 			// No Op
 		}
 
-		public void AddView(string name, string tableName, params IViewField[] fields)
+		public void AddView(string name, string tableName, params IViewElement[] viewElements)
 		{
 			// No Op
+		}
+
+		public void AddView(string name, string tableName, params IViewField[] fields)
+		{
+			throw new NotImplementedException();
 		}
 
 		public void AddTable(string name, params IDbField[] columns)

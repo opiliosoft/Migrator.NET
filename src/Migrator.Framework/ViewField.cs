@@ -1,4 +1,4 @@
-#region License
+﻿#region License
 
 //The contents of this file are subject to the Mozilla Public License
 //Version 1.1 (the "License"); you may not use this file except in
@@ -18,26 +18,26 @@ namespace Migrator.Framework
 	/// <summary>
 	/// Represents a table column.
 	/// </summary>
-    public class ViewField : IViewField
+	public class ViewField : IViewField
 	{
-        public ViewField(string ColumnName)
+		public ViewField(string ColumnName)
 		{
-            this.ColumnName = ColumnName;
+			this.ColumnName = ColumnName;
 		}
 
-        public ViewField(string ColumnName, string TableName, string KeyColumnName, string ParentTableName, string ParentKeyColumnName)
-        {
-            this.ColumnName = ColumnName;
-            this.TableName = TableName;
-            this.KeyColumnName = KeyColumnName;
-            this.ParentTableName = ParentTableName;
-            this.ParentKeyColumnName = ParentKeyColumnName;
-        }
-		
-	    public string TableName { get; set; }
-	    public string ColumnName { get; set; }
-	    public string KeyColumnName { get; set; }
-	    public string ParentTableName { get; set; }
-	    public string ParentKeyColumnName { get; set; }
+		public ViewField(string ColumnName, string TableName, string KeyColumnName, string ParentTableName, string ParentKeyColumnName)
+		{
+			this.ColumnName = ColumnName;
+			this.TableName = TableName;
+			this.KeyColumnName = KeyColumnName;
+			this.ParentTableName = ParentTableName;
+			this.ParentKeyColumnName = ParentKeyColumnName;
+		}
+
+		public string TableName { get; set; }
+		public string ColumnName { get; set; }
+		public string KeyColumnName { get; set; }
+		public string ParentTableName { get; set; }
+		public string ParentKeyColumnName { get; set; }
 	}
 }
