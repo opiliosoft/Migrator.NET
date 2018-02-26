@@ -100,7 +100,7 @@ namespace Migrator.Providers
 			// No Op
 		}
 
-		public void AddView(string name, string tableName, params IViewElement[] viewElement)
+		public void AddView(string name, string tableName, params IViewElement[] viewElements)
 		{
 			// No Op
 		}

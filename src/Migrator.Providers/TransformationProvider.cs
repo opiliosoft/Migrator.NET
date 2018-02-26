@@ -242,9 +242,9 @@ namespace Migrator.Providers
 		}
 
 
-		public virtual void AddView(string name, string tableName, params IViewElement[] viewElement)
+		public virtual void AddView(string name, string tableName, params IViewElement[] viewElements)
 		{
-			var selectedColumns = viewElement.Where(x => x is ViewColumn)
+			var selectedColumns = viewElements.Where(x => x is ViewColumn)
 				.Select(x =>
 				{
 					var viewColumn = (ViewColumn)x;
@@ -254,7 +254,7 @@ namespace Migrator.Providers
 
 			var joins = string.Empty;
 
-			foreach (var viewJoin in viewElement.Where(x => x is ViewJoin).Cast<ViewJoin>())
+			foreach (var viewJoin in viewElements.Where(x => x is ViewJoin).Cast<ViewJoin>())
 			{
 				var joinType = string.Empty;
 
