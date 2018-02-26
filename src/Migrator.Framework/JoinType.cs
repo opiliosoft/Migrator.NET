@@ -5,7 +5,6 @@
 		Join,
 		LeftJoin,
 		RightJoin,
-		FullOuterJoin,
-		Column
+		FullOuterJoin
 	}
 }
