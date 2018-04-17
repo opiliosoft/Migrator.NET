@@ -259,7 +259,7 @@ FROM    sys.[indexes] Ind
             using (
                     IDataReader reader =
                     ExecuteQuery(
-                        String.Format("select COLUMN_NAME, IS_NULLABLE, DATA_TYPE, ISNULL(CHARACTER_MAXIMUM_LENGTH, NUMERIC_PRECISION), COLUMN_DEFAULT from INFORMATION_SCHEMA.COLUMNS where table_name = '{0}'", table)))
+                        String.Format("select COLUMN_NAME, IS_NULLABLE, DATA_TYPE, ISNULL(CHARACTER_MAXIMUM_LENGTH, NUMERIC_PRECISION), COLUMN_DEFAULT, NUMERIC_SCALE from INFORMATION_SCHEMA.COLUMNS where table_name = '{0}'", table)))
             {
                 while (reader.Read())
                 {
@@ -296,6 +296,13 @@ FROM    sys.[indexes] Ind
 
                         if (column.Type == DbType.Double || column.Type == DbType.Single)
                             column.DefaultValue = double.Parse(column.DefaultValue.ToString());
+                    }
+                    if (!reader.IsDBNull(4))
+                    {
+                        if (column.Type == DbType.Decimal)
+                        {
+                            column.Size = reader.GetInt32(4);
+                        }
                     }
 
                     column.ColumnProperty |= isNullable ? ColumnProperty.Null : ColumnProperty.NotNull;

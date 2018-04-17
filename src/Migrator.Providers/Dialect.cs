@@ -137,6 +137,12 @@ namespace Migrator.Providers
 			typeNames.Put(code, name);
 		}
 
+
+	    protected void RegisterColumnTypeAlias(DbType code, string alias)
+	    {
+            typeNames.PutAlias(code, alias);
+	    }
+
 		public virtual ColumnPropertiesMapper GetColumnMapper(Column column)
 		{
 			string type = column.Size > 0 ? GetTypeName(column.Type, column.Size) : GetTypeName(column.Type);

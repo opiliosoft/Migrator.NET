@@ -48,6 +48,8 @@ namespace Migrator.Providers
 
 		readonly Dictionary<DbType, string> defaults = new Dictionary<DbType, string>();
 
+        readonly Dictionary<string, DbType> aliases = new Dictionary<string, DbType>();
+
 		readonly Dictionary<DbType, SortedList<int, string>> weighted =
 			new Dictionary<DbType, SortedList<int, string>>();
 
@@ -57,7 +59,16 @@ namespace Migrator.Providers
 			var retval = defaults.Where(x => x.Value.Trim().ToLower().StartsWith(type)).Select(x => x.Key);
 			if (retval.Any())
 				return retval.First();
-			return weighted.Where(x => x.Value.Where(y => y.Value.Trim().ToLower().StartsWith(type)).Any()).Select(x => x.Key).FirstOrDefault();
+            retval = weighted.Where(x => x.Value.Where(y => y.Value.Trim().ToLower().StartsWith(type)).Any()).Select(x => x.Key);
+            if (retval.Any())
+                return retval.First();
+
+            var alias = aliases.Where(x => x.Key.Trim().ToLower().StartsWith(type));
+
+            if (alias.Any())
+                return alias.First().Value;
+
+            return DbType.AnsiString;
 		}
 
 		/// <summary>
@@ -137,5 +148,10 @@ namespace Migrator.Providers
 		{
 			defaults[typecode] = value;
 		}
+
+	    public void PutAlias(DbType typecode, string value)
+	    {
+            aliases[value] = typecode;
+	    }
 	}
 }

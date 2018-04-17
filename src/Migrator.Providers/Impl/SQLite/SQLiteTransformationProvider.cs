@@ -157,6 +157,7 @@ namespace Migrator.Providers.SQLite
             //Check the impl...
             return;
             /*
+            /*
             // Generate new table definition with foreign key
             string compositeDefSql;
             string[] origColDefs = GetColumnDefs(table, out compositeDefSql);
@@ -196,6 +197,7 @@ namespace Migrator.Providers.SQLite
             ExecuteNonQuery(String.Format("ALTER TABLE {0}_temp RENAME TO {0}", table));
             //});
             */
+             */
         }
 
         public string[] GetCreateIndexSqlStrings(string table)
@@ -237,9 +239,9 @@ namespace Migrator.Providers.SQLite
             
             AddTable(table + "_temp", null, newColumns);
             var colNamesSql = string.Join(", ", newColumns.Select(x => x.Name));
-            ExecuteQuery(String.Format("INSERT INTO {0}_temp SELECT {1} FROM {0}", table, colNamesSql));
+            ExecuteNonQuery(String.Format("INSERT INTO {0}_temp SELECT {1} FROM {0}", table, colNamesSql));
             RemoveTable(table);
-            ExecuteQuery(String.Format("ALTER TABLE {0}_temp RENAME TO {0}", table));
+			ExecuteNonQuery(String.Format("ALTER TABLE {0}_temp RENAME TO {0}", table));
         }
 
         public override void RenameColumn(string tableName, string oldColumnName, string newColumnName)
