@@ -297,11 +297,11 @@ FROM    sys.[indexes] Ind
                         if (column.Type == DbType.Double || column.Type == DbType.Single)
                             column.DefaultValue = double.Parse(column.DefaultValue.ToString());
                     }
-                    if (!reader.IsDBNull(4))
+                    if (!reader.IsDBNull(5))
                     {
                         if (column.Type == DbType.Decimal)
                         {
-                            column.Size = reader.GetInt32(4);
+                            column.Size = reader.GetInt32(5);
                         }
                     }
 
