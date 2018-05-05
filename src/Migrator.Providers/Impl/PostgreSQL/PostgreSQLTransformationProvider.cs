@@ -212,6 +212,17 @@ WHERE  lower(tablenm) = lower('{0}')
 				ChangeColumn(table, change2);
 			}
 
+			if (column.ColumnProperty.HasFlag(ColumnProperty.NotNull))
+			{
+				string change3 = string.Format("{0} SET NOT NULL", QuoteColumnNameIfRequired(mapper.Name));
+				ChangeColumn(table, change3);
+			}
+			else
+			{
+				string change3 = string.Format("{0} DROP NOT NULL", QuoteColumnNameIfRequired(mapper.Name));
+				ChangeColumn(table, change3);
+			}
+
 			if (isUniqueSet)
 			{
 				AddUniqueConstraint(string.Format("UX_{0}_{1}", table, column.Name), table, new string[] { column.Name });
