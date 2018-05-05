@@ -34,7 +34,7 @@ namespace Migrator.Framework
 		/// </summary>
 		Unsigned = 32,
 
-        CaseSensitive = 64,
+		CaseSensitive = 64,
 		/// <summary>
 		/// Foreign Key
 		/// </summary>
@@ -49,26 +49,26 @@ namespace Migrator.Framework
 		PrimaryKeyWithIdentity = PrimaryKey | Identity
 	}
 
-    public static class ColumnPropertyExtensions
-    {
-        public static bool IsSet(this ColumnProperty fruits, ColumnProperty flags)
-        {
-            return (fruits & flags) == flags;
-        }
+	public static class ColumnPropertyExtensions
+	{
+		public static bool IsSet(this ColumnProperty fruits, ColumnProperty flags)
+		{
+			return (fruits & flags) == flags;
+		}
 
-        public static bool IsNotSet(this ColumnProperty fruits, ColumnProperty flags)
-        {
-            return (fruits & (~flags)) == 0;
-        }
+		public static bool IsNotSet(this ColumnProperty fruits, ColumnProperty flags)
+		{
+			return (fruits & (~flags)) == 0;
+		}
 
-        public static ColumnProperty Set(this ColumnProperty fruits, ColumnProperty flags)
-        {
-            return fruits | flags;
-        }
+		public static ColumnProperty Set(this ColumnProperty fruits, ColumnProperty flags)
+		{
+			return fruits | flags;
+		}
 
-        public static ColumnProperty Clear(this ColumnProperty fruits, ColumnProperty flags)
-        {
-            return fruits & (~flags);
-        }
-    }
+		public static ColumnProperty Clear(this ColumnProperty fruits, ColumnProperty flags)
+		{
+			return fruits & (~flags);
+		}
+	}
 }

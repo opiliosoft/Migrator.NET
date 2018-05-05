@@ -138,15 +138,15 @@ namespace Migrator.Providers
 		}
 
 
-	    protected void RegisterColumnTypeAlias(DbType code, string alias)
-	    {
-            typeNames.PutAlias(code, alias);
-	    }
+		protected void RegisterColumnTypeAlias(DbType code, string alias)
+		{
+			typeNames.PutAlias(code, alias);
+		}
 
 		public virtual ColumnPropertiesMapper GetColumnMapper(Column column)
 		{
 			string type = column.Size > 0 ? GetTypeName(column.Type, column.Size) : GetTypeName(column.Type);
-			if (! IdentityNeedsType && column.IsIdentity)
+			if (!IdentityNeedsType && column.IsIdentity)
 				type = String.Empty;
 
 			return new ColumnPropertiesMapper(this, type);
@@ -154,7 +154,7 @@ namespace Migrator.Providers
 
 		public virtual DbType GetDbTypeFromString(string type)
 		{
-			return typeNames.GetDbType(type);            
+			return typeNames.GetDbType(type);
 		}
 
 		/// <summary>
@@ -211,10 +211,10 @@ namespace Migrator.Providers
 		{
 			return typeNames.GetDbType(databaseTypeName);
 		}
-		
+
 		public void RegisterProperty(ColumnProperty property, string sql)
 		{
-			if (! propertyMap.ContainsKey(property))
+			if (!propertyMap.ContainsKey(property))
 			{
 				propertyMap.Add(property, sql);
 			}
