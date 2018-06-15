@@ -72,8 +72,8 @@ WHERE  lower(tablenm) = lower('{0}')
 ;";
 
 
-
-			using (var reader = ExecuteQuery(string.Format(sql, table)))
+			using (var cmd = CreateCommand())
+			using (var reader = ExecuteQuery(cmd, string.Format(sql, table)))
 			{
 				while (reader.Read())
 				{
@@ -108,8 +108,9 @@ WHERE  lower(tablenm) = lower('{0}')
 
 		public override bool ConstraintExists(string table, string name)
 		{
+			using (var cmd = CreateCommand())
 			using (IDataReader reader =
-				ExecuteQuery(string.Format("SELECT constraint_name FROM information_schema.table_constraints WHERE table_schema = 'public' AND constraint_name = lower('{0}')", name)))
+				ExecuteQuery(cmd, string.Format("SELECT constraint_name FROM information_schema.table_constraints WHERE table_schema = 'public' AND constraint_name = lower('{0}')", name)))
 			{
 				return reader.Read();
 			}
@@ -120,8 +121,9 @@ WHERE  lower(tablenm) = lower('{0}')
 			if (!TableExists(table))
 				return false;
 
+			using (var cmd = CreateCommand())
 			using (IDataReader reader =
-				ExecuteQuery(String.Format("SELECT column_name FROM information_schema.columns WHERE table_schema = 'public' AND table_name = lower('{0}') AND (column_name = lower('{1}') OR column_name = '{1}')", table, column)))
+				ExecuteQuery(cmd, String.Format("SELECT column_name FROM information_schema.columns WHERE table_schema = 'public' AND table_name = lower('{0}') AND (column_name = lower('{1}') OR column_name = '{1}')", table, column)))
 			{
 				return reader.Read();
 			}
@@ -129,8 +131,9 @@ WHERE  lower(tablenm) = lower('{0}')
 
 		public override bool TableExists(string table)
 		{
+			using (var cmd = CreateCommand())
 			using (IDataReader reader =
-				ExecuteQuery(String.Format("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_name = lower('{0}')", table)))
+				ExecuteQuery(cmd, String.Format("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_name = lower('{0}')", table)))
 			{
 				return reader.Read();
 			}
@@ -218,7 +221,8 @@ WHERE  lower(tablenm) = lower('{0}')
 		public override string[] GetTables()
 		{
 			var tables = new List<string>();
-			using (IDataReader reader = ExecuteQuery("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'"))
+			using (var cmd = CreateCommand())
+			using (IDataReader reader = ExecuteQuery(cmd, "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'"))
 			{
 				while (reader.Read())
 				{
@@ -231,9 +235,10 @@ WHERE  lower(tablenm) = lower('{0}')
 		public override Column[] GetColumns(string table)
 		{
 			var columns = new List<Column>();
+			using (var cmd = CreateCommand())
 			using (
 				IDataReader reader =
-					ExecuteQuery(
+					ExecuteQuery(cmd,
 						String.Format("select COLUMN_NAME, IS_NULLABLE from information_schema.columns where table_schema = 'public' AND table_name = lower('{0}');", table)))
 			{
 				// FIXME: Mostly duplicated code from the Transformation provider just to support stupid case-insensitivty of Postgre
@@ -258,8 +263,9 @@ WHERE  lower(tablenm) = lower('{0}')
 
 		public override bool IndexExists(string table, string name)
 		{
+			using (var cmd = CreateCommand())
 			using (IDataReader reader =
-				ExecuteQuery(string.Format("SELECT indexname FROM pg_catalog.pg_indexes WHERE indexname = lower('{0}')", name)))
+				ExecuteQuery(cmd, string.Format("SELECT indexname FROM pg_catalog.pg_indexes WHERE indexname = lower('{0}')", name)))
 			{
 				return reader.Read();
 			}

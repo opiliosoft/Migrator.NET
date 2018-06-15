@@ -43,10 +43,10 @@ namespace Migrator.Providers.Impl.Firebird
 		/// </summary>
 		/// <param name="sql">The SQL command.</param>
 		/// <returns>A data iterator, <see cref="System.Data.IDataReader">IDataReader</see>.</returns>
-		public override IDataReader ExecuteQuery(string sql)
+		public override IDataReader ExecuteQuery(IDbCommand cmd, string sql)
 		{
 			Logger.Trace(sql);
-			IDbCommand cmd = BuildCommand(sql);
+			//IDbCommand cmd = BuildCommand(sql);
 			{
 				try
 				{
@@ -63,9 +63,10 @@ namespace Migrator.Providers.Impl.Firebird
 		public override Column[] GetColumns(string table)
 		{
 			var columns = new List<Column>();
+			using (var cmd = CreateCommand())
 			using (
 				IDataReader reader =
-					ExecuteQuery(
+					ExecuteQuery(cmd,
 						String.Format("select RDB$FIELD_NAME, RDB$NULL_FLAG from RDB$RELATION_FIELDS where RDB$RELATION_NAME = '{0}'", table.ToUpper())))
 			{
 				while (reader.Read())
@@ -97,8 +98,10 @@ namespace Migrator.Providers.Impl.Firebird
 					seqTName = seqTName.Substring(0, seqTName.Length - 1);
 
 				// Create a sequence for the table
-				ExecuteQuery(String.Format("CREATE GENERATOR {0}_SEQUENCE", seqTName));
-				ExecuteQuery(String.Format("SET GENERATOR {0}_SEQUENCE TO 0", seqTName));
+				using (var cmd = CreateCommand())
+					ExecuteQuery(cmd, String.Format("CREATE GENERATOR {0}_SEQUENCE", seqTName));
+				using (var cmd = CreateCommand())
+					ExecuteQuery(cmd, String.Format("SET GENERATOR {0}_SEQUENCE TO 0", seqTName));
 
 				var sql = ""; // "set term !! ;";
 				sql += "CREATE TRIGGER {1}_TRIGGER FOR {0}\n";
@@ -108,7 +111,8 @@ namespace Migrator.Providers.Impl.Firebird
 				sql += "if (NEW.{2} is NULL) then NEW.{2} = GEN_ID({1}_SEQUENCE, 1);\n";
 				sql += "END\n";
 
-				ExecuteQuery(String.Format(sql, name, seqTName, identityColumn.Name));
+				using (var cmd = CreateCommand())
+					ExecuteQuery(cmd, String.Format(sql, name, seqTName, identityColumn.Name));
 			}
 		}
 

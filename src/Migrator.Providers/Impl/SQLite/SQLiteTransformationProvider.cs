@@ -52,7 +52,8 @@ namespace Migrator.Providers.SQLite
 		public string GetSqlDefString(string table)
 		{
 			string sqldef = null;
-			using (IDataReader reader = ExecuteQuery(String.Format("SELECT sql FROM sqlite_master WHERE type='table' AND name='{0}'", table)))
+			using (var cmd = CreateCommand())
+			using (IDataReader reader = ExecuteQuery(cmd, String.Format("SELECT sql FROM sqlite_master WHERE type='table' AND name='{0}'", table)))
 			{
 				if (reader.Read())
 				{
@@ -158,7 +159,8 @@ namespace Migrator.Providers.SQLite
 		{
 			var sqlStrings = new List<string>();
 
-			using (IDataReader reader = ExecuteQuery(String.Format("SELECT sql FROM sqlite_master WHERE type='index' AND sql NOT NULL AND tbl_name='{0}'", table)))
+			using (var cmd = CreateCommand())
+			using (IDataReader reader = ExecuteQuery(cmd, String.Format("SELECT sql FROM sqlite_master WHERE type='index' AND sql NOT NULL AND tbl_name='{0}'", table)))
 				while (reader.Read())
 					sqlStrings.Add((string)reader[0]);
 
@@ -250,9 +252,11 @@ namespace Migrator.Providers.SQLite
 			AddTable(table + "_temp", null, newFieldsPlusUnique.ToArray());
 			var colNamesNewSql = string.Join(", ", newColumns.Select(x => x.Name).Select(x => QuoteColumnNameIfRequired(x)));
 			var colNamesSql = string.Join(", ", oldColumnNames.Select(x => QuoteColumnNameIfRequired(x)));
-			ExecuteQuery(String.Format("INSERT INTO {1}_temp ({0}) SELECT {2} FROM {1}", colNamesNewSql, table, colNamesSql));
+			using (var cmd = CreateCommand())
+				ExecuteQuery(cmd, String.Format("INSERT INTO {1}_temp ({0}) SELECT {2} FROM {1}", colNamesNewSql, table, colNamesSql));
 			RemoveTable(table);
-			ExecuteQuery(String.Format("ALTER TABLE {0}_temp RENAME TO {0}", table));
+			using (var cmd = CreateCommand())
+				ExecuteQuery(cmd, String.Format("ALTER TABLE {0}_temp RENAME TO {0}", table));
 		}
 
 
@@ -274,7 +278,8 @@ namespace Migrator.Providers.SQLite
 				string tempColumn = "temp_" + column.Name;
 				RenameColumn(table, column.Name, tempColumn);
 				AddColumn(table, column);
-				ExecuteQuery(String.Format("UPDATE {0} SET {1}={2}", table, column.Name, tempColumn));
+				using (var cmd = CreateCommand())
+					ExecuteQuery(cmd, String.Format("UPDATE {0} SET {1}={2}", table, column.Name, tempColumn));
 				RemoveColumn(table, tempColumn);
 			}
 			else
@@ -293,9 +298,11 @@ namespace Migrator.Providers.SQLite
 				AddTable(table + "_temp", null, newColumns);
 
 				var colNamesSql = string.Join(", ", newColumns.Select(x => x.Name));
-				ExecuteQuery(String.Format("INSERT INTO {0}_temp SELECT {1} FROM {0}", table, colNamesSql));
+				using (var cmd = CreateCommand())
+					ExecuteQuery(cmd, String.Format("INSERT INTO {0}_temp SELECT {1} FROM {0}", table, colNamesSql));
 				RemoveTable(table);
-				ExecuteQuery(String.Format("ALTER TABLE {0}_temp RENAME TO {0}", table));
+				using (var cmd = CreateCommand())
+					ExecuteQuery(cmd, String.Format("ALTER TABLE {0}_temp RENAME TO {0}", table));
 			}
 		}
 
@@ -306,7 +313,8 @@ namespace Migrator.Providers.SQLite
 
 		public override bool TableExists(string table)
 		{
-			using (IDataReader reader = ExecuteQuery(String.Format("SELECT name FROM sqlite_master WHERE type='table' and lower(name)=lower('{0}')", table)))
+			using (var cmd = CreateCommand())
+			using (IDataReader reader = ExecuteQuery(cmd, String.Format("SELECT name FROM sqlite_master WHERE type='table' and lower(name)=lower('{0}')", table)))
 			{
 				return reader.Read();
 			}
@@ -331,7 +339,8 @@ namespace Migrator.Providers.SQLite
 		{
 			var tables = new List<string>();
 
-			using (IDataReader reader = ExecuteQuery("SELECT name FROM sqlite_master WHERE type='table' AND name <> 'sqlite_sequence' ORDER BY name"))
+			using (var cmd = CreateCommand())
+			using (IDataReader reader = ExecuteQuery(cmd, "SELECT name FROM sqlite_master WHERE type='table' AND name <> 'sqlite_sequence' ORDER BY name"))
 			{
 				while (reader.Read())
 				{
@@ -345,7 +354,8 @@ namespace Migrator.Providers.SQLite
 		public override Column[] GetColumns(string table)
 		{
 			var columns = new List<Column>();
-			using (IDataReader reader = ExecuteQuery(String.Format("PRAGMA table_info('{0}')", table)))
+			using (var cmd = CreateCommand())
+			using (IDataReader reader = ExecuteQuery(cmd, String.Format("PRAGMA table_info('{0}')", table)))
 			{
 				while (reader.Read())
 				{
@@ -398,8 +408,9 @@ namespace Migrator.Providers.SQLite
 
 		public override bool IndexExists(string table, string name)
 		{
+			using (var cmd = CreateCommand())
 			using (IDataReader reader =
-				ExecuteQuery(String.Format("SELECT name FROM sqlite_master WHERE type='index' and name='{0}'", name)))
+				ExecuteQuery(cmd, String.Format("SELECT name FROM sqlite_master WHERE type='index' and name='{0}'", name)))
 			{
 				return reader.Read();
 			}

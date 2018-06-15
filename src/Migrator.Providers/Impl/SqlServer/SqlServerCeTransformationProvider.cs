@@ -43,8 +43,9 @@ namespace Migrator.Providers.SqlServer
 
 		public override bool ConstraintExists(string table, string name)
 		{
+			using (var cmd = CreateCommand())
 			using (IDataReader reader =
-				ExecuteQuery(string.Format("SELECT cont.constraint_name FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS cont WHERE cont.Constraint_Name='{0}'", name)))
+				ExecuteQuery(cmd, string.Format("SELECT cont.constraint_name FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS cont WHERE cont.Constraint_Name='{0}'", name)))
 			{
 				return reader.Read();
 			}
@@ -57,7 +58,8 @@ namespace Migrator.Providers.SqlServer
 
 		public override bool TableExists(string table)
 		{
-			using (IDataReader reader = base.ExecuteQuery(string.Format("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME='{0}'", table)))
+			using (var cmd = CreateCommand())
+			using (IDataReader reader = base.ExecuteQuery(cmd, string.Format("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME='{0}'", table)))
 			{
 				return reader.Read();
 			}
@@ -75,8 +77,9 @@ namespace Migrator.Providers.SqlServer
 				table = table.Substring(firstIndex + 1);
 			}
 
+			using (var cmd = CreateCommand())
 			using (
-				IDataReader reader = base.ExecuteQuery(string.Format("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='{0}' AND COLUMN_NAME='{1}'", table, column)))
+				IDataReader reader = base.ExecuteQuery(cmd, string.Format("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='{0}' AND COLUMN_NAME='{1}'", table, column)))
 			{
 				return reader.Read();
 			}

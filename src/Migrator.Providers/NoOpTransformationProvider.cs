@@ -49,7 +49,7 @@ namespace Migrator.Providers
 		{
 			return null;
 		}
-	   
+
 		public int Insert(string table, string[] columns, object[] values)
 		{
 			return 0;
@@ -271,9 +271,14 @@ namespace Migrator.Providers
 			return 0;
 		}
 
-		public IDataReader ExecuteQuery(string sql)
+		public IDataReader ExecuteQuery(IDbCommand cmd, string sql)
 		{
 			return null;
+		}
+
+		public IDbCommand CreateCommand()
+		{
+			throw new NotImplementedException();
 		}
 
 		public object ExecuteScalar(string sql)
@@ -281,17 +286,17 @@ namespace Migrator.Providers
 			return null;
 		}
 
-		public IDataReader Select(string table, string[] columns, string[] whereColumns, object[] whereValues)
+		public IDataReader Select(IDbCommand cmd, string table, string[] columns, string[] whereColumns, object[] whereValues)
 		{
 			return null;
 		}
 
-		public IDataReader Select(string what, string from)
+		public IDataReader Select(IDbCommand cmd, string what, string from)
 		{
 			return null;
 		}
 
-		public IDataReader Select(string what, string from, string where)
+		public IDataReader Select(IDbCommand cmd, string what, string from, string where)
 		{
 			return null;
 		}
@@ -400,7 +405,7 @@ namespace Migrator.Providers
 
 		public void RemoveAllForeignKeys(string tableName, string columnName)
 		{
-			
+
 		}
 
 		public bool IsThisProvider(string provider)
@@ -430,7 +435,7 @@ namespace Migrator.Providers
 
 		public void SwitchDatabase(string databaseName)
 		{
-			
+
 		}
 
 		public List<string> GetDatabases()
@@ -445,17 +450,17 @@ namespace Migrator.Providers
 
 		public void CreateDatabases(string databaseName)
 		{
-			
+
 		}
 
 		public void DropDatabases(string databaseName)
 		{
-			
+
 		}
 
 		public void AddIndex(string table, Index index)
 		{
-			
+
 		}
 
 		public void Dispose()

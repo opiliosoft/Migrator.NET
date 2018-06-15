@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 
 namespace Migrator.Framework
 {
@@ -309,7 +308,7 @@ namespace Migrator.Framework
 		/// <param name="sql">The SQL to execute.</param>
 		/// <param name="timeout">timeout</param>
 		/// <returns></returns>
-		int ExecuteNonQuery(string sql,int timeout);
+		int ExecuteNonQuery(string sql, int timeout);
 
 		int ExecuteNonQuery(string sql);
 		/// <summary>
@@ -317,7 +316,13 @@ namespace Migrator.Framework
 		/// </summary>
 		/// <param name="sql">The SQL to execute.</param>
 		/// <returns></returns>
-		IDataReader ExecuteQuery(string sql);
+		IDataReader ExecuteQuery(IDbCommand cmd, string sql);
+
+		/// <summary>
+		/// Creates a DbCommand
+		/// </summary>
+		/// <returns></returns>
+		IDbCommand CreateCommand();
 
 		/// <summary>
 		/// Execute an arbitrary SQL query
@@ -470,7 +475,7 @@ namespace Migrator.Framework
 		/// <param name="from">The table to select from</param>
 		/// <param name="where">The where clause to limit the selection</param>
 		/// <returns></returns>
-		IDataReader Select(string what, string from, string where);
+		IDataReader Select(IDbCommand cmd, string what, string from, string where);
 
 		/// <summary>
 		/// Get values from a table
@@ -480,7 +485,7 @@ namespace Migrator.Framework
 		/// <param name="whereColumns"></param>
 		/// <param name="whereValues"></param>
 		/// <returns></returns>
-		IDataReader Select(string table, string[] columns, string[] whereColumns = null, object[] whereValues = null);
+		IDataReader Select(IDbCommand cmd, string table, string[] columns, string[] whereColumns = null, object[] whereValues = null);
 
 		/// <summary>
 		/// Get values from a table
@@ -488,7 +493,7 @@ namespace Migrator.Framework
 		/// <param name="what">The columns to select</param>
 		/// <param name="from">The table to select from</param>
 		/// <returns></returns>
-		IDataReader Select(string what, string from);
+		IDataReader Select(IDbCommand cmd, string what, string from);
 
 		/// <summary>
 		/// Get a single value from a table
@@ -547,7 +552,7 @@ namespace Migrator.Framework
 		/// <param name="schemaBuilder"></param>
 		void ExecuteSchemaBuilder(SchemaBuilder.SchemaBuilder schemaBuilder);
 
-		
+
 		void RemoveAllForeignKeys(string tableName, string columnName);
 
 		bool IsThisProvider(string provider);
@@ -618,7 +623,7 @@ namespace Migrator.Framework
 		/// <param name="table">The name of the table that will get the index.</param>
 		/// <param name="columns">The name of the column or columns that are in the index.</param>
 		void AddIndex(string name, string table, params string[] columns);
-		
+
 		/// <summary>
 		/// Check to see if an index exists
 		/// </summary>

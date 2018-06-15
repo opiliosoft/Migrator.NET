@@ -115,10 +115,11 @@ namespace Migrator.Providers
 		public virtual Column[] GetColumns(string table)
 		{
 			var columns = new List<Column>();
+			using (IDbCommand cmd = CreateCommand())
 			using (
 				IDataReader reader =
 					ExecuteQuery(
-						String.Format("select COLUMN_NAME, IS_NULLABLE from INFORMATION_SCHEMA.COLUMNS where table_name = '{0}'", table)))
+						cmd, String.Format("select COLUMN_NAME, IS_NULLABLE from INFORMATION_SCHEMA.COLUMNS where table_name = '{0}'", table)))
 			{
 				while (reader.Read())
 				{
@@ -137,10 +138,11 @@ namespace Migrator.Providers
 		public ForeignKeyConstraint[] GetForeignKeyConstraints(string table)
 		{
 			var constraints = new List<ForeignKeyConstraint>();
+			using (IDbCommand cmd = CreateCommand())
 			using (
 				IDataReader reader =
 					ExecuteQuery(
-						String.Format("SELECT K_Table = FK.TABLE_NAME, FK_Column = CU.COLUMN_NAME, PK_Table = PK.TABLE_NAME, PK_Column = PT.COLUMN_NAME, Constraint_Name = C.CONSTRAINT_NAME FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS C INNER JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS FK ON C.CONSTRAINT_NAME = FK.CONSTRAINT_NAME INNER JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS PK ON C.UNIQUE_CONSTRAINT_NAME = PK.CONSTRAINT_NAME INNER JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE CU ON C.CONSTRAINT_NAME = CU.CONSTRAINT_NAME INNER JOIN ( SELECT i1.TABLE_NAME, i2.COLUMN_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS i1 INNER JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE i2 ON i1.CONSTRAINT_NAME = i2.CONSTRAINT_NAME WHERE i1.CONSTRAINT_TYPE = 'PRIMARY KEY' ) PT ON PT.TABLE_NAME = PK.TABLE_NAME  WHERE FK.table_name = '{0}'", table)))
+						cmd, String.Format("SELECT K_Table = FK.TABLE_NAME, FK_Column = CU.COLUMN_NAME, PK_Table = PK.TABLE_NAME, PK_Column = PT.COLUMN_NAME, Constraint_Name = C.CONSTRAINT_NAME FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS C INNER JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS FK ON C.CONSTRAINT_NAME = FK.CONSTRAINT_NAME INNER JOIN INFORMATION_SCHEMA.TABLE_CONSTRAINTS PK ON C.UNIQUE_CONSTRAINT_NAME = PK.CONSTRAINT_NAME INNER JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE CU ON C.CONSTRAINT_NAME = CU.CONSTRAINT_NAME INNER JOIN ( SELECT i1.TABLE_NAME, i2.COLUMN_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS i1 INNER JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE i2 ON i1.CONSTRAINT_NAME = i2.CONSTRAINT_NAME WHERE i1.CONSTRAINT_TYPE = 'PRIMARY KEY' ) PT ON PT.TABLE_NAME = PK.TABLE_NAME  WHERE FK.table_name = '{0}'", table)))
 			{
 				while (reader.Read())
 				{
@@ -161,10 +163,11 @@ namespace Migrator.Providers
 		public virtual string[] GetConstraints(string table)
 		{
 			var constraints = new List<string>();
+			using (IDbCommand cmd = CreateCommand())
 			using (
 				IDataReader reader =
 					ExecuteQuery(
-						String.Format("SELECT CONSTRAINT_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE LOWER(TABLE_NAME) = LOWER('{0}')", table)))
+						cmd, String.Format("SELECT CONSTRAINT_NAME FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS WHERE LOWER(TABLE_NAME) = LOWER('{0}')", table)))
 			{
 				while (reader.Read())
 				{
@@ -184,7 +187,8 @@ namespace Migrator.Providers
 		public virtual string[] GetTables()
 		{
 			var tables = new List<string>();
-			using (IDataReader reader = ExecuteQuery("SELECT table_name FROM INFORMATION_SCHEMA.TABLES"))
+			using (IDbCommand cmd = CreateCommand())
+			using (IDataReader reader = ExecuteQuery(cmd, "SELECT table_name FROM INFORMATION_SCHEMA.TABLES"))
 			{
 				while (reader.Read())
 				{
@@ -824,19 +828,22 @@ namespace Migrator.Providers
 		{
 			var values = new List<string>();
 
-			using (var reader = ExecuteQuery(string.Format(sql, args)))
+			using (var cmd = CreateCommand())
 			{
-				while (reader.Read())
+				using (var reader = ExecuteQuery(cmd, string.Format(sql, args)))
 				{
-					var value = reader[0];
+					while (reader.Read())
+					{
+						var value = reader[0];
 
-					if (value == null || value == DBNull.Value)
-					{
-						values.Add(null);
-					}
-					else
-					{
-						values.Add(value.ToString());
+						if (value == null || value == DBNull.Value)
+						{
+							values.Add(null);
+						}
+						else
+						{
+							values.Add(value.ToString());
+						}
 					}
 				}
 			}
@@ -888,22 +895,21 @@ namespace Migrator.Providers
 		/// <summary>
 		/// Execute an SQL query returning results.
 		/// </summary>
-		/// <param name="sql">The SQL command.</param>
+		/// <param name="sql">The SQL text.</param>
+		/// <param name="cmd">The IDbCommand.</param>
 		/// <returns>A data iterator, <see cref="System.Data.IDataReader">IDataReader</see>.</returns>
-		public virtual IDataReader ExecuteQuery(string sql)
+		public virtual IDataReader ExecuteQuery(IDbCommand cmd, string sql)
 		{
 			Logger.Trace(sql);
-			using (IDbCommand cmd = BuildCommand(sql))
+			cmd.CommandText = sql;
+			try
 			{
-				try
-				{
-					return cmd.ExecuteReader();
-				}
-				catch (Exception ex)
-				{
-					Logger.Warn("query failed: {0}", cmd.CommandText);
-					throw new Exception("Failed to execute sql statement: " + sql, ex);
-				}
+				return cmd.ExecuteReader();
+			}
+			catch (Exception ex)
+			{
+				Logger.Warn("query failed: {0}", cmd.CommandText);
+				throw new Exception("Failed to execute sql statement: " + sql, ex);
 			}
 		}
 
@@ -924,17 +930,18 @@ namespace Migrator.Providers
 			}
 		}
 
-		public virtual IDataReader Select(string what, string from)
+		public virtual IDataReader Select(IDbCommand cmd, string what, string from)
 		{
-			return Select(what, from, "1=1");
+			return Select(cmd, what, from, "1=1");
 		}
 
-		public virtual IDataReader Select(string what, string from, string where)
+		public virtual IDataReader Select(IDbCommand cmd, string what, string from, string where)
 		{
-			return ExecuteQuery(String.Format("SELECT {0} FROM {1} WHERE {2}", what, from, where));
+			return ExecuteQuery(cmd, String.Format("SELECT {0} FROM {1} WHERE {2}", what, from, where));
 		}
 
-		public virtual IDataReader Select(string table, string[] columns, string[] whereColumns = null, object[] whereValues = null)
+		public virtual IDataReader Select(IDbCommand cmd, string table, string[] columns, string[] whereColumns = null,
+			object[] whereValues = null)
 		{
 			if (string.IsNullOrEmpty(table)) throw new ArgumentNullException("table");
 			if (columns == null) throw new ArgumentNullException("columns");
@@ -948,41 +955,41 @@ namespace Migrator.Providers
 				builder.Append(QuoteColumnNameIfRequired(columns[i]));
 			}
 
-			using (IDbCommand command = _connection.CreateCommand())
+
+			cmd.Transaction = _transaction;
+
+			var query = String.Format("SELECT {0} FROM {1}", builder.ToString(), table);
+
+			if (whereColumns != null)
 			{
-				command.Transaction = _transaction;
-
-				var query = String.Format("SELECT {0} FROM {1}", builder.ToString(), table);
-
-				if (whereColumns != null)
-				{
-					query = String.Format("SELECT {0} FROM {1} WHERE {2}", builder.ToString(), table, GetWhereString(whereColumns, whereValues));
-				}
-
-				command.CommandText = query;
-				command.CommandType = CommandType.Text;
-
-				int paramCount = 0;
-
-				if (whereColumns != null)
-				{
-					foreach (object value in whereValues)
-					{
-						IDbDataParameter parameter = command.CreateParameter();
-
-						ConfigureParameterWithValue(parameter, paramCount, value);
-
-						parameter.ParameterName = GenerateParameterName(paramCount);
-
-						command.Parameters.Add(parameter);
-
-						paramCount++;
-					}
-				}
-
-				Logger.Trace(command.CommandText);
-				return command.ExecuteReader();
+				query = String.Format("SELECT {0} FROM {1} WHERE {2}", builder.ToString(), table,
+					GetWhereString(whereColumns, whereValues));
 			}
+
+			cmd.CommandText = query;
+			cmd.CommandType = CommandType.Text;
+
+			int paramCount = 0;
+
+			if (whereColumns != null)
+			{
+				foreach (object value in whereValues)
+				{
+					IDbDataParameter parameter = cmd.CreateParameter();
+
+					ConfigureParameterWithValue(parameter, paramCount, value);
+
+					parameter.ParameterName = GenerateParameterName(paramCount);
+
+					cmd.Parameters.Add(parameter);
+
+					paramCount++;
+				}
+			}
+
+			Logger.Trace(cmd.CommandText);
+			return cmd.ExecuteReader();
+
 		}
 
 		public object SelectScalar(string what, string from)
@@ -1206,7 +1213,8 @@ namespace Migrator.Providers
 
 		public virtual int InsertIfNotExists(string table, string[] columns, object[] values, string[] whereColumns, object[] whereValues)
 		{
-			using (var reader = this.Select(table, new[] { whereColumns[0] }, whereColumns, whereValues))
+			using (var cmd = CreateCommand())
+			using (var reader = this.Select(cmd, table, new[] { whereColumns[0] }, whereColumns, whereValues))
 			{
 				if (!reader.Read())
 				{
@@ -1354,7 +1362,8 @@ namespace Migrator.Providers
 					versionColumn = QuoteColumnNameIfRequired(versionColumn);
 					scopeColumn = QuoteColumnNameIfRequired(scopeColumn);
 
-					using (IDataReader reader = Select(versionColumn, _schemaInfotable, string.Format("{0} = '{1}'", scopeColumn, _scope)))
+					using (var cmd = CreateCommand())
+					using (IDataReader reader = Select(cmd, versionColumn, _schemaInfotable, string.Format("{0} = '{1}'", scopeColumn, _scope)))
 					{
 						while (reader.Read())
 						{
@@ -1561,16 +1570,22 @@ namespace Migrator.Providers
 			return String.Join(", ", columnStrings.ToArray());
 		}
 
-		protected IDbCommand BuildCommand(string sql)
+		public IDbCommand CreateCommand()
 		{
 			EnsureHasConnection();
 			IDbCommand cmd = _connection.CreateCommand();
-			cmd.CommandText = sql;
 			cmd.CommandType = CommandType.Text;
 			if (_transaction != null)
 			{
 				cmd.Transaction = _transaction;
 			}
+			return cmd;
+		}
+
+		protected IDbCommand BuildCommand(string sql)
+		{
+			var cmd = CreateCommand();
+			cmd.CommandText = sql;
 			return cmd;
 		}
 

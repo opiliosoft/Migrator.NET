@@ -97,7 +97,11 @@ namespace Migrator.Providers.Oracle
 				string columnName = QuoteColumnNameIfRequired(column.Name);
 
 				// now set the column to not-null
-				if (isNotNull) ExecuteQuery(String.Format("ALTER TABLE {0} MODIFY ({1} NOT NULL)", table, columnName));
+				if (isNotNull)
+				{
+					using (var cmd = CreateCommand())
+						ExecuteQuery(cmd, String.Format("ALTER TABLE {0} MODIFY ({1} NOT NULL)", table, columnName));
+				}
 			}
 			else
 			{
@@ -184,10 +188,10 @@ namespace Migrator.Providers.Oracle
 		public override string[] GetConstraints(string table)
 		{
 			var constraints = new List<string>();
-
+			using (var cmd = CreateCommand())
 			using (
 				IDataReader reader =
-					ExecuteQuery(
+					ExecuteQuery(cmd,
 						String.Format("SELECT constraint_name FROM user_constraints WHERE lower(table_name) = '{0}'", table.ToLower())))
 			{
 				while (reader.Read())
@@ -203,9 +207,10 @@ namespace Migrator.Providers.Oracle
 		{
 			var constraints = new List<string>();
 
+			using (var cmd = CreateCommand())
 			using (
 				IDataReader reader =
-					ExecuteQuery(
+					ExecuteQuery(cmd,
 						String.Format("SELECT constraint_name FROM user_constraints WHERE lower(table_name) = '{0}' and constraint_type = 'P'", table.ToLower())))
 			{
 				while (reader.Read())
@@ -263,8 +268,9 @@ namespace Migrator.Providers.Oracle
 		{
 			var tables = new List<string>();
 
+			using (var cmd = CreateCommand())
 			using (IDataReader reader =
-				ExecuteQuery("SELECT table_name FROM user_tables"))
+				ExecuteQuery(cmd, "SELECT table_name FROM user_tables"))
 			{
 				while (reader.Read())
 				{
@@ -279,9 +285,10 @@ namespace Migrator.Providers.Oracle
 		{
 			var columns = new List<Column>();
 
+			using (var cmd = CreateCommand())
 			using (
 				IDataReader reader =
-					ExecuteQuery(
+					ExecuteQuery(cmd,
 						string.Format(
 							"select column_name, data_type, data_length, data_precision, data_scale, NULLABLE FROM USER_TAB_COLUMNS WHERE lower(table_name) = '{0}'",
 							table.ToLower())))
@@ -400,10 +407,12 @@ namespace Migrator.Providers.Oracle
 					seqTName = seqTName.Substring(0, seqTName.Length - 1);
 
 				// Create a sequence for the table
-				ExecuteQuery(String.Format("CREATE SEQUENCE {0}_SEQUENCE", seqTName));
+				using (var cmd = CreateCommand())
+					ExecuteQuery(cmd, String.Format("CREATE SEQUENCE {0}_SEQUENCE", seqTName));
 
 				// Create identity trigger (This all has to be in one line (no whitespace), I learned the hard way :) )
-				ExecuteQuery(String.Format(
+				using (var cmd = CreateCommand())
+					ExecuteQuery(cmd, String.Format(
 					@"CREATE OR REPLACE TRIGGER {0}_TRIGGER BEFORE INSERT ON {1} FOR EACH ROW BEGIN SELECT {0}_SEQUENCE.NEXTVAL INTO :NEW.{2} FROM DUAL; END;", seqTName, name, identityColumn.Name));
 			}
 		}
@@ -412,7 +421,8 @@ namespace Migrator.Providers.Oracle
 			base.RemoveTable(name);
 			try
 			{
-				ExecuteQuery(String.Format(@"DROP SEQUENCE {0}_SEQUENCE", name));
+				using (var cmd = CreateCommand())
+					ExecuteQuery(cmd, String.Format(@"DROP SEQUENCE {0}_SEQUENCE", name));
 			}
 			catch (Exception)
 			{
@@ -471,7 +481,8 @@ namespace Migrator.Providers.Oracle
 
 			var indexes = new List<Index>();
 
-			using (IDataReader reader = ExecuteQuery(sql))
+			using (var cmd = CreateCommand())
+			using (IDataReader reader = ExecuteQuery(cmd, sql))
 			{
 				while (reader.Read())
 				{

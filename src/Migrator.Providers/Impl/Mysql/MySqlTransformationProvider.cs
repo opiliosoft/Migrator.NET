@@ -44,7 +44,8 @@ namespace Migrator.Providers.Mysql
                                                     (k.REFERENCED_TABLE_NAME='{1}') OR (k.TABLE_NAME='{1}')", GetDatabase(), table);
 
 			var l = new List<Tuple<string, string, string>>();
-			using (IDataReader reader = ExecuteQuery(qry))
+			using (var cmd = CreateCommand())
+			using (IDataReader reader = ExecuteQuery(cmd, qry))
 			{
 				while (reader.Read())
 				{
@@ -89,7 +90,8 @@ namespace Migrator.Providers.Mysql
                                                     (k.REFERENCED_TABLE_NAME='{1}') OR (k.TABLE_NAME='{1}')", GetDatabase(), tableName);
 			}
 			var l = new List<Tuple<string, string>>();
-			using (IDataReader reader = ExecuteQuery(qry))
+			using (var cmd = CreateCommand())
+			using (IDataReader reader = ExecuteQuery(cmd, qry))
 			{
 				while (reader.Read())
 				{
@@ -117,8 +119,8 @@ namespace Migrator.Providers.Mysql
 				return false;
 
 			string sqlConstraint = string.Format("SHOW KEYS FROM {0}", table);
-
-			using (IDataReader reader = ExecuteQuery(sqlConstraint))
+			using (var cmd = CreateCommand())
+			using (IDataReader reader = ExecuteQuery(cmd, sqlConstraint))
 			{
 				while (reader.Read())
 				{
@@ -144,8 +146,8 @@ namespace Migrator.Providers.Mysql
                                                     WHERE i.CONSTRAINT_TYPE = 'FOREIGN KEY' 
                                                     AND i.TABLE_SCHEMA = '{1}'
                                                     AND i.TABLE_NAME = '{0}';", table, GetDatabase());
-
-			using (IDataReader reader = ExecuteQuery(sqlConstraint))
+			using (var cmd = CreateCommand())
+			using (IDataReader reader = ExecuteQuery(cmd, sqlConstraint))
 			{
 				while (reader.Read())
 				{
@@ -164,8 +166,8 @@ namespace Migrator.Providers.Mysql
 			var retVal = new List<Index>();
 
 			var sql = @"SHOW INDEX FROM {0}";
-
-			using (var reader = ExecuteQuery(string.Format(sql, table)))
+			using (var cmd = CreateCommand())
+			using (var reader = ExecuteQuery(cmd, string.Format(sql, table)))
 			{
 				while (reader.Read())
 				{
@@ -196,9 +198,10 @@ namespace Migrator.Providers.Mysql
 		public override Column[] GetColumns(string table)
 		{
 			var columns = new List<Column>();
+			using (var cmd = CreateCommand())
 			using (
 				IDataReader reader =
-					ExecuteQuery(
+					ExecuteQuery(cmd,
 						String.Format("SHOW COLUMNS FROM {0}", table)))
 			{
 				while (reader.Read())
@@ -218,7 +221,8 @@ namespace Migrator.Providers.Mysql
 		public override string[] GetTables()
 		{
 			var tables = new List<string>();
-			using (IDataReader reader = ExecuteQuery("SHOW TABLES"))
+			using (var cmd = CreateCommand())
+			using (IDataReader reader = ExecuteQuery(cmd, "SHOW TABLES"))
 			{
 				while (reader.Read())
 				{
@@ -260,8 +264,8 @@ namespace Migrator.Providers.Mysql
 			string definition = null;
 
 			bool dropPrimary = false;
-
-			using (IDataReader reader = ExecuteQuery(String.Format("SHOW COLUMNS FROM {0} WHERE Field='{1}'", tableName, oldColumnName)))
+			using (var cmd = CreateCommand())
+			using (IDataReader reader = ExecuteQuery(cmd, String.Format("SHOW COLUMNS FROM {0} WHERE Field='{1}'", tableName, oldColumnName)))
 			{
 				if (reader.Read())
 				{
