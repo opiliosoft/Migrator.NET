@@ -14,8 +14,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
-using System.Data.SqlClient;
 using Migrator.Framework;
 
 namespace Migrator.Providers.SqlServer
@@ -446,12 +444,6 @@ WHERE TC.CONSTRAINT_TYPE = 'FOREIGN KEY'
 AND CU.TABLE_NAME = '{0}'
 AND CU.COLUMN_NAME = '{1}'",
 					table, column);
-
-			/*return string.Format(
-                "SELECT cont.name FROM sysobjects cont, syscolumns col, sysconstraints cnt  "
-                + "WHERE cont.parent_obj = col.id AND cnt.constid = cont.id AND cnt.colid=col.colid "
-                + "AND col.name = '{1}' AND col.id = object_id('{0}')",
-                table, column);*/
 		}
 
 		public override bool IndexExists(string table, string name)

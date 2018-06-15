@@ -12,19 +12,19 @@ namespace Migrator.Providers.SqlServer
 			RegisterColumnType(DbType.AnsiString, "NVARCHAR(255)");
 			RegisterColumnType(DbType.AnsiString, 4000, "NVARCHAR($l)");
 			RegisterColumnType(DbType.AnsiString, 1073741823, "TEXT");
-            RegisterColumnType(DbType.Double, "FLOAT");
+			RegisterColumnType(DbType.Double, "FLOAT");
 		}
 
-        public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope, string providerName)
+		public override ITransformationProvider GetTransformationProvider(Dialect dialect, string connectionString, string defaultSchema, string scope, string providerName)
 		{
 			return new SqlServerCeTransformationProvider(dialect, connectionString, scope, providerName);
 		}
 
-        public override ITransformationProvider GetTransformationProvider(Dialect dialect, IDbConnection connection,
-         string defaultSchema,
-         string scope, string providerName)
-        {
-            return new SqlServerCeTransformationProvider(dialect, connection, scope, providerName);
-        }
-    }
+		public override ITransformationProvider GetTransformationProvider(Dialect dialect, IDbConnection connection,
+		 string defaultSchema,
+		 string scope, string providerName)
+		{
+			return new SqlServerCeTransformationProvider(dialect, connection, scope, providerName);
+		}
+	}
 }

@@ -99,9 +99,7 @@ namespace Migrator.Providers.PostgreSQL
 			return new PostgreSQLTransformationProvider(dialect, connectionString, defaultSchema, scope, providerName);
 		}
 
-		public override ITransformationProvider GetTransformationProvider(Dialect dialect, IDbConnection connection,
-		  string defaultSchema,
-		  string scope, string providerName)
+		public override ITransformationProvider GetTransformationProvider(Dialect dialect, IDbConnection connection, string defaultSchema, string scope, string providerName)
 		{
 			return new PostgreSQLTransformationProvider(dialect, connection, defaultSchema, scope, providerName);
 		}

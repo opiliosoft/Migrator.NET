@@ -27,11 +27,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migrator.NAnt-vs2010", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migrator.Tests-vs2010", "src\Migrator.Tests\Migrator.Tests-vs2010.csproj", "{882B6A93-67B8-45BF-8636-5796B1B1CBF8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetProjects.Migrator.Framework", "src\Migrator.Framework\DotNetProjects.Migrator.Framework.csproj", "{BB1149D1-9253-4D3D-AA7F-0F43D4A126FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetProjects.Migrator.Framework", "src\Migrator.Framework\DotNetProjects.Migrator.Framework.csproj", "{BB1149D1-9253-4D3D-AA7F-0F43D4A126FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetProjects.Migrator.Providers", "src\Migrator.Providers\DotNetProjects.Migrator.Providers.csproj", "{50582997-F30B-4720-BCB5-A635F8FCA967}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetProjects.Migrator.Providers", "src\Migrator.Providers\DotNetProjects.Migrator.Providers.csproj", "{50582997-F30B-4720-BCB5-A635F8FCA967}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetProjects.Migrator", "src\Migrator\DotNetProjects.Migrator.csproj", "{C6DB41A3-8613-4B9D-8B54-ED3BA6111A7D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetProjects.Migrator", "src\Migrator\DotNetProjects.Migrator.csproj", "{C6DB41A3-8613-4B9D-8B54-ED3BA6111A7D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{ADBAE940-3246-4D16-A123-3C6D311CDA48}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -79,5 +84,8 @@ Global
 		{BB1149D1-9253-4D3D-AA7F-0F43D4A126FC} = {9844714F-717A-4C16-97A9-9995BB1B4A8B}
 		{50582997-F30B-4720-BCB5-A635F8FCA967} = {9844714F-717A-4C16-97A9-9995BB1B4A8B}
 		{C6DB41A3-8613-4B9D-8B54-ED3BA6111A7D} = {9844714F-717A-4C16-97A9-9995BB1B4A8B}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FCBFBB4D-FF78-4044-A35F-0DB216B846CE}
 	EndGlobalSection
 EndGlobal

@@ -141,35 +141,6 @@ WHERE  lower(tablenm) = lower('{0}')
 			return ExecuteStringQuery("SELECT datname FROM pg_database WHERE datistemplate = false");
 		}
 
-		//public override void ChangeColumn(string table, Column column)
-		//{
-		//    if (!ColumnExists(table, column.Name))
-		//    {
-		//        Logger.Warn("Column {0}.{1} does not exist", table, column.Name);
-		//        return;
-		//    }
-
-		//    var existingColumn = GetColumnByName(table, column.Name);
-
-		//    column.Name = existingColumn.Name; // name might have different case.
-
-		//    string tempColumn = "temp_" + column.Name;
-		//    RenameColumn(table, column.Name, tempColumn);
-
-		//    // check if this is not-null
-		//    bool isNotNull = (column.ColumnProperty & ColumnProperty.NotNull) == ColumnProperty.NotNull;
-
-		//    // remove the not-null option
-		//    column.ColumnProperty = (column.ColumnProperty & ~ColumnProperty.NotNull);
-
-		//    AddColumn(table, column);
-		//    ExecuteQuery(String.Format("UPDATE {0} SET {1}={2}", table, Dialect.Quote(column.Name), Dialect.Quote(tempColumn)));
-		//    RemoveColumn(table, tempColumn);
-
-		//    // if is not null, set that now
-		//    if (isNotNull) ExecuteQuery(string.Format("ALTER TABLE {0} ALTER COLUMN {1} SET NOT NULL", table, Dialect.Quote(column.Name)));
-		//}
-
 		public override void ChangeColumn(string table, Column column)
 		{
 			var oldColumn = GetColumnByName(table, column.Name);

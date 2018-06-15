@@ -6,8 +6,8 @@ namespace Migrator.Providers.Impl.Firebird
 {
 	public class FirebirdColumnPropertiesMapper : ColumnPropertiesMapper
 	{
-        public FirebirdColumnPropertiesMapper(Dialect dialect, string type)
-            : base(dialect, type)
+		public FirebirdColumnPropertiesMapper(Dialect dialect, string type)
+			: base(dialect, type)
 		{
 		}
 
@@ -24,8 +24,6 @@ namespace Migrator.Providers.Impl.Firebird
 			AddType(vals);
 
 			AddIdentity(column, vals);
-
-			//AddUnsigned(column, vals);
 
 			AddPrimaryKey(column, vals);
 

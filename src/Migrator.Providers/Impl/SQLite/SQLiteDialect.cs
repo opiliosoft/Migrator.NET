@@ -53,10 +53,6 @@ namespace Migrator.Providers.SQLite
 			);
 		}
 
-		//public override bool ColumnNameNeedsQuote => true;
-
-		//public override bool TableNameNeedsQuote => true;
-
 		public override string QuoteTemplate => "\"{0}\"";
 
 		public override string Default(object defaultValue)
