@@ -490,6 +490,19 @@ namespace Migrator.Framework
 		/// <summary>
 		/// Get values from a table
 		/// </summary>
+		/// <param name="table"></param>
+		/// <param name="columns"></param>
+		/// <param name="whereColumns"></param>
+		/// <param name="whereValues"></param>
+		/// <param name="nullWhereColumns"></param>
+		/// <param name="notNullWhereColumns"></param>
+		/// <returns></returns>
+		IDataReader SelectComplex(IDbCommand cmd, string table, string[] columns, string[] whereColumns = null,
+			object[] whereValues = null, string[] nullWhereColumns = null, string[] notNullWhereColumns = null);
+
+		/// <summary>
+		/// Get values from a table
+		/// </summary>
 		/// <param name="what">The columns to select</param>
 		/// <param name="from">The table to select from</param>
 		/// <returns></returns>

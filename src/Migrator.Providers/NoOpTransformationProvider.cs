@@ -291,6 +291,12 @@ namespace Migrator.Providers
 			return null;
 		}
 
+		public IDataReader SelectComplex(IDbCommand cmd, string table, string[] columns, string[] whereColumns = null,
+			object[] whereValues = null, string[] nullWhereColumns = null, string[] notNullWhereColumns = null)
+		{
+			return null;
+		}
+
 		public IDataReader Select(IDbCommand cmd, string what, string from)
 		{
 			return null;

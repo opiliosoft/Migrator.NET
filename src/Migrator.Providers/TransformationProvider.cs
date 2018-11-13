@@ -940,8 +940,13 @@ namespace Migrator.Providers
 			return ExecuteQuery(cmd, String.Format("SELECT {0} FROM {1} WHERE {2}", what, from, where));
 		}
 
-		public virtual IDataReader Select(IDbCommand cmd, string table, string[] columns, string[] whereColumns = null,
-			object[] whereValues = null)
+		public virtual IDataReader Select(IDbCommand cmd, string table, string[] columns, string[] whereColumns = null, object[] whereValues = null)
+		{
+			return SelectComplex(cmd, table, columns, whereColumns, whereValues);
+		}
+
+		public virtual IDataReader SelectComplex(IDbCommand cmd, string table, string[] columns, string[] whereColumns = null,
+			object[] whereValues = null, string[] nullWhereColumns = null, string[] notNullWhereColumns = null)
 		{
 			if (string.IsNullOrEmpty(table)) throw new ArgumentNullException("table");
 			if (columns == null) throw new ArgumentNullException("columns");
@@ -960,10 +965,30 @@ namespace Migrator.Providers
 
 			var query = String.Format("SELECT {0} FROM {1}", builder.ToString(), table);
 
+			if (whereColumns != null || nullWhereColumns != null || notNullWhereColumns != null)
+			{
+				query = String.Format("SELECT {0} FROM {1} WHERE ", builder.ToString(), table);
+			}
+
+			bool andNeeded = false;
 			if (whereColumns != null)
 			{
-				query = String.Format("SELECT {0} FROM {1} WHERE {2}", builder.ToString(), table,
-					GetWhereString(whereColumns, whereValues));
+				query += GetWhereString(whereColumns, whereValues);
+				andNeeded = true;
+			}
+			if (nullWhereColumns != null)
+			{
+				if (andNeeded)
+					query += " AND ";
+				query += GetWhereStringIsNull(nullWhereColumns);
+				andNeeded = true;
+			}
+			if (notNullWhereColumns != null)
+			{
+				if (andNeeded)
+					query += " AND ";
+				query += GetWhereStringIsNotNull(notNullWhereColumns);
+				andNeeded = true;
 			}
 
 			cmd.CommandText = query;
@@ -1206,6 +1231,32 @@ namespace Migrator.Providers
 				builder2.Append(QuoteColumnNameIfRequired(whereColumns[i]));
 				builder2.Append(" = ");
 				builder2.Append(GenerateParameterName(i + parameterStartIndex));
+			}
+
+			return builder2.ToString();
+		}
+
+		protected virtual string GetWhereStringIsNull(string[] whereColumns)
+		{
+			var builder2 = new StringBuilder();
+			for (int i = 0; i < whereColumns.Length; i++)
+			{
+				if (builder2.Length > 0) builder2.Append(" AND ");
+				builder2.Append(QuoteColumnNameIfRequired(whereColumns[i]));
+				builder2.Append(" IS NULL");
+			}
+
+			return builder2.ToString();
+		}
+
+		protected virtual string GetWhereStringIsNotNull(string[] whereColumns)
+		{
+			var builder2 = new StringBuilder();
+			for (int i = 0; i < whereColumns.Length; i++)
+			{
+				if (builder2.Length > 0) builder2.Append(" AND ");
+				builder2.Append(QuoteColumnNameIfRequired(whereColumns[i]));
+				builder2.Append(" IS NOT NULL");
 			}
 
 			return builder2.ToString();
