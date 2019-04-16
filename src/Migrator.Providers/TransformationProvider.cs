@@ -80,6 +80,8 @@ namespace Migrator.Providers
 			}
 		}
 
+		public int? CommandTimeout { get; set; }
+
 		public IDialect Dialect
 		{
 			get { return _dialect; }
@@ -1629,6 +1631,11 @@ namespace Migrator.Providers
 			if (_transaction != null)
 			{
 				cmd.Transaction = _transaction;
+			}
+
+			if (CommandTimeout.HasValue)
+			{
+				cmd.CommandTimeout = CommandTimeout.Value;
 			}
 			return cmd;
 		}

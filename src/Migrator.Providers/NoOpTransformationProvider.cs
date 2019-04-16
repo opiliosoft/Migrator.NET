@@ -19,6 +19,8 @@ namespace Migrator.Providers
 		{
 		}
 
+		public int? CommandTimeout { get; set; }
+
 		public IDialect Dialect
 		{
 			get { return null; }

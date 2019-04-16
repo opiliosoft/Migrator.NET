@@ -16,6 +16,8 @@ namespace Migrator.Framework
 
 		string SchemaInfoTable { get; set; }
 
+		int? CommandTimeout { get; set; }
+
 		IDialect Dialect { get; }
 
 		/// <summary>
