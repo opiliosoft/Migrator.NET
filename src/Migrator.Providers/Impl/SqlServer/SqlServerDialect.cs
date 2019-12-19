@@ -28,6 +28,7 @@ namespace Migrator.Providers.SqlServer
 			RegisterColumnType(DbType.DateTimeOffset, "DATETIMEOffset(7)");
 			RegisterColumnType(DbType.Decimal, "DECIMAL(19,5)");
 			RegisterColumnType(DbType.Decimal, 19, "DECIMAL(19, $l)");
+			RegisterColumnTypeWithParameters(DbType.Decimal, "DECIMAL({precision}, {scale})");
 			RegisterColumnType(DbType.Double, "DOUBLE PRECISION"); //synonym for FLOAT(53)
 			RegisterColumnType(DbType.Double, 24, "FLOAT(24)");
 			RegisterColumnType(DbType.Double, 53, "FLOAT(53)");

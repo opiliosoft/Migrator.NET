@@ -100,6 +100,8 @@ namespace Migrator.Providers.Oracle
 		public override ColumnPropertiesMapper GetColumnMapper(Column column)
 		{
 			string type = column.Size > 0 ? GetTypeName(column.Type, column.Size) : GetTypeName(column.Type);
+			if (column.Precision.HasValue || column.Scale.HasValue)
+				type = GetTypeNameParametrized(column.Type, column.Size, column.Precision ?? 0, column.Scale ?? 0);
 			if (!IdentityNeedsType && column.IsIdentity)
 				type = String.Empty;
 

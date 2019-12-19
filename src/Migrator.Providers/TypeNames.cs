@@ -48,7 +48,9 @@ namespace Migrator.Providers
 
 		readonly Dictionary<DbType, string> defaults = new Dictionary<DbType, string>();
 
-        readonly Dictionary<string, DbType> aliases = new Dictionary<string, DbType>();
+		readonly Dictionary<DbType, string> parametrized = new Dictionary<DbType, string>();
+
+		readonly Dictionary<string, DbType> aliases = new Dictionary<string, DbType>();
 
 		readonly Dictionary<DbType, SortedList<int, string>> weighted =
 			new Dictionary<DbType, SortedList<int, string>>();
@@ -82,6 +84,21 @@ namespace Migrator.Providers
 			if (!defaults.TryGetValue(typecode, out result))
 			{
 				throw new ArgumentException("Dialect does not support DbType." + typecode, "typecode");
+			}
+			return result;
+		}
+
+		/// <summary>
+		/// Get default type name for specified type
+		/// </summary>
+		/// <param name="typecode">the type key</param>
+		/// <returns>the default type name associated with the specified key</returns>
+		public string GetParametrized(DbType typecode)
+		{
+			string result;
+			if (!parametrized.TryGetValue(typecode, out result))
+			{
+				return null;
 			}
 			return result;
 		}
@@ -149,7 +166,18 @@ namespace Migrator.Providers
 			defaults[typecode] = value;
 		}
 
-	    public void PutAlias(DbType typecode, string value)
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="typecode"></param>
+		/// <param name="value"></param>
+		public void PutParametrized(DbType typecode, string value)
+		{
+			parametrized[typecode] = value;
+		}
+
+
+		public void PutAlias(DbType typecode, string value)
 	    {
             aliases[value] = typecode;
 	    }

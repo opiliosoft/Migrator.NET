@@ -83,6 +83,10 @@ namespace Migrator.Framework
 
 		public int Size { get; set; }
 
+		public int? Precision { get; set; }
+
+		public int? Scale { get; set; }
+
 		public ColumnProperty ColumnProperty { get; set; }
 
 		public object DefaultValue { get; set; }

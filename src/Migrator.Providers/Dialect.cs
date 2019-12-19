@@ -127,6 +127,21 @@ namespace Migrator.Providers
 		}
 
 		/// <summary>
+		/// Subclasses register a typename for the given type code and maximum
+		/// column length. <c>$l</c> in the type name will be replaced by the column
+		/// length (if appropriate)
+		/// <c>$2</c> in the type name will be replaced by the column
+		/// precision (if appropriate)
+		/// </summary>
+		/// <param name="code">The typecode</param>
+		/// <param name="capacity">Maximum length of database type</param>
+		/// <param name="name">The database type name</param>
+		protected void RegisterColumnTypeWithPrecision(DbType code, string name)
+		{
+			typeNames.Put(code, -1, name);
+		}
+
+		/// <summary>
 		/// Suclasses register a typename for the given type code. <c>$l</c> in the 
 		/// typename will be replaced by the column length (if appropriate).
 		/// </summary>
@@ -135,6 +150,18 @@ namespace Migrator.Providers
 		protected void RegisterColumnType(DbType code, string name)
 		{
 			typeNames.Put(code, name);
+		}
+
+		/// <summary>
+		/// Suclasses register a typename for the given type code.
+		/// <c>{length}</c>, <c>{precision}</c> & <c>{scale}</c> in the 
+		/// typename will be replaced.
+		// /// </summary>
+		/// <param name="code">The typecode</param>
+		/// <param name="name">The database type name</param>
+		protected void RegisterColumnTypeWithParameters(DbType code, string name)
+		{
+			typeNames.PutParametrized(code, name);
 		}
 
 
@@ -146,6 +173,8 @@ namespace Migrator.Providers
 		public virtual ColumnPropertiesMapper GetColumnMapper(Column column)
 		{
 			string type = column.Size > 0 ? GetTypeName(column.Type, column.Size) : GetTypeName(column.Type);
+			if (column.Precision.HasValue || column.Scale.HasValue)
+				type = GetTypeNameParametrized(column.Type, column.Size, column.Precision ?? 0, column.Scale ?? 0);
 			if (!IdentityNeedsType && column.IsIdentity)
 				type = String.Empty;
 
@@ -199,6 +228,24 @@ namespace Migrator.Providers
 				return resultWithLength;
 
 			return GetTypeName(type);
+		}
+
+		/// <summary>
+		/// Get the name of the database type associated with the given 
+		/// </summary>
+		/// <param name="type">The DbType</param>
+		/// <returns>The database type name used by ddl.</returns>
+		/// <param name="length"></param>
+		/// <param name="precision"></param>
+		/// <param name="scale"></param>
+		public virtual string GetTypeNameParametrized(DbType type, int length, int precision, int scale)
+		{
+			string result = typeNames.GetParametrized(type);
+			if (result != null)
+				return result.Replace("{length}", length.ToString())
+					.Replace("{precision}", precision.ToString())
+					.Replace("{scale}", scale.ToString());
+			return GetTypeName(type, length, precision, scale);
 		}
 
 		/// <summary>
