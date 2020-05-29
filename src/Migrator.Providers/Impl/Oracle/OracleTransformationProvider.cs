@@ -338,12 +338,12 @@ namespace Migrator.Providers.Oracle
 			return Convert.ToBoolean(value);
 		}
 
-		public override string GenerateParameterName(int index)
+		public override string GenerateParameterNameParameter(int index)
 		{
 			return "p" + index;
 		}
 
-		public override string GenerateParameterNameSQL(int index)
+		public override string GenerateParameterName(int index)
 		{
 			return ":p" + index;
 		}
