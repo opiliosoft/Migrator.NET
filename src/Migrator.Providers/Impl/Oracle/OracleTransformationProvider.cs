@@ -343,6 +343,11 @@ namespace Migrator.Providers.Oracle
 			return ":p" + index;
 		}
 
+		public override string GenerateParameterNameSQL(int index)
+		{
+			return "p" + index;
+		}
+
 		protected override void ConfigureParameterWithValue(IDbDataParameter parameter, int index, object value)
 		{
 			if (value is Guid || value is Guid?)

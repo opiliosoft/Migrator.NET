@@ -1080,7 +1080,7 @@ namespace Migrator.Providers
 				if (builder.Length > 0) builder.Append(", ");
 				builder.Append(QuoteColumnNameIfRequired(columns[i]));
 				builder.Append(" = ");
-				builder.Append(GenerateParameterName(i));
+				builder.Append(GenerateParameterNameSQL(i));
 			}
 
 			using (IDbCommand command = _connection.CreateCommand())
@@ -1130,7 +1130,7 @@ namespace Migrator.Providers
 				if (builder.Length > 0) builder.Append(", ");
 				builder.Append(QuoteColumnNameIfRequired(columns[i]));
 				builder.Append(" = ");
-				builder.Append(GenerateParameterName(i));
+				builder.Append(GenerateParameterNameSQL(i));
 			}
 
 			using (IDbCommand command = _connection.CreateCommand())
@@ -1193,7 +1193,7 @@ namespace Migrator.Providers
 			for (int i = 0; i < values.Length; i++)
 			{
 				if (builder.Length > 0) builder.Append(", ");
-				builder.Append(GenerateParameterName(i));
+				builder.Append(GenerateParameterNameSQL(i));
 			}
 
 			string parameterNames = builder.ToString();
@@ -1232,7 +1232,7 @@ namespace Migrator.Providers
 				if (builder2.Length > 0) builder2.Append(" AND ");
 				builder2.Append(QuoteColumnNameIfRequired(whereColumns[i]));
 				builder2.Append(" = ");
-				builder2.Append(GenerateParameterName(i + parameterStartIndex));
+				builder2.Append(GenerateParameterNameSQL(i + parameterStartIndex));
 			}
 
 			return builder2.ToString();
@@ -1722,6 +1722,11 @@ namespace Migrator.Providers
 		public virtual string GenerateParameterName(int index)
 		{
 			return "@p" + index;
+		}
+
+		public virtual string GenerateParameterNameSQL(int index)
+		{
+			return GenerateParameterName(index);
 		}
 
 		protected virtual void ConfigureParameterWithValue(IDbDataParameter parameter, int index, object value)
