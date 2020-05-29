@@ -340,12 +340,12 @@ namespace Migrator.Providers.Oracle
 
 		public override string GenerateParameterName(int index)
 		{
-			return ":p" + index;
+			return "p" + index;
 		}
 
 		public override string GenerateParameterNameSQL(int index)
 		{
-			return "p" + index;
+			return ":p" + index;
 		}
 
 		protected override void ConfigureParameterWithValue(IDbDataParameter parameter, int index, object value)
