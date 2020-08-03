@@ -84,7 +84,7 @@ namespace Migrator.Tests
 		{
 			_schemaBuilder
 				.AddColumn("MyColumnThatIsForeignKey")
-				.AsForeignKey().ReferencedTo("PrimaryKeyTable", "PrimaryKeyColumn").WithConstraint(ForeignKeyConstraint.NoAction);
+				.AsForeignKey().ReferencedTo("PrimaryKeyTable", "PrimaryKeyColumn").WithConstraint(ForeignKeyConstraintType.NoAction);
 
 			//Assert.IsTrue(_schemaBuilder.Columns[0].ColumnProperty == ColumnProperty.ForeignKey);
 		}

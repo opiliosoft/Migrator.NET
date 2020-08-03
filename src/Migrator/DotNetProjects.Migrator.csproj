@@ -7,7 +7,6 @@
     <AssemblyOriginatorKeyFile>MigratorDotNet.snk</AssemblyOriginatorKeyFile>
     <AssemblyName>DotNetProjects.Migrator</AssemblyName>
     <RootNamespace>DotNetProjects.Migrator</RootNamespace>
-    <NetStandardImplicitPackageVersion>2.0.0</NetStandardImplicitPackageVersion>
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">

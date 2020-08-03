@@ -1,5 +1,5 @@
-﻿using System.Data;
-using System.Data.SqlClient;
+﻿using Migrator.Providers.SqlServer;
+using System.Data;
 
 namespace Migrator.Providers.Utility
 {
@@ -7,7 +7,9 @@ namespace Migrator.Providers.Utility
 	{
 		public static void RemoveAllTablesFromDefaultDatabase(string connectionString)
 		{
-			using (var connection = new SqlConnection(connectionString))
+			var d = new SqlServerDialect();
+			using (var p = d.NewProviderForDialect(connectionString, null, null, null))
+			using (var connection = p.Connection)
 			{
 				connection.Open();
 				RemoveAllForeignKeys(connection);
@@ -16,17 +18,17 @@ namespace Migrator.Providers.Utility
 			}
 		}
 
-		static void DropAllTables(SqlConnection connection)
+		static void DropAllTables(IDbConnection connection)
 		{
 			ExecuteForEachTable(connection, "DROP TABLE ?");
 		}
 
-		static void RemoveAllForeignKeys(SqlConnection connection)
+		static void RemoveAllForeignKeys(IDbConnection connection)
 		{
 			using (
-				var dropConstraintsCommand =
-					new SqlCommand(
-						@"DECLARE @Sql NVARCHAR(500) DECLARE @Cursor CURSOR
+				var dropConstraintsCommand = connection.CreateCommand())
+			{ 
+				dropConstraintsCommand.CommandText = @"DECLARE @Sql NVARCHAR(500) DECLARE @Cursor CURSOR
 
 SET @Cursor = CURSOR FAST_FORWARD FOR
 
@@ -48,20 +50,22 @@ FETCH NEXT FROM @Cursor INTO @Sql
 
 END
 
-CLOSE @Cursor DEALLOCATE @Cursor",
-						connection))
-			{
+CLOSE @Cursor DEALLOCATE @Cursor";
 				dropConstraintsCommand.CommandType = CommandType.Text;
 				dropConstraintsCommand.ExecuteNonQuery();
 			}
 		}
 
-		static void ExecuteForEachTable(SqlConnection connection, string command)
+		static void ExecuteForEachTable(IDbConnection connection, string command)
 		{
-			using (var forEachCommand = new SqlCommand("sp_MSforeachtable", connection))
+			using (var forEachCommand = connection.CreateCommand())
 			{
+				forEachCommand.CommandText = "sp_MSforeachtable";
 				forEachCommand.CommandType = CommandType.StoredProcedure;
-				forEachCommand.Parameters.AddWithValue("@command1", command);
+				var par = forEachCommand.CreateParameter();
+				par.ParameterName = "@command1";
+				par.Value = command;
+				forEachCommand.Parameters.Add(par);
 				forEachCommand.ExecuteNonQuery();
 			}
 		}

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26228.10
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30323.103
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Runners", "Runners", "{1CC77E58-4B1E-4D3F-86EA-5078883434FC}"
 EndProject
@@ -11,9 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{8FF5F3DF
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extras", "Extras", "{02B014BC-CC35-466F-A2F4-C5B5AC830653}"
 	ProjectSection(SolutionItems) = preProject
-		doc\CHANGES.txt = doc\CHANGES.txt
-		default.build = default.build
-		local.properties-example = local.properties-example
 		src\MigratorDotNet.snk = src\MigratorDotNet.snk
 		doc\README.txt = doc\README.txt
 		doc\TODO.txt = doc\TODO.txt
@@ -25,7 +22,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migrator.MSBuild-vs2010", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migrator.NAnt-vs2010", "src\Migrator.NAnt\Migrator.NAnt-vs2010.csproj", "{CDD39DB7-C9C0-4ECA-AD36-1B4D0BF59101}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migrator.Tests-vs2010", "src\Migrator.Tests\Migrator.Tests-vs2010.csproj", "{882B6A93-67B8-45BF-8636-5796B1B1CBF8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migrator.Tests", "src\Migrator.Tests\Migrator.Tests.csproj", "{882B6A93-67B8-45BF-8636-5796B1B1CBF8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetProjects.Migrator.Framework", "src\Migrator.Framework\DotNetProjects.Migrator.Framework.csproj", "{BB1149D1-9253-4D3D-AA7F-0F43D4A126FC}"
 EndProject

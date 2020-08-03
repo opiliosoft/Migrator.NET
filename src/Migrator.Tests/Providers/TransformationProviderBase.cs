@@ -170,11 +170,13 @@ namespace Migrator.Tests.Providers
 		}
 
 		[Test]
-		[ExpectedException(typeof(MigrationException))]
 		public void RenameTableToExistingTable()
 		{
 			AddTable();
-			_provider.RenameTable("Test", "TestTwo");
+			Assert.Throws<MigrationException>(() =>
+			{
+				_provider.RenameTable("Test", "TestTwo");
+			});
 		}
 
 		[Test]
@@ -188,11 +190,13 @@ namespace Migrator.Tests.Providers
 		}
 
 		[Test]
-		[ExpectedException(typeof(MigrationException))]
 		public void RenameColumnToExistingColumn()
 		{
 			AddTable();
-			_provider.RenameColumn("Test", "Title", "name");
+			Assert.Throws<MigrationException>(() =>
+			{
+				_provider.RenameColumn("Test", "Title", "name");
+			});
 		}
 
 		[Test]

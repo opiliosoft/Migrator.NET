@@ -43,11 +43,13 @@ namespace Migrator.Tests
 		}
 
 		[Test]
-		[ExpectedException(typeof (DuplicatedVersionException))]
 		public void CheckForDuplicatedVersion()
 		{
 			_migrationLoader.MigrationsTypes.Add(typeof (MigratorTest.FirstMigration));
-			_migrationLoader.CheckForDuplicatedVersion();
+			Assert.Throws<DuplicatedVersionException>(() =>
+			{
+				_migrationLoader.CheckForDuplicatedVersion();
+			});
 		}
 
 		[Test]
