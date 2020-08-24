@@ -103,7 +103,7 @@ namespace Migrator
 				
 
 #if NETSTANDARD
-				var attrib = t.GetType().GetTypeInfo().GetCustomAttribute<MigrationAttribute>();
+				var attrib = t.GetTypeInfo().GetCustomAttribute<MigrationAttribute>();
 				if (attrib != null && typeof(IMigration).GetTypeInfo().IsAssignableFrom(t) && !attrib.Ignore)
 				{
 					migrations.Add(t);
