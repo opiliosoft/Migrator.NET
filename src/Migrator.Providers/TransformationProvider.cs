@@ -775,7 +775,7 @@ namespace Migrator.Providers
 
 		public virtual int ExecuteNonQuery(string sql)
 		{
-			return ExecuteNonQuery(sql, 30);
+			return ExecuteNonQuery(sql, this.CommandTimeout.HasValue ? this.CommandTimeout.Value : 30);
 		}
 
 		public virtual int ExecuteNonQuery(string sql, int timeout)
