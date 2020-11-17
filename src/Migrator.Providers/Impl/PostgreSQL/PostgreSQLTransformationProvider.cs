@@ -44,7 +44,7 @@ namespace Migrator.Providers.PostgreSQL
 		{
 			using (var cmd = CreateCommand())
 			using (IDataReader reader =
-				ExecuteQuery(cmd, string.Format("SELECT conname FROM pg_constraint WHERE contype = 'p' AND conrelid = (SELECT oid FROM pg_class WHERE relname LIKE '{0}');", table)))
+				ExecuteQuery(cmd, string.Format("SELECT conname FROM pg_constraint WHERE contype = 'p' AND conrelid = (SELECT oid FROM pg_class WHERE relname = lower('{0}'));", table)))
 			{
 				return reader.Read() ? reader.GetString(0) : null;
 			}
