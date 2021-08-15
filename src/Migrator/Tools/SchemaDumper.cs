@@ -17,6 +17,7 @@ using System.IO;
 using System.Linq;
 using Migrator.Framework;
 using Migrator.Providers;
+using Index = Migrator.Framework.Index;
 
 namespace Migrator.Tools
 {

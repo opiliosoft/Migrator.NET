@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30323.103
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31606.5
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Runners", "Runners", "{1CC77E58-4B1E-4D3F-86EA-5078883434FC}"
 EndProject
@@ -22,11 +22,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migrator.MSBuild-vs2010", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migrator.NAnt-vs2010", "src\Migrator.NAnt\Migrator.NAnt-vs2010.csproj", "{CDD39DB7-C9C0-4ECA-AD36-1B4D0BF59101}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migrator.Tests", "src\Migrator.Tests\Migrator.Tests.csproj", "{882B6A93-67B8-45BF-8636-5796B1B1CBF8}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetProjects.Migrator.Framework", "src\Migrator.Framework\DotNetProjects.Migrator.Framework.csproj", "{BB1149D1-9253-4D3D-AA7F-0F43D4A126FC}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetProjects.Migrator.Providers", "src\Migrator.Providers\DotNetProjects.Migrator.Providers.csproj", "{50582997-F30B-4720-BCB5-A635F8FCA967}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Migrator.Tests", "src\Migrator.Tests\Migrator.Tests.csproj", "{882B6A93-67B8-45BF-8636-5796B1B1CBF8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetProjects.Migrator", "src\Migrator\DotNetProjects.Migrator.csproj", "{C6DB41A3-8613-4B9D-8B54-ED3BA6111A7D}"
 EndProject
@@ -57,14 +53,6 @@ Global
 		{882B6A93-67B8-45BF-8636-5796B1B1CBF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{882B6A93-67B8-45BF-8636-5796B1B1CBF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{882B6A93-67B8-45BF-8636-5796B1B1CBF8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BB1149D1-9253-4D3D-AA7F-0F43D4A126FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BB1149D1-9253-4D3D-AA7F-0F43D4A126FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BB1149D1-9253-4D3D-AA7F-0F43D4A126FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BB1149D1-9253-4D3D-AA7F-0F43D4A126FC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{50582997-F30B-4720-BCB5-A635F8FCA967}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{50582997-F30B-4720-BCB5-A635F8FCA967}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{50582997-F30B-4720-BCB5-A635F8FCA967}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{50582997-F30B-4720-BCB5-A635F8FCA967}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C6DB41A3-8613-4B9D-8B54-ED3BA6111A7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C6DB41A3-8613-4B9D-8B54-ED3BA6111A7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C6DB41A3-8613-4B9D-8B54-ED3BA6111A7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -78,8 +66,6 @@ Global
 		{A145FFA9-5FE6-4636-93B8-0C110D132BF3} = {1CC77E58-4B1E-4D3F-86EA-5078883434FC}
 		{CDD39DB7-C9C0-4ECA-AD36-1B4D0BF59101} = {1CC77E58-4B1E-4D3F-86EA-5078883434FC}
 		{882B6A93-67B8-45BF-8636-5796B1B1CBF8} = {8FF5F3DF-DF83-470C-ADFE-C0FF2B858F0F}
-		{BB1149D1-9253-4D3D-AA7F-0F43D4A126FC} = {9844714F-717A-4C16-97A9-9995BB1B4A8B}
-		{50582997-F30B-4720-BCB5-A635F8FCA967} = {9844714F-717A-4C16-97A9-9995BB1B4A8B}
 		{C6DB41A3-8613-4B9D-8B54-ED3BA6111A7D} = {9844714F-717A-4C16-97A9-9995BB1B4A8B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

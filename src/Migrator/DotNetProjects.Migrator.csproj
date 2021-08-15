@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net40</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net40;net5.0</TargetFrameworks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>MigratorDotNet.snk</AssemblyOriginatorKeyFile>
@@ -9,26 +9,32 @@
     <RootNamespace>DotNetProjects.Migrator</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
-    <Compile Remove="Compile\ScriptEngine.cs" />
-  </ItemGroup>
+	<PropertyGroup>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<PackageProjectUrl>https://github.com/dotnetprojects/Migrator.NET</PackageProjectUrl>
+		<PackageLicenseExpression>MPL-1.1</PackageLicenseExpression>
+		<AssemblyVersion>7.0.0.0</AssemblyVersion>
+		<FileVersion>7.0.0.0</FileVersion>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Compile\" />
-  </ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+	  <PackageReference Include="System.CodeDom">
+	    <Version>5.0.0</Version>
+	  </PackageReference>
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Include="..\config\GlobalAssemblyInfo.cs" Link="GlobalAssemblyInfo.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\..\default.build" Link="default.build" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Migrator.Framework\DotNetProjects.Migrator.Framework.csproj" />
-    <ProjectReference Include="..\Migrator.Providers\DotNetProjects.Migrator.Providers.csproj" />
-  </ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
+	  <PackageReference Include="System.CodeDom">
+	    <Version>5.0.0</Version>
+	  </PackageReference>
+	</ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <DefineConstants>$(DefineConstants);NETSTANDARD</DefineConstants>

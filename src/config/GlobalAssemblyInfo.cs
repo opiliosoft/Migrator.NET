@@ -6,8 +6,4 @@ using System.Runtime.InteropServices;
 
 [assembly: ComVisible(false)]
 
-#if NETSTANDARD
-[assembly: AssemblyVersion("5.0.0.1")]
-#else
-[assembly: AssemblyVersion("5.0.0.1")]
-#endif
+[assembly: AssemblyVersion("6.0.99.0")]

@@ -21,8 +21,6 @@
 	</ItemGroup>
 	
   <ItemGroup>
-    <ProjectReference Include="..\Migrator.Framework\DotNetProjects.Migrator.Framework.csproj" />
-    <ProjectReference Include="..\Migrator.Providers\DotNetProjects.Migrator.Providers.csproj" />
     <ProjectReference Include="..\Migrator\DotNetProjects.Migrator.csproj" />
   </ItemGroup>
 
