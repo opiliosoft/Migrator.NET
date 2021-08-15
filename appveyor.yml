@@ -26,7 +26,7 @@ build:
 test: off
 
 artifacts:
-  - path: '**\DotNetProjects.Migrator*.nupkg'
+  - path: '**\DotNetProjects.Migrator*.*nupkg'
 
 #uncomment to publish to NuGet
 deploy:
