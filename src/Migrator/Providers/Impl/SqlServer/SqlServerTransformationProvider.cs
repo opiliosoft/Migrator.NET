@@ -436,7 +436,7 @@ join sys.index_columns ic on ic.object_id = i.object_id
     and ic.index_id = i.index_id
 join sys.columns co on co.object_id = i.object_id 
     and co.column_id = ic.column_id
-where i.[type] = 2 
+where (select count(*) from sys.index_columns ic1 where ic1.object_id = i.object_id and ic1.index_id = i.index_id) = 1 
 and o.[Name] = '{0}'
 and co.[Name] = '{1}'",
 					table, column);
