@@ -194,7 +194,9 @@ namespace Migrator.Providers.SqlServer
 			var sql = @"SELECT  Tab.[name] AS TableName,
                         Ind.[name] AS IndexName,
                         Ind.[type_desc] AS IndexType,
+                        Ind.[is_primary_key] AS IndexPrimary,
                         Ind.[is_unique] AS IndexUnique,
+                        Ind.[is_unique_constraint] AS ConstraintUnique,
                         SUBSTRING(( SELECT  ',' + AC.name
                     FROM    sys.[tables] AS T
                             INNER JOIN sys.[indexes] I ON T.[object_id] = I.[object_id]
@@ -205,7 +207,7 @@ namespace Migrator.Providers.SqlServer
                     WHERE   Ind.[object_id] = I.[object_id]
                             AND Ind.index_id = I.index_id
                             AND IC.is_included_column = 0
-                    ORDER BY IC.key_ordinal 
+                    ORDER BY IC.key_ordinal
                   FOR
                     XML PATH('') ), 2, 8000) AS KeyCols,
         SUBSTRING(( SELECT  ',' + AC.name
@@ -218,7 +220,7 @@ namespace Migrator.Providers.SqlServer
                     WHERE   Ind.[object_id] = I.[object_id]
                             AND Ind.index_id = I.index_id
                             AND IC.is_included_column = 1
-                    ORDER BY IC.key_ordinal 
+                    ORDER BY IC.key_ordinal
                   FOR
                     XML PATH('') ), 2, 8000) AS IncludeCols
 FROM    sys.[indexes] Ind
@@ -236,11 +238,12 @@ FROM    sys.[indexes] Ind
 						{
 							Name = reader.GetString(1),
 							Clustered = reader.GetString(2) == "CLUSTERED",
-							PrimaryKey = reader.GetString(2) == "CLUSTERED",
-							Unique = reader.GetBoolean(3)
+							PrimaryKey = reader.GetBoolean(3),
+							Unique = reader.GetBoolean(4),
+							UniqueConstraint = reader.GetBoolean(5),
 						};
-						if (!reader.IsDBNull(4)) idx.KeyColumns = (reader.GetString(4).Split(','));
-						if (!reader.IsDBNull(5)) idx.IncludeColumns = (reader.GetString(5).Split(','));
+						if (!reader.IsDBNull(6)) idx.KeyColumns = (reader.GetString(6).Split(','));
+						if (!reader.IsDBNull(7)) idx.IncludeColumns = (reader.GetString(7).Split(','));
 						retVal.Add(idx);
 					}
 				}
@@ -428,15 +431,15 @@ FROM    sys.[indexes] Ind
 		protected virtual string FindIndexes(string table, string column)
 		{
 			return string.Format(@"
-select 
-    i.name as IndexName    
-from sys.indexes i 
+select
+    i.name as IndexName
+from sys.indexes i
 join sys.objects o on i.object_id = o.object_id
-join sys.index_columns ic on ic.object_id = i.object_id 
+join sys.index_columns ic on ic.object_id = i.object_id
     and ic.index_id = i.index_id
-join sys.columns co on co.object_id = i.object_id 
+join sys.columns co on co.object_id = i.object_id
     and co.column_id = ic.column_id
-where (select count(*) from sys.index_columns ic1 where ic1.object_id = i.object_id and ic1.index_id = i.index_id) = 1 
+where (select count(*) from sys.index_columns ic1 where ic1.object_id = i.object_id and ic1.index_id = i.index_id) = 1
 and o.[Name] = '{0}'
 and co.[Name] = '{1}'",
 					table, column);

@@ -501,6 +501,7 @@ namespace Migrator.Providers.Oracle
 					if (!reader.IsDBNull(1))
 					{
 						index.PrimaryKey = reader.GetString(1) == "P" ? true : false;
+						index.UniqueConstraint = reader.GetString(1) == "C" ? true : false;
 					}
 					else
 						index.PrimaryKey = false;
@@ -508,7 +509,7 @@ namespace Migrator.Providers.Oracle
 					index.Clustered = false; //???
 
 					//if (!reader.IsDBNull(3)) index.KeyColumns = (reader.GetString(3).Split(','));
-					//if (!reader.IsDBNull(4)) index.IncludeColumns = (reader.GetString(4).Split(','));                    
+					//if (!reader.IsDBNull(4)) index.IncludeColumns = (reader.GetString(4).Split(','));
 
 					indexes.Add(index);
 				}
