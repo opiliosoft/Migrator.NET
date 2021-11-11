@@ -1881,7 +1881,7 @@ namespace Migrator.Providers
 			{
 				if (index.Name == null || !IndexExists(table, index.Name)) continue;
 
-				if (index.PrimaryKey || index.Clustered || index.Unique)
+				if (index.PrimaryKey || index.UniqueConstraint)
 					RemoveConstraint(table, index.Name);
 				else
 					RemoveIndex(table, index.Name);

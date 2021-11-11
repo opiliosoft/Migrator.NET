@@ -60,6 +60,7 @@ SELECT * FROM (
 SELECT i.relname as indname,
        idx.indisprimary,
        idx.indisunique,
+       idx.indisclustered,
        i.relowner as indowner,
        cast(idx.indrelid::regclass as varchar) as tablenm,
        am.amname as indam,
@@ -95,10 +96,11 @@ WHERE  lower(tablenm) = lower('{0}')
 							Name = reader.GetString(0),
 							PrimaryKey = reader.GetBoolean(1),
 							Unique = reader.GetBoolean(2),
+							Clustered = reader.GetBoolean(3),
 						};
-						//var cols = reader.GetString(7);
+						//var cols = reader.GetString(8);
 						//cols = cols.Substring(1, cols.Length - 2);
-						//idx.KeyColumns = cols.Split(',');                        
+						//idx.KeyColumns = cols.Split(',');
 						retVal.Add(idx);
 					}
 				}
