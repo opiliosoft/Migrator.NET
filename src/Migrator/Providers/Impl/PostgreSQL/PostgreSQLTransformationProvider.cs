@@ -98,9 +98,9 @@ WHERE  lower(tablenm) = lower('{0}')
 							Unique = reader.GetBoolean(2),
 							Clustered = reader.GetBoolean(3),
 						};
-						//var cols = reader.GetString(8);
-						//cols = cols.Substring(1, cols.Length - 2);
-						//idx.KeyColumns = cols.Split(',');
+						var cols = reader.GetString(8);
+						cols = cols.Substring(1, cols.Length - 2);
+						idx.KeyColumns = cols.Split(',');
 						retVal.Add(idx);
 					}
 				}
