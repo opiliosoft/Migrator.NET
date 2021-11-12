@@ -1449,7 +1449,7 @@ namespace Migrator.Providers
 		public virtual void MigrationApplied(long version, string scope)
 		{
 			CreateSchemaInfoTable();
-			Insert(_schemaInfotable, new string[] { "Scope", "Version", "TimeStamp" }, new object[] { scope ?? _scope, version, DateTime.Now });
+			Insert(_schemaInfotable, new string[] { "Scope", "Version", "TimeStamp" }, new object[] { scope ?? _scope, version, DateTime.UtcNow });
 			_appliedMigrations.Add(version);
 		}
 
