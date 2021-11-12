@@ -65,11 +65,11 @@ SELECT i.relname as indname,
        cast(idx.indrelid::regclass as varchar) as tablenm,
        am.amname as indam,
        idx.indkey,
-       ARRAY(
+       ARRAY_TO_STRING(ARRAY(
        SELECT pg_get_indexdef(idx.indexrelid, k + 1, true)
        FROM generate_subscripts(idx.indkey, 1) as k
        ORDER BY k
-       ) as indkey_names,
+       ), ',') as indkey_names,
        idx.indexprs IS NOT NULL as indexprs,
        idx.indpred IS NOT NULL as indpred
 FROM   pg_index as idx
@@ -99,7 +99,6 @@ WHERE  lower(tablenm) = lower('{0}')
 							Clustered = reader.GetBoolean(3),
 						};
 						var cols = reader.GetString(8);
-						cols = cols.Substring(1, cols.Length - 2);
 						idx.KeyColumns = cols.Split(',');
 						retVal.Add(idx);
 					}
