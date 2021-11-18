@@ -351,6 +351,13 @@ FROM    sys.[indexes] Ind
 			return ExecuteStringQuery("SELECT name FROM sys.databases");
 		}
 
+		public override void KillDatabaseConnections(string databaseName)
+		{
+			ExecuteNonQuery(string.Format(
+				"USE [master]" + System.Environment.NewLine +
+				"ALTER DATABASE {0} SET SINGLE_USER WITH ROLLBACK IMMEDIATE", databaseName));
+		}
+
 		public override void DropDatabases(string databaseName)
 		{
 			ExecuteNonQuery(string.Format("USE [master]" + System.Environment.NewLine + "DROP DATABASE {0}", databaseName));
