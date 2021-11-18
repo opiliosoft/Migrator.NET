@@ -430,7 +430,7 @@ WHERE type = 'index' AND tbl_name = '{0}';";
 				while (reader.Read())
 				{
 					string idxSql = null;
-					if (reader.IsDBNull(3))
+					if (!reader.IsDBNull(3))
 						idxSql = reader.GetString(3);
 					var idx = new Index
 					{
