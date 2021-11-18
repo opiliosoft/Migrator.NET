@@ -417,6 +417,48 @@ namespace Migrator.Providers.SQLite
 			}
 		}
 
+		public override Index[] GetIndexes(string table)
+		{
+			var retVal = new List<Index>();
+
+			var sql = @"SELECT type, name, tbl_name, sql 
+FROM sqlite_master 
+WHERE type = 'index' AND tbl_name = '{0}';";
+			using (var cmd = CreateCommand())
+			using (var reader = ExecuteQuery(cmd, string.Format(sql, table)))
+			{
+				while (reader.Read())
+				{
+					string idxSql = null;
+					if (reader.IsDBNull(3))
+						idxSql = reader.GetString(3);
+					var idx = new Index
+					{
+						Name = reader.GetString(0)
+					};
+					idx.PrimaryKey = idx.Name.StartsWith("sqlite_autoindex_");
+					idx.Unique = idx.Name.StartsWith("sqlite_autoindex_") || (idxSql != null && idxSql.Contains("UNIQUE"));
+				}
+			}
+
+			foreach(var idx in retVal)
+			{
+				sql = "PRAGMA index_info(\"" + idx.Name + "\")";
+				using (var cmd = CreateCommand())
+				using (var reader = ExecuteQuery(cmd, sql))
+				{
+					var columns = new List<string>();
+					while (reader.Read())
+					{
+						columns.Add(reader.GetString(2));
+					}
+					idx.KeyColumns = columns.ToArray();
+				}
+			}
+
+			return retVal.ToArray();
+		}
+
 		public override void AddTable(string name, string engine, params IDbField[] fields)
 		{
 			if (TableExists(name))
