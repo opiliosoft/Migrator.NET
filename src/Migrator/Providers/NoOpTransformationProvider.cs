@@ -462,6 +462,11 @@ namespace Migrator.Providers
 
 		}
 
+		public void KillDatabaseConnections(string databaseName)
+		{
+
+		}
+
 		public void DropDatabases(string databaseName)
 		{
 

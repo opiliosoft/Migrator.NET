@@ -530,6 +530,11 @@ namespace Migrator.Providers
 			ExecuteNonQuery(string.Format("CREATE DATABASE {0}", databaseName));
 		}
 
+		public virtual void KillDatabaseConnections(string databaseName)
+		{
+			//todo, implement this for each DB, no default implementation possible!!!
+		}
+
 		public virtual void DropDatabases(string databaseName)
 		{
 			ExecuteNonQuery(string.Format("DROP DATABASE {0}", databaseName));

@@ -624,6 +624,12 @@ namespace Migrator.Framework
 		void CreateDatabases(string databaseName);
 
 		/// <summary>
+		/// Close all Connections to the Database. Sometimes needed for DropDatabase or redefine PrimaryKey.
+		/// </summary>
+		/// <param name="databaseName">Name of the database to close all Connections</param>
+		void KillDatabaseConnections(string databaseName);
+
+		/// <summary>
 		/// Delete a database from the server
 		/// </summary>
 		/// <param name="databaseName">Name of the database to delete</param>
