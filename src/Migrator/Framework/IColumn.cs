@@ -28,6 +28,7 @@ namespace Migrator.Framework
 		bool IsIdentity { get; }
 
 		bool IsPrimaryKey { get; }
+		bool IsPrimaryKeyNonClustered { get; }
 
 		object DefaultValue { get; set; }
 	}
