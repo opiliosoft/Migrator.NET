@@ -515,6 +515,21 @@ namespace Migrator.Providers.Oracle
 				}
 			}
 
+			foreach (var idx in indexes)
+			{
+				sql = "SELECT column_Name FROM all_ind_columns WHERE table_name = '" + table + "' and index_name = '" + idx.Name + "'";
+				using (var cmd = CreateCommand())
+				using (var reader = ExecuteQuery(cmd, sql))
+				{
+					var columns = new List<string>();
+					while (reader.Read())
+					{
+						columns.Add(reader.GetString(0));
+					}
+					idx.KeyColumns = columns.ToArray();
+				}
+			}
+
 			return indexes.ToArray();
 		}
 
