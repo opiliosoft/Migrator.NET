@@ -54,7 +54,7 @@ namespace Migrator.Providers.SQLite
 		{
 			string sqldef = null;
 			using (var cmd = CreateCommand())
-			using (IDataReader reader = ExecuteQuery(cmd, String.Format("SELECT sql FROM sqlite_master WHERE type='table' AND name='{0}'", table)))
+			using (IDataReader reader = ExecuteQuery(cmd, String.Format("SELECT sql FROM sqlite_master WHERE type='table' AND lower(name)=lower('{0}')", table)))
 			{
 				if (reader.Read())
 				{
@@ -161,7 +161,7 @@ namespace Migrator.Providers.SQLite
 			var sqlStrings = new List<string>();
 
 			using (var cmd = CreateCommand())
-			using (IDataReader reader = ExecuteQuery(cmd, String.Format("SELECT sql FROM sqlite_master WHERE type='index' AND sql NOT NULL AND tbl_name='{0}'", table)))
+			using (IDataReader reader = ExecuteQuery(cmd, String.Format("SELECT sql FROM sqlite_master WHERE type='index' AND sql NOT NULL AND lower(tbl_name)=lower('{0}')", table)))
 				while (reader.Read())
 					sqlStrings.Add((string)reader[0]);
 
@@ -411,7 +411,7 @@ namespace Migrator.Providers.SQLite
 		{
 			using (var cmd = CreateCommand())
 			using (IDataReader reader =
-				ExecuteQuery(cmd, String.Format("SELECT name FROM sqlite_master WHERE type='index' and name='{0}'", name)))
+				ExecuteQuery(cmd, String.Format("SELECT name FROM sqlite_master WHERE type='index' and lower(name)=lower('{0}')", name)))
 			{
 				return reader.Read();
 			}
@@ -423,7 +423,7 @@ namespace Migrator.Providers.SQLite
 
 			var sql = @"SELECT type, name, tbl_name, sql
 FROM sqlite_master
-WHERE type = 'index' AND tbl_name = '{0}';";
+WHERE type = 'index' AND lower(tbl_name) = lower('{0}');";
 			using (var cmd = CreateCommand())
 			using (var reader = ExecuteQuery(cmd, string.Format(sql, table)))
 			{
