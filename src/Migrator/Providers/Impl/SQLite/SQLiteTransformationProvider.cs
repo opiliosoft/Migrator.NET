@@ -421,8 +421,8 @@ namespace Migrator.Providers.SQLite
 		{
 			var retVal = new List<Index>();
 
-			var sql = @"SELECT type, name, tbl_name, sql 
-FROM sqlite_master 
+			var sql = @"SELECT type, name, tbl_name, sql
+FROM sqlite_master
 WHERE type = 'index' AND tbl_name = '{0}';";
 			using (var cmd = CreateCommand())
 			using (var reader = ExecuteQuery(cmd, string.Format(sql, table)))
@@ -434,7 +434,7 @@ WHERE type = 'index' AND tbl_name = '{0}';";
 						idxSql = reader.GetString(3);
 					var idx = new Index
 					{
-						Name = reader.GetString(0)
+						Name = reader.GetString(1)
 					};
 					idx.PrimaryKey = idx.Name.StartsWith("sqlite_autoindex_");
 					idx.Unique = idx.Name.StartsWith("sqlite_autoindex_") || (idxSql != null && idxSql.Contains("UNIQUE"));
