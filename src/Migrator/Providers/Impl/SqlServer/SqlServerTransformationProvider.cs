@@ -77,7 +77,18 @@ namespace Migrator.Providers.SqlServer
 			table = _dialect.TableNameNeedsQuote ? _dialect.Quote(table) : table;
 			ExecuteNonQuery(string.Format("ALTER TABLE {0} ADD {1}", table, sqlColumn));
 		}
-
+		public override void AddPrimaryKeyNonClustered(string name, string table, params string[] columns)
+		{
+			if (ConstraintExists(table, name))
+			{
+				Logger.Warn("Primary key {0} already exists", name);
+				return;
+			}
+			string nonclusteredString = "NONCLUSTERED";
+			ExecuteNonQuery(
+			String.Format("ALTER TABLE {0} ADD CONSTRAINT {1} PRIMARY KEY {2} ({3}) ", table, name, nonclusteredString,
+						  String.Join(",", QuoteColumnNamesIfRequired(columns))));
+		}
 		public override void AddIndex(string table, Index index)
 		{
 			if (IndexExists(table, index.Name))

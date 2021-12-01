@@ -643,15 +643,7 @@ namespace Migrator.Providers
 		}
 		public virtual void AddPrimaryKeyNonClustered(string name, string table, params string[] columns)
 		{
-			if (ConstraintExists(table, name))
-			{
-				Logger.Warn("Primary key {0} already exists", name);
-				return;
-			}
-			string nonclusteredString = "NONCLUSTERED";
-			ExecuteNonQuery(
-			String.Format("ALTER TABLE {0} ADD CONSTRAINT {1} PRIMARY KEY {2} ({3}) ", table, name, nonclusteredString,
-						  String.Join(",", QuoteColumnNamesIfRequired(columns))));
+			this.AddPrimaryKey(name, table, columns);
 		}
 		public virtual void AddUniqueConstraint(string name, string table, params string[] columns)
 		{
