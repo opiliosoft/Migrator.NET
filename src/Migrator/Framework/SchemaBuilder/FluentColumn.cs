@@ -67,5 +67,10 @@ namespace Migrator.Framework.SchemaBuilder
 		public ForeignKeyConstraintType Constraint { get; set; }
 
 		public ForeignKey ForeignKey { get; set; }
+
+		public bool IsPrimaryKeyNonClustered
+		{
+			get { return _inner.IsPrimaryKeyNonClustered; }
+		}
 	}
 }
