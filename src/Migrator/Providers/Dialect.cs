@@ -53,7 +53,11 @@ namespace Migrator.Providers
 		{
 			get { return true; }
 		}
-
+		public virtual bool SupportsNonClustered
+		{
+			get { return false; }
+		}
+		
 		public virtual bool NeedsNotNullForIdentity
 		{
 			get { return true; }

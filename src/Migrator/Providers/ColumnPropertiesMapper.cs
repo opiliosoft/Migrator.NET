@@ -174,7 +174,8 @@ namespace Migrator.Providers
 		}
 		protected virtual void AddPrimaryKeyNonClustered(Column column, List<string> vals)
 		{
-			AddValueIfSelected(column, ColumnProperty.PrimaryKeyNonClustered, vals);
+			if(dialect.SupportsNonClustered)
+				AddValueIfSelected(column, ColumnProperty.PrimaryKeyNonClustered, vals);
 		}
 		protected virtual void AddPrimaryKey(Column column, List<string> vals)
 		{
