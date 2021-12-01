@@ -97,6 +97,7 @@ namespace Migrator.Providers
 			AddNull(column, vals);
 
 			AddPrimaryKey(column, vals);
+			AddPrimaryKeyNonClustered(column, vals);
 
 			AddIdentityAgain(column, vals);
 
@@ -171,7 +172,7 @@ namespace Migrator.Providers
 		}
 		protected virtual void AddPrimaryKeyNonClustered(Column column, List<string> vals)
 		{
-				AddValueIfSelected(column, ColumnProperty.PrimaryKeyNonClustered, vals);
+			AddValueIfSelected(column, ColumnProperty.PrimaryKeyNonClustered, vals);
 		}
 		protected virtual void AddPrimaryKey(Column column, List<string> vals)
 		{
