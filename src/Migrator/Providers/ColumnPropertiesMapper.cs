@@ -97,6 +97,7 @@ namespace Migrator.Providers
 			AddNull(column, vals);
 
 			AddPrimaryKey(column, vals);
+
 			AddPrimaryKeyNonClustered(column, vals);
 
 			AddIdentityAgain(column, vals);
@@ -135,6 +136,7 @@ namespace Migrator.Providers
 			AddPrimaryKey(column, vals);
 
 			AddIdentityAgain(column, vals);
+
 			AddPrimaryKeyNonClustered(column, vals);
 
 			AddUnique(column, vals);
