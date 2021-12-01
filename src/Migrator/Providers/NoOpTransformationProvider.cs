@@ -192,7 +192,10 @@ namespace Migrator.Providers
 		{
 			// No Op
 		}
-
+		public void AddPrimaryKeyNonClustered(string name, string table, params string[] columns)
+		{
+			// No Op
+		}
 		public void GenerateForeignKey(string primaryTable, string primaryColumn, string refTable, string refColumn)
 		{
 			// No Op
