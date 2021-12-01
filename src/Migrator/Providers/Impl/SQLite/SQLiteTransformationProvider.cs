@@ -438,6 +438,7 @@ WHERE type = 'index' AND tbl_name = '{0}';";
 					};
 					idx.PrimaryKey = idx.Name.StartsWith("sqlite_autoindex_");
 					idx.Unique = idx.Name.StartsWith("sqlite_autoindex_") || (idxSql != null && idxSql.Contains("UNIQUE"));
+					retVal.Add(idx);
 				}
 			}
 
