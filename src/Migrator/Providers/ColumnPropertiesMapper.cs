@@ -98,6 +98,8 @@ namespace Migrator.Providers
 
 			AddPrimaryKey(column, vals);
 
+			AddPrimaryKeyNonClustered(column, vals);
+
 			AddIdentityAgain(column, vals);
 
 			AddUnique(column, vals);
@@ -135,6 +137,8 @@ namespace Migrator.Providers
 
 			AddIdentityAgain(column, vals);
 
+			AddPrimaryKeyNonClustered(column, vals);
+
 			AddUnique(column, vals);
 
 			AddForeignKey(column, vals);
@@ -168,7 +172,11 @@ namespace Migrator.Providers
 			if (dialect.IdentityNeedsType)
 				AddValueIfSelected(column, ColumnProperty.Identity, vals);
 		}
-
+		protected virtual void AddPrimaryKeyNonClustered(Column column, List<string> vals)
+		{
+			if(dialect.SupportsNonClustered)
+				AddValueIfSelected(column, ColumnProperty.PrimaryKeyNonClustered, vals);
+		}
 		protected virtual void AddPrimaryKey(Column column, List<string> vals)
 		{
 			AddValueIfSelected(column, ColumnProperty.PrimaryKey, vals);

@@ -232,7 +232,6 @@ namespace Migrator.Providers.SQLite
 			}
 			this.changeColumnInternal(table, columns, newCol.ToArray());
 		}
-
 		public override void AddUniqueConstraint(string name, string table, params string[] columns)
 		{
 			var constr = new Unique() { KeyColumns = columns, Name = name };
@@ -442,7 +441,7 @@ WHERE type = 'index' AND lower(tbl_name) = lower('{0}');";
 				}
 			}
 
-			foreach(var idx in retVal)
+			foreach (var idx in retVal)
 			{
 				sql = "PRAGMA index_info(\"" + idx.Name + "\")";
 				using (var cmd = CreateCommand())

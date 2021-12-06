@@ -46,7 +46,11 @@ namespace Migrator.Framework
 		/// <summary>
 		/// Primary key. Make the column a PrimaryKey and unsigned
 		/// </summary>
-		PrimaryKeyWithIdentity = PrimaryKey | Identity
+		PrimaryKeyWithIdentity = PrimaryKey | Identity,
+		/// <summary>
+		/// Primary key. Make the column a PrimaryKey and unsigned
+		/// </summary>
+		PrimaryKeyNonClustered = 256 | PrimaryKey
 	}
 
 	public static class ColumnPropertyExtensions

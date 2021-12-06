@@ -100,5 +100,9 @@ namespace Migrator.Framework
 		{
 			get { return (ColumnProperty & ColumnProperty.PrimaryKey) == ColumnProperty.PrimaryKey; }
 		}
+		public bool IsPrimaryKeyNonClustered
+		{
+			get { return (ColumnProperty & ColumnProperty.PrimaryKeyNonClustered) == ColumnProperty.PrimaryKeyNonClustered; }
+		}
 	}
 }

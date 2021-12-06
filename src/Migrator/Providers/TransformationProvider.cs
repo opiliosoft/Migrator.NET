@@ -641,7 +641,10 @@ namespace Migrator.Providers
 				String.Format("ALTER TABLE {0} ADD CONSTRAINT {1} PRIMARY KEY ({2}) ", table, name,
 							  String.Join(",", QuoteColumnNamesIfRequired(columns))));
 		}
-
+		public virtual void AddPrimaryKeyNonClustered(string name, string table, params string[] columns)
+		{
+			this.AddPrimaryKey(name, table, columns);
+		}
 		public virtual void AddUniqueConstraint(string name, string table, params string[] columns)
 		{
 			if (ConstraintExists(table, name))
@@ -1923,5 +1926,7 @@ namespace Migrator.Providers
 			var tables = c.GetSchema("Columns", tableRestrictions);
 			return from DataRow row in tables.Rows select (row["TABLE_NAME"] as string);
 		}
+
+
 	}
 }

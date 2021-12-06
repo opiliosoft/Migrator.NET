@@ -21,6 +21,7 @@ namespace Migrator.Providers
 			RegisterProperty(ColumnProperty.NotNull, "NOT NULL");
 			RegisterProperty(ColumnProperty.Unique, "UNIQUE");
 			RegisterProperty(ColumnProperty.PrimaryKey, "PRIMARY KEY");
+			RegisterProperty(ColumnProperty.PrimaryKeyNonClustered, " NONCLUSTERED");
 		}
 
 		public virtual int MaxKeyLength
@@ -52,7 +53,11 @@ namespace Migrator.Providers
 		{
 			get { return true; }
 		}
-
+		public virtual bool SupportsNonClustered
+		{
+			get { return false; }
+		}
+		
 		public virtual bool NeedsNotNullForIdentity
 		{
 			get { return true; }
