@@ -267,6 +267,27 @@ WHERE  lower(tablenm) = lower('{0}')
 			return columns.ToArray();
 		}
 
+		public override string[] GetConstraints(string table)
+		{
+			var constraints = new List<string>();
+			using (IDbCommand cmd = CreateCommand())
+			using (
+				IDataReader reader =
+					ExecuteQuery(
+						cmd, String.Format(@"select c.conname as constraint_name
+from pg_constraint c
+join pg_class t on c.conrelid = t.oid
+where LOWER(t.relname) = LOWER('{0}')", table)))
+			{
+				while (reader.Read())
+				{
+					constraints.Add(reader.GetString(0));
+				}
+			}
+
+			return constraints.ToArray();
+		}
+
 		public override Column GetColumnByName(string table, string columnName)
 		{
 			// Duplicate because of the lower case issue

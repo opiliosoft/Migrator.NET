@@ -517,7 +517,7 @@ namespace Migrator.Providers.Oracle
 
 			foreach (var idx in indexes)
 			{
-				sql = "SELECT column_Name FROM all_ind_columns WHERE table_name = '" + table + "' and index_name = '" + idx.Name + "'";
+				sql = "SELECT column_Name FROM all_ind_columns WHERE lower(table_name) = lower('" + table + "') and lower(index_name) = lower('" + idx.Name + "')";
 				using (var cmd = CreateCommand())
 				using (var reader = ExecuteQuery(cmd, sql))
 				{
