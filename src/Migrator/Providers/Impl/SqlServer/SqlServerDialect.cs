@@ -73,6 +73,12 @@ namespace Migrator.Providers.SqlServer
 		{
 			get { return true; }
 		}
+
+		public override bool ConstraintNameNeedsQuote
+		{
+			get { return true; }
+		}
+
 		public override string QuoteTemplate
 		{
 			get { return "[{0}]"; }
