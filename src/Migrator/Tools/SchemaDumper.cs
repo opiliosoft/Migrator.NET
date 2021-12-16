@@ -27,13 +27,16 @@ namespace Migrator.Tools
 		string[] tables;
 		List<ForeignKeyConstraint> foreignKeys = new List<ForeignKeyConstraint>();
 		List<Column> columns = new List<Column>();
-
+		string dumpResult;
 		public SchemaDumper(ProviderTypes provider, string connectionString, string defaultSchema, string path = null,string tablePrefix = null)
 		{
 			_provider = ProviderFactory.Create(provider, connectionString, defaultSchema);
 			this.Dump(tablePrefix, path);
 		}
-
+		public string GetDump()
+		{
+			return this.dumpResult;
+		}
 		private void Dump(string tablePrefix, string path)
 		{
 			if (String.IsNullOrEmpty(tablePrefix))
@@ -59,11 +62,11 @@ namespace Migrator.Tools
 			writer.WriteLine("\t}");
 			writer.WriteLine("\tpublic override void Down(){}");
 			writer.WriteLine("}");
-
-			File.WriteAllText(path, writer.ToString());
+			this.dumpResult = writer.ToString();
+			File.WriteAllText(path, dumpResult);
 		}
 
-		private string getListString(string[] list)
+		private string GetListString(string[] list)
 		{
 			if (list == null)
 				return "new string[]{}";
@@ -79,7 +82,7 @@ namespace Migrator.Tools
 			{
 				string[] fkCols = fk.Columns;
 				foreach (var col in fkCols)
-					writer.WriteLine($"\t\tDatabase.AddForeignKey(\"{fk.Name}\", \"{fk.Table}\", {this.getListString(fk.Columns)}, \"{fk.PkTable}\", {this.getListString(fk.PkColumns)});");
+					writer.WriteLine($"\t\tDatabase.AddForeignKey(\"{fk.Name}\", \"{fk.Table}\", {this.GetListString(fk.Columns)}, \"{fk.PkTable}\", {this.GetListString(fk.PkColumns)});");
 				//this._provider.AddForeignKey(name, fktable, fkcols, pktable, primaryCols);
 			}
 		}
@@ -111,7 +114,7 @@ namespace Migrator.Tools
 					writer.WriteLine($"\t\tDatabase.AddPrimaryKey{nonclusteredString}(\"{ind.Name}\",\"{table}\",new string[]{String.Format("{{{0}}}", keysString)});");
 					continue;
 				}
-				writer.WriteLine($"\t\tDatabase.AddIndex(\"{table}\",new Index() { String.Format("{{Name = \"{0}\",Clustered = {1}, KeyColumns={2}, IncludeColumns={3}, Unique={4}, UniqueConstraint={5}}}", ind.Name, ind.Clustered.ToString().ToLower(), this.getListString(ind.KeyColumns), this.getListString(ind.IncludeColumns), ind.Unique.ToString().ToLower(), ind.UniqueConstraint.ToString().ToLower()) });");
+				writer.WriteLine($"\t\tDatabase.AddIndex(\"{table}\",new Index() { String.Format("{{Name = \"{0}\",Clustered = {1}, KeyColumns={2}, IncludeColumns={3}, Unique={4}, UniqueConstraint={5}}}", ind.Name, ind.Clustered.ToString().ToLower(), this.GetListString(ind.KeyColumns), this.GetListString(ind.IncludeColumns), ind.Unique.ToString().ToLower(), ind.UniqueConstraint.ToString().ToLower()) });");
 			}
 		}
 
@@ -131,7 +134,7 @@ namespace Migrator.Tools
 			string precision = "";
 			if (col.Precision != null)
 				precision = $"({col.Precision})";
-			string propertyString = this.getColumnPropertyString(col.ColumnProperty);
+			string propertyString = this.GetColumnPropertyString(col.ColumnProperty);
 
 			if (col.Size != 0 && col.DefaultValue == null && col.ColumnProperty == ColumnProperty.None)
 			{
@@ -160,7 +163,7 @@ namespace Migrator.Tools
 			return String.Format("new Column(\"{0}\",{1})", col.Name, col.Type);
 
 		}
-		private string getColumnPropertyString(ColumnProperty prp)
+		private string GetColumnPropertyString(ColumnProperty prp)
 		{
 			string retVal = "";
 			if ((prp & ColumnProperty.ForeignKey) == ColumnProperty.ForeignKey) retVal += "ColumnProperty.ForeignKey | ";

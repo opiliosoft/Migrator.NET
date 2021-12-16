@@ -68,7 +68,7 @@ namespace Migrator.Framework.Support
 			Func<string, bool> isNameMatch = x => x.Split('.').Reverse().Take(sqlScriptParts.Length).SequenceEqual(sqlScriptParts, StringComparer.InvariantCultureIgnoreCase);
 #endif
 
-			string result = null;
+			//string result = null;
 			var foundResources = resources.Where(isNameMatch).ToArray();
 
 			if (foundResources.Length == 0) throw new InvalidOperationException(string.Format("Could not find resource named {0} in assembly {1}", resourceName, assembly.FullName));
