@@ -33,7 +33,7 @@ namespace Migrator.Tests.Tools
 				throw new ArgumentNullException("MySqlConnectionString", "No config file");
 
             var dumper = new SchemaDumper(ProviderTypes.Mysql, constr, null);
-			string output = dumper.Dump();
+			string output = dumper.GetDump();
 
 			Assert.IsNotNull(output);
 		}
@@ -51,7 +51,7 @@ namespace Migrator.Tests.Tools
                 throw new ArgumentNullException("SqlServerConnectionString", "No config file");
 
             SchemaDumper dumper = new SchemaDumper(ProviderTypes.SqlServer, constr, "");
-            string output = dumper.Dump();
+			string output = dumper.GetDump();
 
             Assert.IsNotNull(output);
         }
