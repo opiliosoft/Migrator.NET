@@ -24,102 +24,142 @@ namespace Migrator.Tools
 	public class SchemaDumper
 	{
 		private readonly ITransformationProvider _provider;
+		string[] tables;
+		List<ForeignKeyConstraint> foreignKeys = new List<ForeignKeyConstraint>();
+		List<Column> columns = new List<Column>();
 
-		public SchemaDumper(ProviderTypes provider, string connectionString, string defaultSchema)
+		public SchemaDumper(ProviderTypes provider, string connectionString, string defaultSchema, string path = null,string tablePrefix = null)
 		{
 			_provider = ProviderFactory.Create(provider, connectionString, defaultSchema);
+			this.Dump(tablePrefix, path);
 		}
 
-		public string Dump()
+		private void Dump(string tablePrefix, string path)
 		{
-			var writer = new StringWriter();
+			if (String.IsNullOrEmpty(tablePrefix))
+				this.tables = this._provider.GetTables();
+			else
+				this.tables = this._provider.GetTables().Where(o => o.ToUpper().StartsWith(tablePrefix.ToUpper())).ToArray();
 
-			writer.WriteLine("using Migrator;\n");
-			writer.WriteLine("[Migration(1)]");
-			writer.WriteLine("public class SchemaDump : Migration");
-			writer.WriteLine("{");
+			foreach (var tab in this.tables)
+			{
+				foreignKeys.AddRange(this._provider.GetForeignKeyConstraints(tab));
+			}
+
+			var writer = new StringWriter();
+			writer.WriteLine("using System.Data;");
+			writer.WriteLine("using Migrator.Framework;\n");
+			writer.WriteLine("\t[Migration(1)]");
+			writer.WriteLine("\tpublic class SchemaDump : Migration");
+			writer.WriteLine("\t{");
 			writer.WriteLine("\tpublic override void Up()");
 			writer.WriteLine("\t{");
-
-			foreach (string table in _provider.GetTables())
-			{
-				writer.WriteLine("\t\tDatabase.AddTable(\"{0}\",", table);
-				var columnLines = new List<string>();
-				foreach (Column column in _provider.GetColumns(table))
-				{
-					if (column.Size>0 && column.DefaultValue!=null)
-						columnLines.Add(string.Format("\t\t\tnew Column(\"{0}\", DbType.{1}, {2}, {3}, \"{4}\")", column.Name, column.Type, column.Size, getColumnPropertyString(column.ColumnProperty), column.DefaultValue));
-					else if (column.Size > 0)
-						columnLines.Add(string.Format("\t\t\tnew Column(\"{0}\", DbType.{1}, {2}, {3})", column.Name, column.Type, column.Size, getColumnPropertyString(column.ColumnProperty)));
-					else if (column.DefaultValue != null)
-						columnLines.Add(string.Format("\t\t\tnew Column(\"{0}\", DbType.{1}, {2}, \"{3}\")", column.Name, column.Type, getColumnPropertyString(column.ColumnProperty), column.DefaultValue));                    
-					else
-						columnLines.Add(string.Format("\t\t\tnew Column(\"{0}\", DbType.{1}, {2})", column.Name, column.Type, getColumnPropertyString(column.ColumnProperty)));
-				}
-				foreach (var constraint in _provider.GetForeignKeyConstraints(table))
-				{
-					columnLines.Add(string.Format("\t\t\tnew ForeignKeyConstraint(\"{0}\", \"{1}\", new[] {{\"{2}\"}}, \"{3}\", new[] {{\"{4}\"}})", constraint.Name, constraint.Table, string.Join("\",\"", constraint.Columns), constraint.PkTable, string.Join("\",\"", constraint.PkColumns)));                    
-				}
-				writer.WriteLine(string.Join(string.Format(",{0}", Environment.NewLine), columnLines.ToArray()));
-				writer.WriteLine("\t\t);");
-				
-				foreach (Index index in _provider.GetIndexes(table).Where( x => !x.PrimaryKey))
-				{
-					if (index.IncludeColumns == null)
-					{
-						writer.WriteLine(string.Format("\t\tDatabase.AddIndex(\"{0}\", new Index() {{ Name = \"{1}\", Unique = {2}, Clustered = {3}, KeyColumns = new[] {{\"{4}\"}}, IncludeColumns = null }});",
-							table,
-							index.Name,
-							index.Unique.ToString().ToLower(),
-							index.Clustered.ToString().ToLower(),
-							string.Join("\",\"", index.KeyColumns)));
-					}
-					else
-					{
-						writer.WriteLine(string.Format("\t\tDatabase.AddIndex(\"{0}\", new Index() {{ Name = \"{1}\", Unique = {2}, Clustered = {3}, KeyColumns = new[] {{\"{4}\"}}, IncludeColumns = new[] {{\"{5}\"}} }});",
-							table,
-							index.Name,
-							index.Unique.ToString().ToLower(),
-							index.Clustered.ToString().ToLower(),
-							string.Join("\",\"", index.KeyColumns),
-							string.Join("\",\"", index.IncludeColumns)));
-					}
-				}
-
-				writer.WriteLine("");
-			}
-
-			writer.WriteLine("");
-			writer.WriteLine("");
-
-			/*foreach (string table in _provider.GetTables())
-			{
-				foreach (var constraint in _provider.GetForeignKeyConstraints(table))
-				{
-					writer.WriteLine("\t\tDatabase.AddForeignKey(\"{0}\", \"{1}\", new[] {{\"{2}\"}}, \"{3}\", new[] {{\"{4}\"}});", constraint.Name, constraint.Table, string.Join("\",\"", constraint.Columns), constraint.PkTable, string.Join("\",\"", constraint.PkColumns));
-					writer.WriteLine("");
-				}                                                                
-			}*/
-
-			writer.WriteLine("");
-			writer.WriteLine("");
-
-			writer.WriteLine("\t}\n");
-			writer.WriteLine("\tpublic override void Down()");
-			writer.WriteLine("\t{");
-
-			foreach (string table in _provider.GetTables())
-			{
-				writer.WriteLine("\t\tDatabase.RemoveTable(\"{0}\");", table);
-				writer.WriteLine("");
-			}
-
+			this.addTableStatement(writer);
+			this.addForeignKeys(writer);
 			writer.WriteLine("\t}");
+			writer.WriteLine("\tpublic override void Down(){}");
 			writer.WriteLine("}");
 
-			return writer.ToString();
+			File.WriteAllText(path, writer.ToString());
 		}
 
+		private string getListString(string[] list)
+		{
+			if (list == null)
+				return "new string[]{}";
+			for (int i = 0; i < list.Length; i++)
+			{
+				list[i] = $"\"{list[i]}\"";
+			}
+			return $"new []{String.Format("{{{0}}}", String.Join(",", list))}";
+		}
+		private void addForeignKeys(StringWriter writer)
+		{
+			foreach (var fk in this.foreignKeys)
+			{
+				string[] fkCols = fk.Columns;
+				foreach (var col in fkCols)
+					writer.WriteLine($"\t\tDatabase.AddForeignKey(\"{fk.Name}\", \"{fk.Table}\", {this.getListString(fk.Columns)}, \"{fk.PkTable}\", {this.getListString(fk.PkColumns)});");
+				//this._provider.AddForeignKey(name, fktable, fkcols, pktable, primaryCols);
+			}
+		}
+		private void addTableStatement(StringWriter writer)
+		{
+			foreach (string table in this.tables)
+			{
+				string cols = this.getColsStatement(table);
+				writer.WriteLine($"\t\tDatabase.AddTable(\"{table}\",{cols});");
+				this.AddIndexes(table, writer);
+			}
+		}
+
+		private void AddIndexes(string table, StringWriter writer)
+		{
+			Index[] inds = this._provider.GetIndexes(table);
+			foreach (Index ind in inds)
+			{
+				if (ind.PrimaryKey == true)
+				{
+					string nonclusteredString = (ind.Clustered == false ? "NonClustered" : "");
+
+					string[] keys = ind.KeyColumns;
+					for (int i = 0; i < keys.Length; i++)
+					{
+						keys[i] = $"\"{keys[i]}\"";
+					}
+					string keysString = string.Join(",", keys);
+					writer.WriteLine($"\t\tDatabase.AddPrimaryKey{nonclusteredString}(\"{ind.Name}\",\"{table}\",new string[]{String.Format("{{{0}}}", keysString)});");
+					continue;
+				}
+				writer.WriteLine($"\t\tDatabase.AddIndex(\"{table}\",new Index() { String.Format("{{Name = \"{0}\",Clustered = {1}, KeyColumns={2}, IncludeColumns={3}, Unique={4}, UniqueConstraint={5}}}", ind.Name, ind.Clustered.ToString().ToLower(), this.getListString(ind.KeyColumns), this.getListString(ind.IncludeColumns), ind.Unique.ToString().ToLower(), ind.UniqueConstraint.ToString().ToLower()) });");
+			}
+		}
+
+		private string getColsStatement(string table)
+		{
+			Column[] cols = this._provider.GetColumns(table);
+			List<string> colList = new List<string>();
+			foreach (var col in cols)
+			{
+				colList.Add(this.getColStatement(col, table));
+			}
+			string result = String.Format("{0}", string.Join(",", colList));
+			return result;
+		}
+		private string getColStatement(Column col, string table)
+		{
+			string precision = "";
+			if (col.Precision != null)
+				precision = $"({col.Precision})";
+			string propertyString = this.getColumnPropertyString(col.ColumnProperty);
+
+			if (col.Size != 0 && col.DefaultValue == null && col.ColumnProperty == ColumnProperty.None)
+			{
+				return String.Format("new Column(\"{0}\",DbType.{1},{2})", col.Name, col.Type, col.Size);
+			}
+			if (col.DefaultValue != null && col.ColumnProperty == ColumnProperty.None && col.Size == 0)
+			{
+				return String.Format("new Column(\"{0}\",DbType.{1},\"{2}\")", col.Name, col.Type, col.DefaultValue);
+			}
+			if (col.ColumnProperty != ColumnProperty.None && col.Size == 0 && col.DefaultValue == null)
+			{
+				return String.Format("new Column(\"{0}\",DbType.{1},{2})", col.Name, col.Type, propertyString);
+			}
+			if (col.ColumnProperty != ColumnProperty.None && col.Size != 0 && col.DefaultValue == null)
+			{
+				return String.Format("new Column(\"{0}\",DbType.{1},{2},{3})", col.Name, col.Type, col.Size, propertyString);
+			}
+			if (col.ColumnProperty != ColumnProperty.None && col.Size != 0 && col.DefaultValue != null)
+			{
+				return String.Format("new Column(\"{0}\",DbType.{1},{2},{3},\"{4}\")", col.Name, col.Type, col.Size, propertyString, col.DefaultValue);
+			}
+			if (col.ColumnProperty != ColumnProperty.None && col.Size == 0 && col.DefaultValue != null)
+			{
+				return String.Format("new Column(\"{0}\",DbType.{1},{2},\"{3}\")", col.Name, col.Type, propertyString, col.DefaultValue);
+			}
+			return String.Format("new Column(\"{0}\",{1})", col.Name, col.Type);
+
+		}
 		private string getColumnPropertyString(ColumnProperty prp)
 		{
 			string retVal = "";
@@ -128,9 +168,9 @@ namespace Migrator.Tools
 			if ((prp & ColumnProperty.Indexed) == ColumnProperty.Indexed) retVal += "ColumnProperty.Indexed | ";
 			if ((prp & ColumnProperty.NotNull) == ColumnProperty.NotNull) retVal += "ColumnProperty.NotNull | ";
 			if ((prp & ColumnProperty.Null) == ColumnProperty.Null) retVal += "ColumnProperty.Null | ";
-			if ((prp & ColumnProperty.PrimaryKey) == ColumnProperty.PrimaryKey) retVal += "ColumnProperty.PrimaryKey | ";
-			if ((prp & ColumnProperty.PrimaryKeyWithIdentity) == ColumnProperty.PrimaryKeyWithIdentity) retVal += "ColumnProperty.PrimaryKeyWithIdentity | ";
-			if ((prp & ColumnProperty.PrimaryKeyNonClustered) == ColumnProperty.PrimaryKeyNonClustered) retVal += "ColumnProperty.PrimaryKeyNonClustered | ";
+			//if ((prp & ColumnProperty.PrimaryKey) == ColumnProperty.PrimaryKey) retVal += "ColumnProperty.PrimaryKey | ";
+			//if ((prp & ColumnProperty.PrimaryKeyWithIdentity) == ColumnProperty.PrimaryKeyWithIdentity) retVal += "ColumnProperty.PrimaryKeyWithIdentity | ";
+			//if ((prp & ColumnProperty.PrimaryKeyNonClustered) == ColumnProperty.PrimaryKeyNonClustered) retVal += "ColumnProperty.PrimaryKeyNonClustered | ";
 			if ((prp & ColumnProperty.Unique) == ColumnProperty.Unique) retVal += "ColumnProperty.Unique | ";
 			if ((prp & ColumnProperty.Unsigned) == ColumnProperty.Unsigned) retVal += "ColumnProperty.Unsigned | ";
 
@@ -139,15 +179,6 @@ namespace Migrator.Tools
 			if (retVal == "") retVal = "ColumnProperty.None";
 
 			return retVal;
-		}
-
-		public void DumpTo(string file)
-		{
-			using (var fs=new FileStream(file, FileMode.Create))
-			using (var writer = new StreamWriter(fs))
-			{
-				writer.Write(Dump());
-			}
 		}
 	}
 }

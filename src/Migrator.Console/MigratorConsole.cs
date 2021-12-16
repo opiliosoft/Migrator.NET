@@ -118,11 +118,10 @@ namespace Migrator.MigratorConsole
 
 		public void Dump()
 		{
-			CheckArguments();
+			//CheckArguments();
 
-			var dumper = new SchemaDumper(_provider, _connectionString, _defaultSchema);
+			var dumper = new SchemaDumper(_provider, _connectionString, _defaultSchema, _dumpTo);
 
-			dumper.DumpTo(_dumpTo);
 		}
 
 		/// <summary>
@@ -174,6 +173,16 @@ namespace Migrator.MigratorConsole
 		{
 			for (int i = 0; i < argv.Length; i++)
 			{
+				if(argv[i].Equals("-connectionString",StringComparison.InvariantCultureIgnoreCase))
+				{
+					this._connectionString = argv[i + 1];
+					continue;
+				}
+				if (argv[i].Equals("-providerType", StringComparison.InvariantCultureIgnoreCase))
+				{
+					this._provider = (ProviderTypes)Enum.Parse(typeof(ProviderTypes), argv[i+1]);
+					continue;
+				}
 				if (argv[i].Equals("-list"))
 				{
 					_list = true;
