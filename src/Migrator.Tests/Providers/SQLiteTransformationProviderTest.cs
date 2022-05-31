@@ -42,8 +42,8 @@ namespace Migrator.Tests.Providers
 		[Test]
 		public void CanParseColumnDefForName()
 		{
-			const string nullString = "bar TEXT";
-			const string notNullString = "baz INTEGER NOT NULL";
+			//const string nullString = "bar TEXT";
+			//const string notNullString = "baz INTEGER NOT NULL";
 			//Assert.AreEqual("bar", ((SQLiteTransformationProvider) _provider).ExtractNameFromColumnDef(nullString));
 			//Assert.AreEqual("baz", ((SQLiteTransformationProvider) _provider).ExtractNameFromColumnDef(notNullString));
 		}

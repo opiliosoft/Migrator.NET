@@ -36,6 +36,7 @@ namespace Migrator.MigratorConsole
         ProviderTypes _provider;
 		bool _trace;
 		string _defaultSchema;
+		string _tablePrefix=null;
 
 		/// <summary>
 		/// Builds a new console
@@ -58,7 +59,7 @@ namespace Migrator.MigratorConsole
 				if (_list)
 					List();
 				else if (_dumpTo != null)
-					Dump();
+					new SchemaDumper(_provider, _connectionString, _defaultSchema, _dumpTo,this._tablePrefix);
 				else
 					Migrate();
 			}
@@ -116,14 +117,6 @@ namespace Migrator.MigratorConsole
 			}
 		}
 
-		public void Dump()
-		{
-			CheckArguments();
-
-			var dumper = new SchemaDumper(_provider, _connectionString, _defaultSchema);
-
-			dumper.DumpTo(_dumpTo);
-		}
 
 		/// <summary>
 		/// Show usage information and help.
@@ -174,6 +167,21 @@ namespace Migrator.MigratorConsole
 		{
 			for (int i = 0; i < argv.Length; i++)
 			{
+				if(argv[i].Equals("-connectionString",StringComparison.InvariantCultureIgnoreCase))
+				{
+					this._connectionString = argv[i + 1];
+					continue;
+				}
+				if (argv[i].Equals("-providerType", StringComparison.InvariantCultureIgnoreCase))
+				{
+					this._provider = (ProviderTypes)Enum.Parse(typeof(ProviderTypes), argv[i+1]);
+					continue;
+				}
+				if (argv[i].Equals("-tablePrefix", StringComparison.InvariantCultureIgnoreCase))
+				{
+					this._tablePrefix= argv[i + 1];
+					continue;
+				}
 				if (argv[i].Equals("-list"))
 				{
 					_list = true;
