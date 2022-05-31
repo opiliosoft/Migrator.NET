@@ -194,7 +194,7 @@ namespace Migrator.Providers.SQLite
 			var newColumns = GetColumns(table).Where(x => x.Name != column).ToArray();
 
 			AddTable(table + "_temp", null, newColumns);
-			var colNamesSql = string.Join(", ", newColumns.Select(x => x.Name));
+			var colNamesSql = string.Join(", ", newColumns.Select(x => QuoteColumnNameIfRequired(x.Name)));
 			ExecuteNonQuery(String.Format("INSERT INTO {0}_temp SELECT {1} FROM {0}", table, colNamesSql));
 			RemoveTable(table);
 			ExecuteNonQuery(String.Format("ALTER TABLE {0}_temp RENAME TO {0}", table));
@@ -297,7 +297,7 @@ namespace Migrator.Providers.SQLite
 
 				AddTable(table + "_temp", null, newColumns);
 
-				var colNamesSql = string.Join(", ", newColumns.Select(x => x.Name));
+				var colNamesSql = string.Join(", ", newColumns.Select(x => x.Name).Select(x => QuoteColumnNameIfRequired(x)));
 				using (var cmd = CreateCommand())
 					ExecuteQuery(cmd, String.Format("INSERT INTO {0}_temp SELECT {1} FROM {0}", table, colNamesSql));
 				RemoveTable(table);
