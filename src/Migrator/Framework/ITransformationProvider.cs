@@ -345,6 +345,14 @@ namespace Migrator.Framework
 		Column[] GetColumns(string table);
 
 		/// <summary>
+		/// Reads the MaxLength of the Data in the Column
+		/// </summary>
+		/// <param name="table"></param>
+		/// <param name="columnName"></param>
+		/// <returns></returns>
+		int GetColumnContentSize(string table, string columnName);
+
+		/// <summary>
 		/// Get information about a single column in a table
 		/// </summary>
 		/// <param name="table">The table name that you want the columns for.</param>

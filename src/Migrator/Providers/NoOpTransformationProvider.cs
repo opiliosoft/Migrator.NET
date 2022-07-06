@@ -546,5 +546,10 @@ namespace Migrator.Providers
 		{
 			throw new NotImplementedException();
 		}
+
+		public int GetColumnContentSize(string table, string columnName)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

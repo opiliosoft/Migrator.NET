@@ -27,6 +27,11 @@ using ForeignKeyConstraintType = Migrator.Framework.ForeignKeyConstraintType;
 using ForeignKeyConstraint = Migrator.Framework.ForeignKeyConstraint;
 using Index = Migrator.Framework.Index;
 using System.Reflection;
+using Migrator.Providers.Mysql;
+using Migrator.Providers.Oracle;
+using Migrator.Providers.PostgreSQL;
+using Migrator.Providers.SQLite;
+using Migrator.Providers.SqlServer;
 
 namespace Migrator.Providers
 {
@@ -185,6 +190,15 @@ namespace Migrator.Providers
 		{
 			var columns = GetColumns(table);
 			return columns.First(column => column.Name.Equals(columnName, StringComparison.OrdinalIgnoreCase));
+		}
+
+		public virtual int GetColumnContentSize(string table, string columnName)
+		{
+			object result = this.ExecuteScalar("SELECT MAX(LENGTH(" + this.QuoteColumnNameIfRequired(columnName) + ")) FROM " + this.QuoteTableNameIfRequired(table));
+
+			if (result == DBNull.Value)
+				return 0;
+			return Convert.ToInt32(result);
 		}
 
 		public virtual string[] GetTables()

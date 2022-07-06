@@ -263,6 +263,15 @@ FROM    sys.[indexes] Ind
 			return retVal.ToArray();
 		}
 
+		public override int GetColumnContentSize(string table, string columnName)
+		{
+			object result = this.ExecuteScalar("SELECT MAX(LEN(" + this.QuoteColumnNameIfRequired(columnName) + ")) FROM " + this.QuoteTableNameIfRequired(table));
+
+			if (result == DBNull.Value)
+				return 0;
+			return Convert.ToInt32(result);
+		}
+
 		public override Column[] GetColumns(string table)
 		{
 			string schema;
