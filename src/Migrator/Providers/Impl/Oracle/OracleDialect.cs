@@ -22,6 +22,7 @@ namespace Migrator.Providers.Oracle
 			RegisterColumnType(DbType.Currency, "NUMBER(19,1)");
 			RegisterColumnType(DbType.Date, "DATE");
 			RegisterColumnType(DbType.DateTime, "TIMESTAMP(4)");
+			RegisterColumnType(DbType.DateTime2, "TIMESTAMP(7)");
 			RegisterColumnType(DbType.DateTimeOffset, "TIMESTAMP(4)");
 			RegisterColumnType(DbType.Decimal, "NUMBER(19,5)");
 			RegisterColumnType(DbType.Decimal, 19, "NUMBER(19, $l)");
