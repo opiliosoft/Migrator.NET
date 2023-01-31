@@ -1056,6 +1056,9 @@ namespace Migrator.Providers
 		{
 			using (IDbCommand command = _connection.CreateCommand())
 			{
+				if (CommandTimeout.HasValue)
+					command.CommandTimeout = CommandTimeout.Value;
+
 				command.Transaction = _transaction;
 
 				var query = String.Format("SELECT {0} FROM {1} WHERE {2}", what, from, GetWhereString(whereColumns, whereValues));
@@ -1108,6 +1111,9 @@ namespace Migrator.Providers
 
 			using (IDbCommand command = _connection.CreateCommand())
 			{
+				if (CommandTimeout.HasValue)
+					command.CommandTimeout = CommandTimeout.Value;
+
 				command.Transaction = _transaction;
 
 				var query = String.Format("UPDATE {0} SET {1}", table, builder.ToString());
@@ -1158,6 +1164,9 @@ namespace Migrator.Providers
 
 			using (IDbCommand command = _connection.CreateCommand())
 			{
+				if (CommandTimeout.HasValue)
+					command.CommandTimeout = CommandTimeout.Value;
+
 				command.Transaction = _transaction;
 
 				var query = String.Format("UPDATE {0} SET {1} WHERE {2}", table, builder.ToString(), GetWhereString(whereColumns, whereValues, values.Length));
@@ -1223,6 +1232,9 @@ namespace Migrator.Providers
 
 			using (IDbCommand command = _connection.CreateCommand())
 			{
+				if (CommandTimeout.HasValue)
+					command.CommandTimeout = CommandTimeout.Value;
+
 				command.Transaction = _transaction;
 
 				command.CommandText = String.Format("INSERT INTO {0} ({1}) VALUES ({2})", table, columnNames, parameterNames);
@@ -1320,6 +1332,9 @@ namespace Migrator.Providers
 
 				using (IDbCommand command = _connection.CreateCommand())
 				{
+					if (CommandTimeout.HasValue)
+						command.CommandTimeout = CommandTimeout.Value;
+
 					command.Transaction = _transaction;
 
 					var query = String.Format("DELETE FROM {0} WHERE ({1})", table,
