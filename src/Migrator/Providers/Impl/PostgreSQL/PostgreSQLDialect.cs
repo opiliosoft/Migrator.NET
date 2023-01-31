@@ -19,6 +19,7 @@ namespace Migrator.Providers.PostgreSQL
 			RegisterColumnType(DbType.Currency, "decimal(16,4)");
 			RegisterColumnType(DbType.Date, "date");
 			RegisterColumnType(DbType.DateTime, "timestamptz");
+			RegisterColumnType(DbType.DateTime2, "timestamptz");
 			RegisterColumnType(DbType.DateTimeOffset, "timestamptz");
 			RegisterColumnType(DbType.Decimal, "decimal(19,5)");
 			RegisterColumnType(DbType.Decimal, 19, "decimal(18, $l)");
