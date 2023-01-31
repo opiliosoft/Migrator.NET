@@ -1650,6 +1650,10 @@ namespace Migrator.Providers
 		{
 			EnsureHasConnection();
 			IDbCommand cmd = _connection.CreateCommand();
+
+			if (CommandTimeout.HasValue)
+				cmd.CommandTimeout = CommandTimeout.Value;
+
 			cmd.CommandType = CommandType.Text;
 			if (_transaction != null)
 			{
