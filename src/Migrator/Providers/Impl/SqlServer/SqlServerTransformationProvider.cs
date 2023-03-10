@@ -65,7 +65,7 @@ namespace Migrator.Providers.SqlServer
 
 			if (!retVal)
 				using (var cmd = CreateCommand())
-				using (IDataReader reader = ExecuteQuery(cmd, string.Format("SELECT TOP 1 * FROM SYS.DEFAULT_CONSTRAINTS WHERE PARENT_OBJECT_ID = OBJECT_ID('{0}') AND Name = '{1}'", table, name)))
+				using (IDataReader reader = ExecuteQuery(cmd, string.Format("SELECT TOP 1 * FROM sys.default_constraints WHERE parent_object_id = OBJECT_ID('{0}') AND name = '{1}'", table, name)))
 				{
 					return reader.Read();
 				}
