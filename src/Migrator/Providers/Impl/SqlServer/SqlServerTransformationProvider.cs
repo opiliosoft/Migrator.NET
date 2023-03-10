@@ -169,7 +169,7 @@ namespace Migrator.Providers.SqlServer
 
 		public override void RemoveColumnDefaultValue(string table, string column)
 		{
-			var sql = string.Format("SELECT name FROM sys.default_constraints WHERE parent_object_id = OBJECT_ID('{0}') AND parent_column_id = (SELECT column_id FROM sys.columns WHERE NAME = '{1}' AND object_id = OBJECT_ID('{0}'))", table, column);
+			var sql = string.Format("SELECT name FROM sys.default_constraints WHERE parent_object_id = OBJECT_ID('{0}') AND parent_column_id = (SELECT column_id FROM sys.columns WHERE name = '{1}' AND object_id = OBJECT_ID('{0}'))", table, column);
 			var constraintName = ExecuteScalar(sql);
 			if (constraintName != null)
 				RemoveConstraint(table, constraintName.ToString());
