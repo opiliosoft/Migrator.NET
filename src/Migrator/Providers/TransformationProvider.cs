@@ -460,7 +460,7 @@ namespace Migrator.Providers
 
 			var existingColumn = GetColumnByName(table, column);
 
-			ExecuteNonQuery(String.Format("ALTER TABLE {0} DROP COLUMN {1} ", table, Dialect.Quote(existingColumn.Name)));
+			ExecuteNonQuery(String.Format("ALTER TABLE [{0}] DROP COLUMN {1} ", table, Dialect.Quote(existingColumn.Name)));
 		}
 
 		public virtual bool ColumnExists(string table, string column)
